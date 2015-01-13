@@ -36,12 +36,12 @@
    Desc:   
 */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_FACTORY_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_FACTORY_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_FACTORY_
+#define MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_FACTORY_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space_factory.h>
+#include <moveit/ompl/parameterization/model_based_state_space_factory.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 class HumanoidModelStateSpaceFactory : public ModelBasedStateSpaceFactory
 {

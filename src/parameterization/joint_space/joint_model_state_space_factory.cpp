@@ -34,22 +34,22 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/parameterization/joint_space/joint_model_state_space_factory.h>
-#include <moveit/ompl_interface/parameterization/joint_space/joint_model_state_space.h>
+#include <moveit/ompl/parameterization/joint_space/joint_model_state_space_factory.h>
+#include <moveit/ompl/parameterization/joint_space/joint_model_state_space.h>
 
-ompl_interface::JointModelStateSpaceFactory::JointModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
+moveit_ompl::JointModelStateSpaceFactory::JointModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
 {
   type_ = JointModelStateSpace::PARAMETERIZATION_TYPE;
 }
 
-int ompl_interface::JointModelStateSpaceFactory::canRepresentProblem(const std::string &group,
+int moveit_ompl::JointModelStateSpaceFactory::canRepresentProblem(const std::string &group,
                                                                      const moveit_msgs::MotionPlanRequest &req,
                                                                      const robot_model::RobotModelConstPtr &kmodel) const
 {
   return 100;
 }
 
-ompl_interface::ModelBasedStateSpacePtr ompl_interface::JointModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::JointModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
 {
   return ModelBasedStateSpacePtr(new JointModelStateSpace(space_spec));
 }

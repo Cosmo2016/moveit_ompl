@@ -34,12 +34,12 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/detail/state_validity_checker.h>
-#include <moveit/ompl_interface/model_based_planning_context.h>
+#include <moveit/ompl/detail/state_validity_checker.h>
+#include <moveit/ompl/model_based_planning_context.h>
 #include <moveit/profiler/profiler.h>
 #include <ros/ros.h>
 
-ompl_interface::StateValidityChecker::StateValidityChecker(const ModelBasedPlanningContext *pc)
+moveit_ompl::StateValidityChecker::StateValidityChecker(const ModelBasedPlanningContext *pc)
   : ompl::base::StateValidityChecker(pc->getOMPLSimpleSetup()->getSpaceInformation())
   , planning_context_(pc)
   , group_name_(pc->getGroupName())
@@ -63,12 +63,12 @@ ompl_interface::StateValidityChecker::StateValidityChecker(const ModelBasedPlann
   collision_request_with_distance_verbose_.verbose = true;
 }
 
-void ompl_interface::StateValidityChecker::setVerbose(bool flag)
+void moveit_ompl::StateValidityChecker::setVerbose(bool flag)
 {
   verbose_ = flag;
 }
 
-bool ompl_interface::StateValidityChecker::isValid(const ompl::base::State *state, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValid(const ompl::base::State *state, bool verbose) const
 {
   //  moveit::Profiler::ScopedBlock sblock("isValid");
   if (planning_context_->useStateValidityCache())
@@ -81,13 +81,13 @@ bool ompl_interface::StateValidityChecker::isValid(const ompl::base::State *stat
   }
 }
 
-bool ompl_interface::StateValidityChecker::isValid(const ompl::base::State *state, double &dist, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValid(const ompl::base::State *state, double &dist, bool verbose) const
 {
   //  moveit::Profiler::ScopedBlock sblock("isValid");
   return planning_context_->useStateValidityCache() ? isValidWithCache(state, dist, verbose) : isValidWithoutCache(state, dist, verbose);
 }
 
-double ompl_interface::StateValidityChecker::cost(const ompl::base::State *state) const
+double moveit_ompl::StateValidityChecker::cost(const ompl::base::State *state) const
 {
   double cost = 0.0;
   
@@ -104,7 +104,7 @@ double ompl_interface::StateValidityChecker::cost(const ompl::base::State *state
   return cost;
 }
 
-double ompl_interface::StateValidityChecker::clearance(const ompl::base::State *state) const
+double moveit_ompl::StateValidityChecker::clearance(const ompl::base::State *state) const
 {
   robot_state::RobotState *kstate = tss_.getStateStorage();
   planning_context_->getOMPLStateSpace()->copyToRobotState(*kstate, state);
@@ -114,7 +114,7 @@ double ompl_interface::StateValidityChecker::clearance(const ompl::base::State *
   return res.collision ? 0.0 : (res.distance < 0.0 ? std::numeric_limits<double>::infinity() : res.distance);
 }
 
-bool ompl_interface::StateValidityChecker::isValidWithoutCache(const ompl::base::State *state, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValidWithoutCache(const ompl::base::State *state, bool verbose) const
 {
   // check bounds
   if (!si_->satisfiesBounds(state))
@@ -143,7 +143,7 @@ bool ompl_interface::StateValidityChecker::isValidWithoutCache(const ompl::base:
   return res.collision == false;
 }
 
-bool ompl_interface::StateValidityChecker::isValidWithoutCache(const ompl::base::State *state, double &dist, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValidWithoutCache(const ompl::base::State *state, double &dist, bool verbose) const
 {
   if (!si_->satisfiesBounds(state))
   {
@@ -181,7 +181,7 @@ bool ompl_interface::StateValidityChecker::isValidWithoutCache(const ompl::base:
   return res.collision == false;
 }
 
-bool ompl_interface::StateValidityChecker::isValidWithCache(const ompl::base::State *state, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValidWithCache(const ompl::base::State *state, bool verbose) const
 {
   // Check if state already contains valid flag
   if (state->as<ModelBasedStateSpace::StateType>()->isValidityKnown())
@@ -228,7 +228,7 @@ bool ompl_interface::StateValidityChecker::isValidWithCache(const ompl::base::St
   }
 }
 
-bool ompl_interface::StateValidityChecker::isValidWithCache(const ompl::base::State *state, double &dist, bool verbose) const
+bool moveit_ompl::StateValidityChecker::isValidWithCache(const ompl::base::State *state, double &dist, bool verbose) const
 {
   if (state->as<ModelBasedStateSpace::StateType>()->isValidityKnown() && state->as<ModelBasedStateSpace::StateType>()->isGoalDistanceKnown())
   {

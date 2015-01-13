@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2014, JSK, The University of Tokyo.
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the JSK, The University of Tokyo nor the names of its
+ *   * Neither the name of Willow Garage nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,43 +32,49 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Dave Coleman
-   Desc:   
-*/
+/* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_FACTORY_
+#define MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_FACTORY_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit_msgs/MotionPlanRequest.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
-class HumanoidModelStateSpace : public ModelBasedStateSpace
+class ModelBasedStateSpaceFactory;
+typedef boost::shared_ptr<ModelBasedStateSpaceFactory> ModelBasedStateSpaceFactoryPtr;
+
+class ModelBasedStateSpaceFactory
 {
 public:
 
-  static const std::string PARAMETERIZATION_TYPE;
+  ModelBasedStateSpaceFactory()
+  {
+  }
 
-  HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  virtual ~ModelBasedStateSpaceFactory()
+  {
+  }
 
-  /**
-   * \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link
-   */
-  virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const;
+  ModelBasedStateSpacePtr getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const;
 
-  virtual void copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const;
+  const std::string& getType() const
+  {
+    return type_;
+  }
 
-  virtual void copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const;
+  /** \brief Decide whether the type of state space constructed by this factory could represent problems specified by the user
+      request \e req for group \e group. The group \e group must always be specified and takes precedence over \e req.group_name, which may be different */
+  virtual int canRepresentProblem(const std::string &group,
+                                  const moveit_msgs::MotionPlanRequest &req,
+                                  const robot_model::RobotModelConstPtr &kmodel) const = 0;
 
 protected:
 
-  /** \brief Used to calculate the fake base transform of the vjoint */
-  moveit::core::RobotStatePtr moveit_robot_state_;
-
-  /** \brief Used to calculate the fake base transform of the vjoint */
-  const moveit::core::JointModel* vjoint_model_;
-  int jmg_vjoint_index_;
+  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const = 0;
+  std::string type_;
 };
 
 }

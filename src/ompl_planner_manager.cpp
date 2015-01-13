@@ -34,14 +34,14 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/ompl_planner_manager.h>
+#include <moveit/ompl/ompl_planner_manager.h>
 #include <moveit/robot_state/conversions.h>
 #include <moveit/kinematic_constraints/utils.h>
-#include <moveit/ompl_interface/detail/constrained_valid_state_sampler.h>
+#include <moveit/ompl/detail/constrained_valid_state_sampler.h>
 #include <moveit/profiler/profiler.h>
 #include <fstream>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 OMPLPlannerManager::OMPLPlannerManager()

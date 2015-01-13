@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/parameterization/joint_space/joint_model_state_space.h>
-#include <moveit/ompl_interface/parameterization/work_space/pose_model_state_space.h>
+#include <moveit/ompl/parameterization/joint_space/joint_model_state_space.h>
+#include <moveit/ompl/parameterization/work_space/pose_model_state_space.h>
 
 #include <urdf_parser/urdf_parser.h>
 
@@ -89,11 +89,11 @@ protected:
 
 TEST_F(LoadPlanningModelsPr2, StateSpace)
 {
-  ompl_interface::ModelBasedStateSpaceSpecification spec(kmodel_, "whole_body");
-  ompl_interface::JointModelStateSpace ss(spec);
+  ompl::ModelBasedStateSpaceSpecification spec(kmodel_, "whole_body");
+  ompl::JointModelStateSpace ss(spec);
   ss.setPlanningVolume(-1, 1, -1, 1, -1, 1);
   ss.setup();
-  std::ofstream fout("ompl_interface_test_state_space_diagram1.dot");
+  std::ofstream fout("ompl_test_state_space_diagram1.dot");
   ss.diagram(fout);
   bool passed = false;
   try
@@ -110,33 +110,33 @@ TEST_F(LoadPlanningModelsPr2, StateSpace)
 
 TEST_F(LoadPlanningModelsPr2, StateSpaces)
 {
-  ompl_interface::ModelBasedStateSpaceSpecification spec1(kmodel_, "right_arm");
-  ompl_interface::ModelBasedStateSpace ss1(spec1);
+  ompl::ModelBasedStateSpaceSpecification spec1(kmodel_, "right_arm");
+  ompl::ModelBasedStateSpace ss1(spec1);
   ss1.setup();
 
-  ompl_interface::ModelBasedStateSpaceSpecification spec2(kmodel_, "left_arm");
-  ompl_interface::ModelBasedStateSpace ss2(spec2);
+  ompl::ModelBasedStateSpaceSpecification spec2(kmodel_, "left_arm");
+  ompl::ModelBasedStateSpace ss2(spec2);
   ss2.setup();
 
-  ompl_interface::ModelBasedStateSpaceSpecification spec3(kmodel_, "whole_body");
-  ompl_interface::ModelBasedStateSpace ss3(spec3);
+  ompl::ModelBasedStateSpaceSpecification spec3(kmodel_, "whole_body");
+  ompl::ModelBasedStateSpace ss3(spec3);
   ss3.setup();
 
-  ompl_interface::ModelBasedStateSpaceSpecification spec4(kmodel_, "arms");
-  ompl_interface::ModelBasedStateSpace ss4(spec4);
+  ompl::ModelBasedStateSpaceSpecification spec4(kmodel_, "arms");
+  ompl::ModelBasedStateSpace ss4(spec4);
   ss4.setup();
 
-  std::ofstream fout("ompl_interface_test_state_space_diagram2.dot");
+  std::ofstream fout("ompl_test_state_space_diagram2.dot");
   ompl::base::StateSpace::Diagram(fout);
 }
 
 TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
 {
-  ompl_interface::ModelBasedStateSpaceSpecification spec(kmodel_, "right_arm");
-  ompl_interface::JointModelStateSpace ss(spec);
+  ompl::ModelBasedStateSpaceSpecification spec(kmodel_, "right_arm");
+  ompl::JointModelStateSpace ss(spec);
   ss.setPlanningVolume(-1, 1, -1, 1, -1, 1);
   ss.setup();
-  std::ofstream fout("ompl_interface_test_state_space_diagram1.dot");
+  std::ofstream fout("ompl_test_state_space_diagram1.dot");
   ss.diagram(fout);
   bool passed = false;
   try

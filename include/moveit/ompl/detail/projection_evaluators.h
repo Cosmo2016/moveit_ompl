@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 *
-*  Copyright (c) 2012, Willow Garage, Inc.
+*  Copyright (c) 2011, Willow Garage, Inc.
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -34,27 +34,51 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_FACTORY_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_FACTORY_
+#ifndef MOVEIT_OMPL_DETAIL_PROJECTION_EVALUATORS_
+#define MOVEIT_OMPL_DETAIL_PROJECTION_EVALUATORS_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space_factory.h>
+#include <ompl/base/ProjectionEvaluator.h>
+#include <moveit/ompl/detail/threadsafe_state_storage.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
-class JointModelStateSpaceFactory : public ModelBasedStateSpaceFactory
+
+class ModelBasedPlanningContext;
+
+/** @class ProjectionEvaluatorLinkPose
+    @brief */
+class ProjectionEvaluatorLinkPose : public ompl::base::ProjectionEvaluator
 {
 public:
-  
-  JointModelStateSpaceFactory();
-  
-  virtual int canRepresentProblem(const std::string &group,
-                                  const moveit_msgs::MotionPlanRequest &req,
-                                  const robot_model::RobotModelConstPtr &robot_model) const;
-  
-protected:
-  
-  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const;
 
+  ProjectionEvaluatorLinkPose(const ModelBasedPlanningContext *pc, const std::string &link);
+
+  virtual unsigned int getDimension() const;
+  virtual void defaultCellSizes();
+  virtual void project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const;
+
+private:
+
+  const ModelBasedPlanningContext *planning_context_;
+  const robot_model::LinkModel    *link_;
+  TSStateStorage                   tss_;
+};
+
+/** @class ProjectionEvaluatorJointValue
+    @brief */
+class ProjectionEvaluatorJointValue : public ompl::base::ProjectionEvaluator
+{
+public:
+  ProjectionEvaluatorJointValue(const ModelBasedPlanningContext *pc, const std::vector<unsigned int> &variables);
+
+  virtual unsigned int getDimension() const;
+  virtual void defaultCellSizes();
+  virtual void project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const;
+
+private:
+
+  const ModelBasedPlanningContext *planning_context_;
+  std::vector<unsigned int>        variables_;
 };
 }
 

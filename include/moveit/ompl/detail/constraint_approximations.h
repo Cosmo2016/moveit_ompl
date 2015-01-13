@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_DETAIL_CONSTRAINT_APPROXIMATION_
-#define MOVEIT_OMPL_INTERFACE_DETAIL_CONSTRAINT_APPROXIMATION_
+#ifndef MOVEIT_OMPL_DETAIL_CONSTRAINT_APPROXIMATION_
+#define MOVEIT_OMPL_DETAIL_CONSTRAINT_APPROXIMATION_
 
 #include <planning_scene/planning_scene.h>
 #include <kinematic_constraints/kinematic_constraint.h>
@@ -43,7 +43,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <boost/function.hpp>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 typedef ompl::base::StateStorageWithMetadata< std::vector<std::size_t> > ConstraintApproximationStateStorage;

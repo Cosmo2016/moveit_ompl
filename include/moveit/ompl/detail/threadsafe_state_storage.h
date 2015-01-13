@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 *
-*  Copyright (c) 2012, Willow Garage, Inc.
+*  Copyright (c) 2011, Willow Garage, Inc.
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -34,28 +34,31 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_FACTORY_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_FACTORY_
+#ifndef MOVEIT_OMPL_DEATIL_THREADSAFE_STATE_STORAGE_
+#define MOVEIT_OMPL_DEATIL_THREADSAFE_STATE_STORAGE_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space_factory.h>
+#include <moveit/robot_state/robot_state.h>
+#include <boost/thread.hpp>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
-class PoseModelStateSpaceFactory : public ModelBasedStateSpaceFactory
+
+class TSStateStorage
 {
 public:
 
-  PoseModelStateSpaceFactory();
+  TSStateStorage(const robot_model::RobotModelPtr &kmodel);
+  TSStateStorage(const robot_state::RobotState &start_state);
+  ~TSStateStorage();
 
-  virtual int canRepresentProblem(const std::string &group,
-                                  const moveit_msgs::MotionPlanRequest &req,
-                                  const robot_model::RobotModelConstPtr &robot_model) const;
+  robot_state::RobotState* getStateStorage() const;
 
-protected:
+private:
 
-  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const;
-
+  robot_state::RobotState                                       start_state_;
+  mutable std::map<boost::thread::id, robot_state::RobotState*> thread_states_;
+  mutable boost::mutex                                                  lock_;
 };
-}
 
+}
 #endif

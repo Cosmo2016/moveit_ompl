@@ -34,11 +34,11 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_MODEL_BASED_PLANNING_CONTEXT_
-#define MOVEIT_OMPL_INTERFACE_MODEL_BASED_PLANNING_CONTEXT_
+#ifndef MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
+#define MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
-#include <moveit/ompl_interface/detail/constrained_valid_state_sampler.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit/ompl/detail/constrained_valid_state_sampler.h>
 #include <moveit/constraint_samplers/constraint_sampler_manager.h>
 #include <moveit/planning_interface/planning_interface.h>
 
@@ -52,7 +52,7 @@
 #include <boost/thread/mutex.hpp>
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 namespace ob = ompl::base;
 namespace og = ompl::geometric;

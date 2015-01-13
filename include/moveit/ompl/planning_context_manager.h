@@ -34,12 +34,12 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PLANNING_CONTEXT_MANAGER_
-#define MOVEIT_OMPL_INTERFACE_PLANNING_CONTEXT_MANAGER_
+#ifndef MOVEIT_OMPL_PLANNING_CONTEXT_MANAGER_
+#define MOVEIT_OMPL_PLANNING_CONTEXT_MANAGER_
 
 #include <moveit/macros/class_forward.h>
-#include <moveit/ompl_interface/model_based_planning_context.h>
-#include <moveit/ompl_interface/parameterization/model_based_state_space_factory.h>
+#include <moveit/ompl/model_based_planning_context.h>
+#include <moveit/ompl/parameterization/model_based_state_space_factory.h>
 #include <moveit/constraint_samplers/constraint_sampler_manager.h>
 
 #include <boost/shared_ptr.hpp>
@@ -47,7 +47,7 @@
 #include <string>
 #include <map>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 MOVEIT_CLASS_FORWARD(PlanningContextManager); 

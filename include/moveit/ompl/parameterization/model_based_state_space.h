@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
+#define MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
 
 #include <ompl/base/StateSpace.h>
 #include <moveit/robot_model/robot_model.h>
@@ -43,7 +43,7 @@
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <moveit/constraint_samplers/constraint_sampler.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 typedef boost::function<bool(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state)> InterpolationFunction;

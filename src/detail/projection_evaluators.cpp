@@ -34,11 +34,11 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/detail/projection_evaluators.h>
-#include <moveit/ompl_interface/model_based_planning_context.h>
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
+#include <moveit/ompl/detail/projection_evaluators.h>
+#include <moveit/ompl/model_based_planning_context.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
 
-ompl_interface::ProjectionEvaluatorLinkPose::ProjectionEvaluatorLinkPose(const ModelBasedPlanningContext *pc, const std::string &link)
+moveit_ompl::ProjectionEvaluatorLinkPose::ProjectionEvaluatorLinkPose(const ModelBasedPlanningContext *pc, const std::string &link)
   : ompl::base::ProjectionEvaluator(pc->getOMPLStateSpace())
   , planning_context_(pc)
   , link_(planning_context_->getJointModelGroup()->getLinkModel(link))
@@ -46,12 +46,12 @@ ompl_interface::ProjectionEvaluatorLinkPose::ProjectionEvaluatorLinkPose(const M
 {
 }
 
-unsigned int ompl_interface::ProjectionEvaluatorLinkPose::getDimension() const
+unsigned int moveit_ompl::ProjectionEvaluatorLinkPose::getDimension() const
 {
   return 3;
 }
 
-void ompl_interface::ProjectionEvaluatorLinkPose::defaultCellSizes()
+void moveit_ompl::ProjectionEvaluatorLinkPose::defaultCellSizes()
 {
   cellSizes_.resize(3);
   cellSizes_[0] = 0.1;
@@ -59,9 +59,9 @@ void ompl_interface::ProjectionEvaluatorLinkPose::defaultCellSizes()
   cellSizes_[2] = 0.1;
 }
 
-void ompl_interface::ProjectionEvaluatorLinkPose::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
+void moveit_ompl::ProjectionEvaluatorLinkPose::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
 {
-  std::cout << "ompl_interface::ProjectionEvaluatorLinkPose::project() " << std::endl;
+  std::cout << "moveit_ompl::ProjectionEvaluatorLinkPose::project() " << std::endl;
   robot_state::RobotState *s = tss_.getStateStorage();
   planning_context_->getOMPLStateSpace()->copyToRobotState(*s, state);
 
@@ -71,7 +71,7 @@ void ompl_interface::ProjectionEvaluatorLinkPose::project(const ompl::base::Stat
   projection(2) = o.z();
 }
 
-ompl_interface::ProjectionEvaluatorJointValue::ProjectionEvaluatorJointValue(const ModelBasedPlanningContext *pc,
+moveit_ompl::ProjectionEvaluatorJointValue::ProjectionEvaluatorJointValue(const ModelBasedPlanningContext *pc,
                                                                              const std::vector<unsigned int> &variables)
   : ompl::base::ProjectionEvaluator(pc->getOMPLStateSpace())
   , planning_context_(pc)
@@ -79,20 +79,20 @@ ompl_interface::ProjectionEvaluatorJointValue::ProjectionEvaluatorJointValue(con
 {
 }
 
-unsigned int ompl_interface::ProjectionEvaluatorJointValue::getDimension() const
+unsigned int moveit_ompl::ProjectionEvaluatorJointValue::getDimension() const
 {
   return variables_.size();
 }
 
-void ompl_interface::ProjectionEvaluatorJointValue::defaultCellSizes()
+void moveit_ompl::ProjectionEvaluatorJointValue::defaultCellSizes()
 {
   cellSizes_.clear();
   cellSizes_.resize(variables_.size(), 0.1);
 }
 
-void ompl_interface::ProjectionEvaluatorJointValue::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
+void moveit_ompl::ProjectionEvaluatorJointValue::project(const ompl::base::State *state, ompl::base::EuclideanProjection &projection) const
 {
-  //std::cout << "ompl_interface::ProjectionEvaluatorJointValue::project() " << std::endl;
+  //std::cout << "moveit_ompl::ProjectionEvaluatorJointValue::project() " << std::endl;
   for (std::size_t i = 0 ; i < variables_.size() ; ++i)
     projection(i) = state->as<ModelBasedStateSpace::StateType>()->values[variables_[i]];
 }

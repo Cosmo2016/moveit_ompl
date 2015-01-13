@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2014, JSK, The University of Tokyo.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage nor the names of its
+ *   * Neither the name of the JSK, The University of Tokyo nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,24 +32,43 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Dave Coleman
+   Desc:   
+*/
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_
+#define MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
-class JointModelStateSpace : public ModelBasedStateSpace
+class HumanoidModelStateSpace : public ModelBasedStateSpace
 {
 public:
 
   static const std::string PARAMETERIZATION_TYPE;
 
-  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
 
+  /**
+   * \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link
+   */
+  virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const;
+
+  virtual void copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const;
+
+  virtual void copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const;
+
+protected:
+
+  /** \brief Used to calculate the fake base transform of the vjoint */
+  moveit::core::RobotStatePtr moveit_robot_state_;
+
+  /** \brief Used to calculate the fake base transform of the vjoint */
+  const moveit::core::JointModel* vjoint_model_;
+  int jmg_vjoint_index_;
 };
 
 }

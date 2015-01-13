@@ -37,7 +37,7 @@
 #include <ros/console.h>
 #include <ompl/util/Console.h>
 
-namespace ompl_inteface
+namespace moveit_ompl
 {
 class OutputHandlerROS : public ompl::msg::OutputHandler
 {

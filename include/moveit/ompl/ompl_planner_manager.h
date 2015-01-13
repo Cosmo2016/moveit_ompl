@@ -34,10 +34,10 @@
 
 /* Author: Ioan Sucan, Dave Coleman */
 
-#ifndef MOVEIT_OMPL_INTERFACE_OMPL_PLANNER_MANAGER_
-#define MOVEIT_OMPL_INTERFACE_OMPL_PLANNER_MANAGER
+#ifndef MOVEIT_OMPL_OMPL_PLANNER_MANAGER_
+#define MOVEIT_OMPL_OMPL_PLANNER_MANAGER
 
-#include <moveit/ompl_interface/planning_context_manager.h>
+#include <moveit/ompl/planning_context_manager.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/robot_state/conversions.h>
@@ -50,10 +50,10 @@
 #include <class_loader/class_loader.h>
 
 /** \brief The MoveIt interface to OMPL */
-namespace ompl_interface
+namespace moveit_ompl
 {
 
-//using namespace moveit_planners_ompl;
+//using namespace moveit_ompl;
 
 /** @class OMPLPlannerManager
  *  This class defines the interface to the motion planners in OMPL*/
@@ -163,10 +163,9 @@ private:
 
 };
 
-} // ompl_interface
+} // ompl
 
-CLASS_LOADER_REGISTER_CLASS(ompl_interface::OMPLPlannerManager, planning_interface::PlannerManager);
-//PLUGINLIB_EXPORT_CLASS( ompl_interface::OMPLPlannerManager, planning_interface::PlannerManager);
+CLASS_LOADER_REGISTER_CLASS(moveit_ompl::OMPLPlannerManager, planning_interface::PlannerManager);
 
 
 #endif

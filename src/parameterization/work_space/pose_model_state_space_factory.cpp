@@ -34,15 +34,15 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/parameterization/work_space/pose_model_state_space_factory.h>
-#include <moveit/ompl_interface/parameterization/work_space/pose_model_state_space.h>
+#include <moveit/ompl/parameterization/work_space/pose_model_state_space_factory.h>
+#include <moveit/ompl/parameterization/work_space/pose_model_state_space.h>
 
-ompl_interface::PoseModelStateSpaceFactory::PoseModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
+moveit_ompl::PoseModelStateSpaceFactory::PoseModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
 {
   type_ = PoseModelStateSpace::PARAMETERIZATION_TYPE;
 }
 
-int ompl_interface::PoseModelStateSpaceFactory::canRepresentProblem(const std::string &group,
+int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::string &group,
                                                                     const moveit_msgs::MotionPlanRequest &req,
                                                                     const robot_model::RobotModelConstPtr &kmodel) const
 {
@@ -82,7 +82,7 @@ int ompl_interface::PoseModelStateSpaceFactory::canRepresentProblem(const std::s
   return -1;
 }
 
-ompl_interface::ModelBasedStateSpacePtr ompl_interface::PoseModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::PoseModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
 {
   return ModelBasedStateSpacePtr(new PoseModelStateSpace(space_spec));
 }

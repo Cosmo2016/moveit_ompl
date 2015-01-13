@@ -34,11 +34,11 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/parameterization/joint_space/joint_model_state_space.h>
+#include <moveit/ompl/parameterization/joint_space/joint_model_state_space.h>
 
-const std::string ompl_interface::JointModelStateSpace::PARAMETERIZATION_TYPE = "JointModel";
+const std::string moveit_ompl::JointModelStateSpace::PARAMETERIZATION_TYPE = "JointModel";
 
-ompl_interface::JointModelStateSpace::JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec) :
+moveit_ompl::JointModelStateSpace::JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec) :
   ModelBasedStateSpace(spec)
 {
   setName(getName() + "_" + PARAMETERIZATION_TYPE);

@@ -1,8 +1,5 @@
-moveit_planners
+moveit_ompl
 ===============
 
-Interfaces for the motion planning libraries used in MoveIt
+Custom interface for the OMPL in MoveIt
 
-## Build Status
-
-[![Build Status](https://travis-ci.org/ros-planning/moveit_planners.png?branch=hydro-devel)](https://travis-ci.org/ros-planning/moveit_planners)

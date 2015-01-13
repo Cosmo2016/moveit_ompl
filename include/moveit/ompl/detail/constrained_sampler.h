@@ -34,47 +34,51 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_DETAIL_CONSTRAINED_VALID_STATE_SAMPLER_
-#define MOVEIT_OMPL_INTERFACE_DETAIL_CONSTRAINED_VALID_STATE_SAMPLER_
+#ifndef MOVEIT_OMPL_DETAIL_CONSTRAINED_SAMPLER_
+#define MOVEIT_OMPL_DETAIL_CONSTRAINED_SAMPLER_
 
 #include <ompl/base/StateSampler.h>
-#include <ompl/base/ValidStateSampler.h>
 #include <moveit/constraint_samplers/constraint_sampler.h>
-#include <moveit_visual_tools/moveit_visual_tools.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 class ModelBasedPlanningContext;
 
-/** @class ValidConstrainedSampler
- *  This class defines a sampler that tries to find a valid sample that satisfies the specified constraints */
-class ValidConstrainedSampler : public ompl::base::ValidStateSampler
+/** @class ConstrainedSampler
+ *  This class defines a sampler that tries to find a sample that satisfies the constraints*/
+class ConstrainedSampler : public ompl::base::StateSampler
 {
 public:
+  /** @brief Default constructor
+   *  @param pg The planning group
+   *  @param cs A pointer to a kinematic constraint sampler
+   */
+  ConstrainedSampler(const ModelBasedPlanningContext *pc, const constraint_samplers::ConstraintSamplerPtr &cs);
 
-  ValidConstrainedSampler(const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
-                            const constraint_samplers::ConstraintSamplerPtr &cs = constraint_samplers::ConstraintSamplerPtr(),
-                           moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
+  /** @brief Sample a state (uniformly)*/
+  virtual void sampleUniform(ompl::base::State *state);
 
-  virtual bool sample(ompl::base::State *state);
-  virtual bool project(ompl::base::State *state);
-  virtual bool sampleNear(ompl::base::State *state, const ompl::base::State *near, const double distance);
+  /** @brief Sample a state (uniformly) within a certain distance of another state*/
+  virtual void sampleUniformNear(ompl::base::State *state, const ompl::base::State *near, const double distance);
+
+  /** @brief Sample a state using the specified Gaussian*/
+  virtual void sampleGaussian(ompl::base::State *state, const ompl::base::State *mean, const double stdDev);
+
+  double getConstrainedSamplingRate() const;
 
 private:
 
-  const ModelBasedPlanningContext                  *planning_context_;
-  kinematic_constraints::KinematicConstraintSetPtr  kinematic_constraint_set_;
-  constraint_samplers::ConstraintSamplerPtr         constraint_sampler_;
-  ompl::base::StateSamplerPtr                       default_sampler_;
-  robot_state::RobotState                           work_state_;
-  double                                            inv_dim_;
-  ompl::RNG                                         rng_;
-  moveit_visual_tools::MoveItVisualToolsPtr         visual_tools_;
-};
+  bool sampleC(ompl::base::State *state);
 
-typedef boost::shared_ptr<ValidConstrainedSampler> ValidConstrainedSamplerPtr;
-typedef boost::shared_ptr<const ValidConstrainedSampler> ValidConstrainedSamplerConstPtr;
+  const ModelBasedPlanningContext                  *planning_context_;
+  ompl::base::StateSamplerPtr                       default_;
+  constraint_samplers::ConstraintSamplerPtr         constraint_sampler_;
+  robot_state::RobotState                           work_state_;
+  unsigned int                                      constrained_success_;
+  unsigned int                                      constrained_failure_;
+  double                                            inv_dim_;
+};
 
 }
 

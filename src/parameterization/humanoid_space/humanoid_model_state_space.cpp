@@ -37,11 +37,11 @@
 */
 
 
-#include <moveit/ompl_interface/parameterization/humanoid_space/humanoid_model_state_space.h>
+#include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space.h>
 
-const std::string ompl_interface::HumanoidModelStateSpace::PARAMETERIZATION_TYPE = "HumanoidModel";
+const std::string moveit_ompl::HumanoidModelStateSpace::PARAMETERIZATION_TYPE = "HumanoidModel";
 
-ompl_interface::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec) :
+moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec) :
   ModelBasedStateSpace(spec)
 {
   setName(getName() + "_" + PARAMETERIZATION_TYPE);
@@ -51,7 +51,7 @@ ompl_interface::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBase
 
   if (true) // TODO check this somehow moveit_robot_state_->dynamicRootEnabled())
   {
-    logWarn("ompl_interface::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root enabled"); // do not delete until above fixed
+    logWarn("moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root enabled"); // do not delete until above fixed
 
     // Load vjoint information for faster fake base transforms
     static const std::string vjoint_name = "virtual_joint"; // TODO set this dynamically somehow
@@ -60,14 +60,14 @@ ompl_interface::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBase
   }
   else
   {
-    logError("ompl_interface::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root not enabled");
+    logError("moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root not enabled");
   }
 }
 
-void ompl_interface::HumanoidModelStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to,
+void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to,
                                                           const double t, ompl::base::State *state) const
 {
-  std::cout << "ompl_interface::HumanoidModelStateSpace::interpolate" << std::endl;
+  std::cout << "moveit_ompl::HumanoidModelStateSpace::interpolate" << std::endl;
 
   // interpolate in joint space
   ModelBasedStateSpace::interpolate(from, to, t, state);
@@ -75,13 +75,13 @@ void ompl_interface::HumanoidModelStateSpace::interpolate(const ompl::base::Stat
   // copy the stability mode bit since the joint model group won't do this
   const moveit::core::FixedLinkModes &mode 
     = static_cast<moveit::core::FixedLinkModes>(from->as<StateType>()->values[variable_count_ - 1]);
-  std::cout << "ompl_interface::HumanoidModelStateSpace::interpolate() - copying over mode " << mode << std::endl;
+  std::cout << "moveit_ompl::HumanoidModelStateSpace::interpolate() - copying over mode " << mode << std::endl;
   state->as<StateType>()->values[variable_count_ - 1] = mode;
 
   // change the virtual joint to the proper location based on fixed foot position
   if (mode > moveit::core::NO_FEET)
   {    
-    logInform("ompl_interface::HumanoidModelStateSpace::interpolate() HAS FEET in ompl::State");
+    logInform("moveit_ompl::HumanoidModelStateSpace::interpolate() HAS FEET in ompl::State");
     moveit_robot_state_->setFixedFootMode(mode);
     moveit_robot_state_->printFixedLinks();
 
@@ -102,10 +102,10 @@ void ompl_interface::HumanoidModelStateSpace::interpolate(const ompl::base::Stat
     moveit_robot_state_->enableDynamicRoot();
   }
   else
-    logError("ompl_interface::HumanoidModelStateSpace::interpolate() NO_FEET in ompl::State");
+    logError("moveit_ompl::HumanoidModelStateSpace::interpolate() NO_FEET in ompl::State");
 }
 
-void ompl_interface::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const
+void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const
 {
   rstate.setJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 
@@ -125,7 +125,7 @@ void ompl_interface::HumanoidModelStateSpace::copyToRobotState(robot_state::Robo
   std::cout << std::endl;
 }
 
-void ompl_interface::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const
+void moveit_ompl::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const
 {
   rstate.copyJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 

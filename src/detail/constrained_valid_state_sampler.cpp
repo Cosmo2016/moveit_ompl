@@ -34,11 +34,11 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/detail/constrained_valid_state_sampler.h>
-#include <moveit/ompl_interface/model_based_planning_context.h>
+#include <moveit/ompl/detail/constrained_valid_state_sampler.h>
+#include <moveit/ompl/model_based_planning_context.h>
 #include <moveit/profiler/profiler.h>
 
-ompl_interface::ValidConstrainedSampler::ValidConstrainedSampler(const ModelBasedPlanningContext *pc,
+moveit_ompl::ValidConstrainedSampler::ValidConstrainedSampler(const ModelBasedPlanningContext *pc,
                                                                  const kinematic_constraints::KinematicConstraintSetPtr &ks,
                                                                  const constraint_samplers::ConstraintSamplerPtr &cs,
                                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) 
@@ -56,9 +56,9 @@ ompl_interface::ValidConstrainedSampler::ValidConstrainedSampler(const ModelBase
   logDebug("Constructed a ValidConstrainedSampler instance at address %p", this);
 }
 
-bool ompl_interface::ValidConstrainedSampler::project(ompl::base::State *state)
+bool moveit_ompl::ValidConstrainedSampler::project(ompl::base::State *state)
 {
-  std::cout << "ompl_interface::ValidConstrainedSampler::project() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
+  std::cout << "moveit_ompl::ValidConstrainedSampler::project() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
 
   if (constraint_sampler_)
   {
@@ -77,9 +77,9 @@ bool ompl_interface::ValidConstrainedSampler::project(ompl::base::State *state)
   return false;
 }
 
-bool ompl_interface::ValidConstrainedSampler::sample(ob::State *state)
+bool moveit_ompl::ValidConstrainedSampler::sample(ob::State *state)
 {
-  std::cout << "ompl_interface::ValidConstrainedSampler::sample() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
+  std::cout << "moveit_ompl::ValidConstrainedSampler::sample() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
 
   if (constraint_sampler_)
   {
@@ -105,9 +105,9 @@ bool ompl_interface::ValidConstrainedSampler::sample(ob::State *state)
   return false;
 }
 
-bool ompl_interface::ValidConstrainedSampler::sampleNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
+bool moveit_ompl::ValidConstrainedSampler::sampleNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
 {
-  std::cout << "ompl_interface::ValidConstrainedSampler::sampleNear() " << std::endl;
+  std::cout << "moveit_ompl::ValidConstrainedSampler::sampleNear() " << std::endl;
 
   if (!sample(state))
     return false;

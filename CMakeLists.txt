@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(moveit_planners_ompl)
-set(MOVEIT_LIB_NAME moveit_ompl_interface)
+project(moveit_ompl)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -17,16 +16,16 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   eigen_conversions
   ompl_thunder
-  )
-
+)
 find_package(OMPL REQUIRED)
+find_package(OpenMP)
 
 catkin_package(
   LIBRARIES
-    moveit_ompl_interface
+    moveit_ompl
     ${OMPL_LIBRARIES}
   INCLUDE_DIRS
-    ompl_interface/include
+    include
     ${OMPL_INCLUDE_DIRS}
   CATKIN_DEPENDS
     moveit_core
@@ -36,13 +35,15 @@ catkin_package(
 include_directories(SYSTEM
                     ${Boost_INCLUDE_DIRS})
 
-include_directories(ompl_interface/include
+include_directories(include
                     ${catkin_INCLUDE_DIRS}
                     ${OMPL_INCLUDE_DIRS})
 
 link_directories(${OMPL_LIBRARY_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+
+set(MOVEIT_LIB_NAME moveit_ompl)
 
 add_library(${MOVEIT_LIB_NAME}
   src/planning_context_manager.cpp
@@ -65,8 +66,6 @@ add_library(${MOVEIT_LIB_NAME}
   src/detail/ompl_console.cpp
 )
 
-find_package(OpenMP)
-
 target_link_libraries(${MOVEIT_LIB_NAME} ${OMPL_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES COMPILE_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
@@ -84,5 +83,5 @@ install(TARGETS ${MOVEIT_LIB_NAME} moveit_ompl_planner_plugin
 install(DIRECTORY include/ DESTINATION include)
 
 
-install(FILES ompl_interface_plugin_description.xml
+install(FILES moveit_ompl_plugin_description.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

@@ -34,14 +34,14 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_DETAIL_STATE_VALIDITY_CHECKER_
-#define MOVEIT_OMPL_INTERFACE_DETAIL_STATE_VALIDITY_CHECKER_
+#ifndef MOVEIT_OMPL_DETAIL_STATE_VALIDITY_CHECKER_
+#define MOVEIT_OMPL_DETAIL_STATE_VALIDITY_CHECKER_
 
-#include <moveit/ompl_interface/detail/threadsafe_state_storage.h>
+#include <moveit/ompl/detail/threadsafe_state_storage.h>
 #include <moveit/collision_detection/collision_common.h>
 #include <ompl/base/StateValidityChecker.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 class ModelBasedPlanningContext;

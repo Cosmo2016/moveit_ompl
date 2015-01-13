@@ -36,7 +36,7 @@
 
 #include <ompl/base/goals/GoalSampleableRegion.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 /** @class GoalSampleableRegionMux*/

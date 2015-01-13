@@ -36,15 +36,15 @@
    Desc:   This state space is for robots with fixed fake bases such as feet
 */
 
-#include <moveit/ompl_interface/parameterization/humanoid_space/humanoid_model_state_space_factory.h>
-#include <moveit/ompl_interface/parameterization/humanoid_space/humanoid_model_state_space.h>
+#include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space_factory.h>
+#include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space.h>
 
-ompl_interface::HumanoidModelStateSpaceFactory::HumanoidModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
+moveit_ompl::HumanoidModelStateSpaceFactory::HumanoidModelStateSpaceFactory() : ModelBasedStateSpaceFactory()
 {
   type_ = HumanoidModelStateSpace::PARAMETERIZATION_TYPE;
 }
 
-int ompl_interface::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::string &group,
+int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::string &group,
                                                                         const moveit_msgs::MotionPlanRequest &req,
                                                                         const robot_model::RobotModelConstPtr &kmodel) const
 {
@@ -64,7 +64,7 @@ int ompl_interface::HumanoidModelStateSpaceFactory::canRepresentProblem(const st
   return 1;
 }
 
-ompl_interface::ModelBasedStateSpacePtr ompl_interface::HumanoidModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::HumanoidModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
 {
   return ModelBasedStateSpacePtr(new HumanoidModelStateSpace(space_spec));
 }

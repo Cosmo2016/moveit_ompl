@@ -34,47 +34,22 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_FACTORY_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_FACTORY_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_
+#define MOVEIT_OMPL_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
-#include <moveit_msgs/MotionPlanRequest.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
-class ModelBasedStateSpaceFactory;
-typedef boost::shared_ptr<ModelBasedStateSpaceFactory> ModelBasedStateSpaceFactoryPtr;
-
-class ModelBasedStateSpaceFactory
+class JointModelStateSpace : public ModelBasedStateSpace
 {
 public:
 
-  ModelBasedStateSpaceFactory()
-  {
-  }
+  static const std::string PARAMETERIZATION_TYPE;
 
-  virtual ~ModelBasedStateSpaceFactory()
-  {
-  }
+  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
 
-  ModelBasedStateSpacePtr getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const;
-
-  const std::string& getType() const
-  {
-    return type_;
-  }
-
-  /** \brief Decide whether the type of state space constructed by this factory could represent problems specified by the user
-      request \e req for group \e group. The group \e group must always be specified and takes precedence over \e req.group_name, which may be different */
-  virtual int canRepresentProblem(const std::string &group,
-                                  const moveit_msgs::MotionPlanRequest &req,
-                                  const robot_model::RobotModelConstPtr &kmodel) const = 0;
-
-protected:
-
-  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const = 0;
-  std::string type_;
 };
 
 }

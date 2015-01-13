@@ -34,9 +34,9 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space_factory.h>
+#include <moveit/ompl/parameterization/model_based_state_space_factory.h>
 
-ompl_interface::ModelBasedStateSpacePtr ompl_interface::ModelBasedStateSpaceFactory::getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::ModelBasedStateSpaceFactory::getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
 {
   ModelBasedStateSpacePtr ss = allocStateSpace(space_spec);
   ss->computeLocations();

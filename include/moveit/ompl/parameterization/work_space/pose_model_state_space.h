@@ -34,13 +34,13 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_
-#define MOVEIT_OMPL_INTERFACE_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_
+#ifndef MOVEIT_OMPL_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_
+#define MOVEIT_OMPL_PARAMETERIZATION_WORK_SPACE_POSE_MODEL_STATE_SPACE_
 
-#include <moveit/ompl_interface/parameterization/model_based_state_space.h>
+#include <moveit/ompl/parameterization/model_based_state_space.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
 
-namespace ompl_interface
+namespace moveit_ompl
 {
 
 class PoseModelStateSpace : public ModelBasedStateSpace
