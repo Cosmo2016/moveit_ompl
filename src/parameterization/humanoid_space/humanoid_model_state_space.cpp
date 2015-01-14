@@ -38,6 +38,7 @@
 
 
 #include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space.h>
+#include <limits>
 
 const std::string moveit_ompl::HumanoidModelStateSpace::PARAMETERIZATION_TYPE = "HumanoidModel";
 
@@ -47,21 +48,19 @@ moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedSt
   setName(getName() + "_" + PARAMETERIZATION_TYPE);
 
   // Create a robot state to use for updating the virtual joint based on fixed foot location
-  moveit_robot_state_.reset(new moveit::core::RobotState(spec.robot_model_));
+  moveit_robot_state1_.reset(new moveit::core::RobotState(spec.robot_model_));
+  moveit_robot_state2_.reset(new moveit::core::RobotState(spec.robot_model_));
 
-  if (true) // TODO check this somehow moveit_robot_state_->dynamicRootEnabled())
-  {
-    logWarn("moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root enabled"); // do not delete until above fixed
+  logWarn("moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root enabled"); // do not delete until above fixed
 
-    // Load vjoint information for faster fake base transforms
-    static const std::string vjoint_name = "virtual_joint"; // TODO set this dynamically somehow
-    vjoint_model_ = spec_.robot_model_->getJointModel(vjoint_name);
-    jmg_vjoint_index_ = spec_.joint_model_group_->getVariableGroupIndex(vjoint_name);
-  }
-  else
-  {
-    logError("moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace() dynamic root not enabled");
-  }
+  // Testing
+  logError("ROOT LINK");
+  spec.robot_model_->getRootJoint()->print();
+
+  // Load vjoint information for faster fake base transforms
+  static const std::string vjoint_name = "virtual_joint"; // TODO set this dynamically somehow
+  vjoint_model_ = spec_.robot_model_->getJointModel(vjoint_name);
+  jmg_vjoint_index_ = spec_.joint_model_group_->getVariableGroupIndex(vjoint_name);
 }
 
 void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to,
@@ -82,32 +81,30 @@ void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *
   if (mode > moveit::core::NO_FEET)
   {    
     logInform("moveit_ompl::HumanoidModelStateSpace::interpolate() HAS FEET in ompl::State");
-    moveit_robot_state_->setFixedFootMode(mode);
-    //moveit_robot_state_->printFixedLinks();
+    moveit_robot_state1_->setFixedFootMode(mode);
+    //moveit_robot_state1_->printFixedLinks();
 
     // Copy all the joints over
     // TODO: only copy joints pertaining to the leg. this is difficult because OMPL state is unknown ordering. 
     // Probably not worth the effort
-    copyToRobotState(*moveit_robot_state_, state);
+    copyToRobotState(*moveit_robot_state1_, state);
 
     // Update the transforms of the leg and the joint value of the virtual joint
-    std::cout << "Fixed primary: " << moveit_robot_state_->getDynamicRootLink()->getName() << std::endl;
-    //moveit_robot_state_->updateSingleChainDynamicRoot();
-    moveit_robot_state_->updateWithDynamicRoot(); // TODO: is this the fastest method?
+    std::cout << "Fixed primary: " << moveit_robot_state1_->getDynamicRootLink()->getName() << std::endl;
+    //moveit_robot_state1_->updateSingleChainDynamicRoot();
+    moveit_robot_state1_->updateWithDynamicRoot(); // TODO: is this the fastest method?
 
     // Copy just the virtual joint back to the ompl "state", since that is the only joint that changed
-    copyJointToOMPLState(state, *moveit_robot_state_, vjoint_model_, jmg_vjoint_index_);
+    copyJointToOMPLState(state, *moveit_robot_state1_, vjoint_model_, jmg_vjoint_index_);
 
     logDebug("VJOINT: %s", vjoint_model_->getName().c_str());
     int length = 7;
-    const double* arr = moveit_robot_state_->getJointPositions(vjoint_model_);
+    const double* arr = moveit_robot_state1_->getJointPositions(vjoint_model_);
     for (std::size_t i = 0; i < length; ++i)
     {
       std::cout << "vjoint: " << arr[i] << std::endl;
     }
 
-    // TODO: set this just once at construction, somehow
-    moveit_robot_state_->enableDynamicRoot();
   }
   else
     logError("moveit_ompl::HumanoidModelStateSpace::interpolate() NO_FEET in ompl::State");
@@ -121,23 +118,28 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
     return distance_function_(state1, state2);
   }
 
-  /*
   // Deal with mode variable
   const moveit::core::FixedLinkModes& state1_mode = static_cast<moveit::core::FixedLinkModes>(state1->as<StateType>()->foot_mode);
   const moveit::core::FixedLinkModes& state2_mode = static_cast<moveit::core::FixedLinkModes>(state2->as<StateType>()->foot_mode);
+  const JointModel* joint = robot_model_->getFootVirtualFloatingJoint();
 
   // Check for transition states
   if (state1_mode == state2_mode)
   {
-    // Both in same mode. If their fixed foot is no the same then we know the states CANNOT connect
+    // Both in same mode. If their fixed foot is not the same then we know the states CANNOT connect
+    std::cout << "moveit_ompl::HumanoidModelStateSpace::distance - both in same state " << std::endl;
 
     // Convert to moveit robot
-    copyToRobotState(*moveit_robot_state_, state1);
+    //copyToRobotState(*moveit_robot_state1_, state1);
+    //copyToRobotState(*moveit_robot_state2_, state2);
 
-
-
-    std::cout << "moveit_ompl::HumanoidModelStateSpace::distance - both in same state " << std::endl;
-    return true;
+    // Compare the joints values of the fixed foot "floating joint"
+    if (!equalJoint(state1, state2, joint))
+    {
+      // These states are in different discrete steps, so make distance infinity
+      logWarn("Returned distance infinity because fixed feet are in different locations");
+      return std::numeric_limits<double>::infinity();
+    }
   }
   else if (state1_mode == moveit::core::LEFT_FOOT && state2_mode == LEFT_BOTH_FEET ||
            state2_mode == moveit::core::LEFT_FOOT && state1_mode == LEFT_BOTH_FEET)
@@ -158,13 +160,32 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
 
 
   }
-  */
+
   return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+}
+
+bool moveit_ompl::HumanoidModelStateSpace::equalJoint(const ompl::base::State *state1, const ompl::base::State *state2, 
+                                                      const JointModel* joint) const
+{
+  for (unsigned int i = joint->getFirstVariableIndex() ; i < joint->getVariableCount(); ++i)
+  {
+    std::cout << "moveit_ompl::HumanoidModelStateSpace::equalJoint - getting variable " << i 
+              << " state1: " << state1->as<StateType>()->values[i] 
+              << " state2: " << state2->as<StateType>()->values[i] << std::endl;
+
+    // Check if equal
+    if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) > std::numeric_limits<double>::epsilon())
+    {
+      // Not equal
+      return false;
+    }
+  }
+  return true;
 }
 
 bool moveit_ompl::HumanoidModelStateSpace::equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const
 {
-  // Compare all the joints values except the last one - this is the mode
+  // Compare all the joints values
   for (unsigned int i = 0 ; i < variable_count_; ++i)
     if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) > std::numeric_limits<double>::epsilon())
       return false;
@@ -189,14 +210,15 @@ bool moveit_ompl::HumanoidModelStateSpace::equalStates(const ompl::base::State *
 void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const
 {
   rstate.setJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
-
-  // Get the foot mode from the last position of the data
+  
+  // Copy the foot mode
   rstate.setFixedFootMode( static_cast<moveit::core::FixedLinkModes>(state->as<StateType>()->foot_mode ));
 
   std::cout << "moveit_ompl::HumanoidModelStateSpace::copyToRobotState foot_mode = " << state->as<StateType>()->foot_mode << std::endl;
   
   if (rstate.dynamicRootEnabled())
   {
+    rstate.updateDynamicRootLink(); // convert the double values from OMPL to a correct Transform structure
     rstate.updateWithDynamicRoot(); // TODO: is this the fastest method?
   }
   else
@@ -207,7 +229,7 @@ void moveit_ompl::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *st
 {
   rstate.copyJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 
-  // The foot mode goes in the last position of the data
+  // Copy the foot mode
   state->as<StateType>()->foot_mode = rstate.getFixedFootMode();
   std::cout << "moveit_ompl::HumanoidModelStateSpace::copyToOMPLState last_value = " << state->as<StateType>()->foot_mode << std::endl;
 

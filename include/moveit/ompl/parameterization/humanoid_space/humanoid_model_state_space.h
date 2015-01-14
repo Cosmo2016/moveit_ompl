@@ -168,7 +168,8 @@ public:
 protected:
 
   /** \brief Used to calculate the fake base transform of the vjoint */
-  moveit::core::RobotStatePtr moveit_robot_state_;
+  moveit::core::RobotStatePtr moveit_robot_state1_;
+  moveit::core::RobotStatePtr moveit_robot_state2_;
 
   /** \brief Used to calculate the fake base transform of the vjoint */
   const moveit::core::JointModel* vjoint_model_;
