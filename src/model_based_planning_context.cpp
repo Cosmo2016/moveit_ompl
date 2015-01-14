@@ -443,13 +443,15 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
   {
     double ptime = getLastPlanTime();
 
-    //logWarn("Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
+    logWarn("Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
 
-    if (simplify_solutions_ && ptime < request_.allowed_planning_time)
+    if (simplify_solutions_ && ptime < request_.allowed_planning_time && false)
     {
       simplifySolution(request_.allowed_planning_time - ptime);
       ptime += getLastSimplifyTime();
     }
+
+    logWarn("moveit_ompl::ModelBasedPlanningContext::solve() Interpolating solution");
     interpolateSolution();
 
     // fill the response

@@ -43,7 +43,7 @@ moveit_ompl::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpa
 {
   // set the state space name
   setName(spec_.joint_model_group_->getName());
-  variable_count_ = spec_.joint_model_group_->getVariableCount() + 1; // DTC foot mode hack
+  variable_count_ = spec_.joint_model_group_->getVariableCount();
   state_values_size_ = variable_count_ * sizeof(double);
   joint_model_vector_ = spec_.joint_model_group_->getActiveJointModels();
   
@@ -171,7 +171,7 @@ double moveit_ompl::ModelBasedStateSpace::distance(const ompl::base::State *stat
 
 bool moveit_ompl::ModelBasedStateSpace::equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const
 {
-  for (unsigned int i = 0 ; i < variable_count_ ; ++i)
+  for (unsigned int i = 0 ; i < variable_count_; ++i)
     if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) > std::numeric_limits<double>::epsilon())
       return false;
   return true;

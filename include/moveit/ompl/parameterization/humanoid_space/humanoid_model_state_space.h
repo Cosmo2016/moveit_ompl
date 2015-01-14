@@ -48,6 +48,106 @@ class HumanoidModelStateSpace : public ModelBasedStateSpace
 {
 public:
 
+  class StateType : public ompl::base::State
+  {
+  public:
+    
+    enum
+      {
+        VALIDITY_KNOWN = 1,
+        GOAL_DISTANCE_KNOWN = 2,
+        VALIDITY_TRUE = 4,
+        IS_START_STATE = 8,
+        IS_GOAL_STATE = 16
+      };
+    
+    StateType() 
+      : ompl::base::State()
+      , values(NULL)
+      , tag(-1)
+      , flags(0)
+      , foot_mode(0)
+      , distance(0.0)
+    {
+    }
+    
+    void markValid(double d)
+    {
+      distance = d;
+      flags |= GOAL_DISTANCE_KNOWN;
+      markValid();
+    }
+    
+    void markValid()
+    {
+      flags |= (VALIDITY_KNOWN | VALIDITY_TRUE);
+    }
+    
+    void markInvalid(double d)
+    {
+      distance = d;
+      flags |= GOAL_DISTANCE_KNOWN;
+      markInvalid();
+    }
+
+    void markInvalid()
+    {
+      flags &= ~VALIDITY_TRUE;
+      flags |= VALIDITY_KNOWN;
+    }
+
+    bool isValidityKnown() const
+    {
+      return flags & VALIDITY_KNOWN;
+    }
+
+    void clearKnownInformation()
+    {
+      flags = 0;
+    }
+
+    bool isMarkedValid() const
+    {
+      return flags & VALIDITY_TRUE;
+    }
+
+    bool isGoalDistanceKnown() const
+    {
+      return flags & GOAL_DISTANCE_KNOWN;
+    }
+
+    bool isStartState() const
+    {
+      return flags & IS_START_STATE;
+    }
+
+    bool isGoalState() const
+    {
+      return flags & IS_GOAL_STATE;
+    }
+
+    bool isInputState() const
+    {
+      return flags & (IS_START_STATE | IS_GOAL_STATE);
+    }
+
+    void markStartState()
+    {
+      flags |= IS_START_STATE;
+    }
+
+    void markGoalState()
+    {
+      flags |= IS_GOAL_STATE;
+    }
+
+    double *values;
+    int tag;
+    int flags;
+    int foot_mode; // enum from moveit::core::FixedLinkModes in robot_state.h
+    double distance;
+  };
+
   static const std::string PARAMETERIZATION_TYPE;
 
   HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
@@ -56,6 +156,10 @@ public:
    * \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link
    */
   virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const;
+
+  virtual double distance(const ompl::base::State *state1, const ompl::base::State *state2) const;
+
+  virtual bool equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
   virtual void copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const;
 
@@ -72,5 +176,6 @@ protected:
 };
 
 }
+
 
 #endif

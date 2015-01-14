@@ -51,7 +51,6 @@ int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::
   // This state space is for robots with fixed fake bases such as feet
   if (req.start_state.fixed_links.joint_names.size())
   {
-    std::cout << "debug " << req << std::endl;
     logWarn("Using humanoid model state space");
     return 200;
   }
