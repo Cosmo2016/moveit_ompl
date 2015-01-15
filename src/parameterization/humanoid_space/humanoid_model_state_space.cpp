@@ -121,25 +121,29 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
   // Deal with mode variable
   const moveit::core::FixedLinkModes& state1_mode = static_cast<moveit::core::FixedLinkModes>(state1->as<StateType>()->foot_mode);
   const moveit::core::FixedLinkModes& state2_mode = static_cast<moveit::core::FixedLinkModes>(state2->as<StateType>()->foot_mode);
-  const JointModel* joint = robot_model_->getFootVirtualFloatingJoint();
+  const JointModel* fixed_joint = robot_model_->getFootVirtualFloatingJoint();
 
-  // Check for transition states
-  if (state1_mode == state2_mode)
+  // State machine logic
+  if ((state1_mode == moveit::core::RIGHT_FOOT_NO_COM || state1_mode == moveit::core::LEFT_FOOT_NO_COM) &&
+      (state2_mode == moveit::core::RIGHT_FOOT_NO_COM || state2_mode == moveit::core::LEFT_FOOT_NO_COM))
   {
     // Both in same mode. If their fixed foot is not the same then we know the states CANNOT connect
-    std::cout << "moveit_ompl::HumanoidModelStateSpace::distance - both in same state " << std::endl;
+    std::cout << "moveit_ompl::HumanoidModelStateSpace::distance - both in TRANSITION state" << std::endl;
 
-    // Convert to moveit robot
-    //copyToRobotState(*moveit_robot_state1_, state1);
-    //copyToRobotState(*moveit_robot_state2_, state2);
+    // We know the other foot is fixed because COM is outside either foot
+    if (!
+    const JointModel* free_joint = robot_model_->getFootVirtualFloatingJoint();
+
 
     // Compare the joints values of the fixed foot "floating joint"
-    if (!equalJoint(state1, state2, joint))
+    if (!equalJoint(state1, state2, fixed_joint))
     {
       // These states are in different discrete steps, so make distance infinity
       logWarn("Returned distance infinity because fixed feet are in different locations");
       return std::numeric_limits<double>::infinity();
     }
+
+
   }
   else if (state1_mode == moveit::core::LEFT_FOOT && state2_mode == LEFT_BOTH_FEET ||
            state2_mode == moveit::core::LEFT_FOOT && state1_mode == LEFT_BOTH_FEET)
