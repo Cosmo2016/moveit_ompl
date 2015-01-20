@@ -228,8 +228,8 @@ public:
     return spec_;
   }
 
-  virtual void printState(const ompl::base::State *state, std::ostream &out) const;
-  virtual void printSettings(std::ostream &out) const;
+  virtual void printState(const ompl::base::State *state, std::ostream &out = std::cout) const;
+  virtual void printSettings(std::ostream &out = std::cout) const;
 
   /// Set the planning volume for the possible SE2 and/or SE3 components of the state space
   virtual void setPlanningVolume(double minX, double maxX, double minY, double maxY, double minZ, double maxZ);

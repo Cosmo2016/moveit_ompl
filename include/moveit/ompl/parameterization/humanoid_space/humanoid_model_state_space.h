@@ -66,7 +66,7 @@ public:
       , values(NULL)
       , tag(-1)
       , flags(0)
-      , foot_mode(0)
+      , foot_mode(moveit::core::UNKNOWN )
       , distance(0.0)
     {
     }
@@ -159,6 +159,9 @@ public:
 
   virtual double distance(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
+  virtual bool equalJoint(const ompl::base::State *state1, const ompl::base::State *state2,
+                          const moveit::core::JointModel* joint1, const moveit::core::JointModel* joint2) const;
+
   virtual bool equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
   virtual void copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const;
@@ -175,6 +178,8 @@ protected:
   const moveit::core::JointModel* vjoint_model_;
   int jmg_vjoint_index_;
 };
+
+typedef boost::shared_ptr<HumanoidModelStateSpace> HumanoidModelStateSpacePtr;
 
 }
 
