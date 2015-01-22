@@ -192,7 +192,7 @@ void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *
   copyToRobotState(*moveit_robot_state1_, state);
 
   // Update the transforms of the leg and the joint value of the virtual joint
-  std::cout << "Fixed primary: " << moveit_robot_state1_->getDynamicRootLink()->getName() << std::endl;
+  std::cout << "Fixed primary: " << moveit_robot_state1_->getPrimaryFixedLink()->getName() << std::endl;
 
   //moveit_robot_state1_->updateSingleChainDynamicRoot();
   moveit_robot_state1_->updateWithDynamicRoot(); // TODO: is this the fastest method?
@@ -368,7 +368,7 @@ void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotSt
   rstate.setJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 
   // Copy humanoid variables
-  rstate.setFixedLinkPrimary( state->as<StateType>()->fixed_link_primary );
+  rstate.setPrimaryFixedLink( state->as<StateType>()->fixed_link_primary );
   rstate.setFixedLinksMode( state->as<StateType>()->fixed_links );
   rstate.setFixedLinkStability( state->as<StateType>()->fixed_link_stability );
   rstate.setFixedLinkTransforms( state->as<StateType>()->fixed_link_transforms );
@@ -385,7 +385,7 @@ void moveit_ompl::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *st
   rstate.copyJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 
   // Copy humanoid variables
-  state->as<StateType>()->fixed_link_primary = rstate.getFixedLinkPrimary();  
+  state->as<StateType>()->fixed_link_primary = rstate.getPrimaryFixedLinkID();  
   state->as<StateType>()->fixed_links = rstate.getFixedLinksMode();  
   state->as<StateType>()->fixed_link_stability = rstate.getFixedLinkStability();
   state->as<StateType>()->fixed_link_transforms = rstate.getFixedLinkTransforms();  
