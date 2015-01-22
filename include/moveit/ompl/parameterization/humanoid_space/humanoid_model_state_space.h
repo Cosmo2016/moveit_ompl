@@ -44,6 +44,18 @@
 namespace moveit_ompl
 {
 
+
+/** \brief Store what mode the feet are in */
+enum BipedFootModes { 
+  ERROR = 0,
+  LEFT_COM_LEFT_FIXED = 1, // left foot is fixed with COM within left foot
+  LEFT_COM_BOTH_FIXED = 2, // both feet fixed with COM within left foot
+  BOTH_COM_BOTH_FIXED = 3, // both feet fixed with COM between feet
+  RIGHT_COM_BOTH_FIXED = 4, // both feet fixed with COM within right foot
+  RIGHT_COM_RIGHT_FIXED = 5 // right foot is fixed with COM within right foot
+};
+
+
 class HumanoidModelStateSpace : public ModelBasedStateSpace
 {
 public:
@@ -66,8 +78,11 @@ public:
       , values(NULL)
       , tag(-1)
       , flags(0)
-      , foot_mode(moveit::core::UNKNOWN )
       , distance(0.0)
+        // Humanoid variables
+      , fixed_link_primary(-1)
+      , fixed_links(0)
+      , fixed_link_stability(moveit::core::UNKNOWN)
     {
     }
     
@@ -144,23 +159,40 @@ public:
     double *values;
     int tag;
     int flags;
-    int foot_mode; // enum from moveit::core::FixedLinkModes in robot_state.h
     double distance;
+    
+    // Humanoid properties
+    int fixed_link_primary;
+    int fixed_links;
+    moveit::core::FixedLinkStability fixed_link_stability;
+    EigenSTL::vector_Affine3d fixed_link_transforms;
   };
 
   static const std::string PARAMETERIZATION_TYPE;
 
   HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
 
-  /**
-   * \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link
-   */
+  virtual ompl::base::State* allocState() const;
+
+  virtual void freeState(ompl::base::State *state) const;
+
+  virtual void copyState(ompl::base::State *destination, const ompl::base::State *source) const;
+
+  virtual unsigned int getSerializationLength() const;
+
+  virtual void serialize(void *serialization, const ompl::base::State *state) const;
+
+  virtual void deserialize(ompl::base::State *state, const void *serialization) const;
+
+  /** \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link */
   virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const;
 
   virtual double distance(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
+  virtual moveit_ompl::BipedFootModes getBipedFootMode(const ompl::base::State *state) const;
+
   virtual bool equalJoint(const ompl::base::State *state1, const ompl::base::State *state2,
-                          const moveit::core::JointModel* joint1, const moveit::core::JointModel* joint2) const;
+                          int index_state1, int index_state2) const;
 
   virtual bool equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
@@ -172,11 +204,13 @@ protected:
 
   /** \brief Used to calculate the fake base transform of the vjoint */
   moveit::core::RobotStatePtr moveit_robot_state1_;
-  moveit::core::RobotStatePtr moveit_robot_state2_;
 
   /** \brief Used to calculate the fake base transform of the vjoint */
   const moveit::core::JointModel* vjoint_model_;
   int jmg_vjoint_index_;
+
+  /** \brief A state machine for biped states */
+  char is_connected_[5][5];
 };
 
 typedef boost::shared_ptr<HumanoidModelStateSpace> HumanoidModelStateSpacePtr;

@@ -58,7 +58,6 @@ moveit_ompl::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpa
   if (spec_.joint_bounds_.empty())
     spec_.joint_bounds_ = spec_.joint_model_group_->getActiveJointModelsBounds();
   
-
   // new perform a deep copy of the bounds, in case we need to modify them
   joint_bounds_storage_.resize(spec_.joint_bounds_.size());
   for (std::size_t i = 0 ; i < joint_bounds_storage_.size() ; ++i)
