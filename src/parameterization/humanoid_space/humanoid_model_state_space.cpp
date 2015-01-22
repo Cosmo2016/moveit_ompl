@@ -56,21 +56,40 @@ moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedSt
   jmg_vjoint_index_ = spec_.joint_model_group_->getVariableGroupIndex(vjoint_model_->getName());
 
   // Populate state machine ----------------------------
+
+  // Initialize all to 0
+  for (std::size_t i = 0; i < 6; ++i)
+    for (std::size_t j = 0; j < 6; ++j)
+      is_connected_[i][j] = false;
+
   // Staying on same state
-  is_connected_[1][1] = 1;
-  is_connected_[2][2] = 1;
-  is_connected_[3][3] = 1;
-  is_connected_[4][4] = 1;
-  is_connected_[5][5] = 1;
+  is_connected_[1][1] = true;
+  is_connected_[2][2] = true;
+  is_connected_[3][3] = true;
+  is_connected_[4][4] = true;
+  is_connected_[5][5] = true;
   // Move clockwise on state
-  is_connected_[1][2] = 1;
-  is_connected_[2][3] = 1;
-  is_connected_[4][5] = 1;
+  is_connected_[1][2] = true;
+  is_connected_[2][3] = true;
+  is_connected_[3][4] = true;
+  is_connected_[4][5] = true;
+
   // Move counter-clockwise on state
-  is_connected_[5][4] = 1;
-  is_connected_[4][3] = 1;
-  is_connected_[3][2] = 1;
-  is_connected_[2][1] = 1;
+  is_connected_[5][4] = true;
+  is_connected_[4][3] = true;
+  is_connected_[3][2] = true;
+  is_connected_[2][1] = true;
+
+  // Print adjacency matrix
+  if (false)
+    for (std::size_t i = 0; i < 6; ++i)
+    {
+      for (std::size_t j = 0; j < 6; ++j)
+      {
+        std::cout << is_connected_[i][j] << " ";
+      }
+      std::cout << std::endl;
+    }
 }
 
 ompl::base::State* moveit_ompl::HumanoidModelStateSpace::allocState() const
@@ -193,7 +212,7 @@ void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *
 double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *state1, const ompl::base::State *state2) const
 {
   // Only for use with bipeds
-  assert( moveit_robot_state1_->getRobotModel()->getFixableLinks().size() < 3);
+  assert( moveit_robot_state1_->getRobotModel()->getFixableLinks().size() == 2);
 
   if (distance_function_)
   {
@@ -206,9 +225,9 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
   moveit_ompl::BipedFootModes s2_biped_mode = getBipedFootMode( state2 );
 
   std::cout << "BIPED MODES: state1: " << s1_biped_mode << " state2: " << s2_biped_mode << std::endl;
-
+  std::cout << "is connected value: " << is_connected_[s1_biped_mode][s2_biped_mode] << std::endl;
   // Check if the states cannot connect
-  if (!is_connected_[ s1_biped_mode, s2_biped_mode])
+  if (!is_connected_[s1_biped_mode][s2_biped_mode])
   {
     logError("Biped states cannot connect. Distance infinity");
     return std::numeric_limits<double>::infinity();
@@ -218,9 +237,10 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
   const int& right_foot_index = moveit_robot_state1_->getRobotModel()->getFixableLinkRightIndex();
   assert(right_foot_index == 0 || right_foot_index == 1); // must have a right foot
   
-  // Check if moving between s1 and s2
+  // Check if moving between s1 and s2, OR s1->s1
   if ( (s1_biped_mode == LEFT_COM_LEFT_FIXED && s2_biped_mode == LEFT_COM_BOTH_FIXED) || 
-       (s1_biped_mode == LEFT_COM_BOTH_FIXED && s2_biped_mode == LEFT_COM_LEFT_FIXED) )
+       (s1_biped_mode == LEFT_COM_BOTH_FIXED && s2_biped_mode == LEFT_COM_LEFT_FIXED) ||
+       (s1_biped_mode == s2_biped_mode && s1_biped_mode == LEFT_COM_LEFT_FIXED) ) // staying on same state
   {
     // Only must have same left foot
     if (equalJoint(state1, state2, int(!right_foot_index), int(!right_foot_index)))
@@ -233,9 +253,10 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
     return std::numeric_limits<double>::infinity();
   }
 
-  // Check if moving between s4 and s5
+  // Check if moving between s4 and s5, OR s5->s5
   if ( (s1_biped_mode == RIGHT_COM_BOTH_FIXED && s2_biped_mode == RIGHT_COM_RIGHT_FIXED) || 
-       (s1_biped_mode == RIGHT_COM_RIGHT_FIXED && s2_biped_mode == RIGHT_COM_BOTH_FIXED) )
+       (s1_biped_mode == RIGHT_COM_RIGHT_FIXED && s2_biped_mode == RIGHT_COM_BOTH_FIXED) ||
+       (s1_biped_mode == s2_biped_mode && s1_biped_mode == RIGHT_COM_RIGHT_FIXED) ) // staying on same state
   {
     // Only must have same right foot
     if (equalJoint(state1, state2, right_foot_index, right_foot_index))
@@ -248,7 +269,7 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
     return std::numeric_limits<double>::infinity();
   }
 
-  // Otherwise moving between s2, s3, or s4. Both feet must be equal
+  // Otherwise moving between s2, s3, or s4. OR s2->s2, s3->s3, s4->s4. Both feet must be equal
   if (equalJoint(state1, state2, right_foot_index, right_foot_index) && 
       equalJoint(state1, state2, !right_foot_index, !right_foot_index))
   {

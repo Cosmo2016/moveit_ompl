@@ -200,6 +200,9 @@ public:
 
   virtual void copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const;
 
+  /** \brief A state machine for biped states */
+  bool is_connected_[5][5];
+
 protected:
 
   /** \brief Used to calculate the fake base transform of the vjoint */
@@ -208,9 +211,6 @@ protected:
   /** \brief Used to calculate the fake base transform of the vjoint */
   const moveit::core::JointModel* vjoint_model_;
   int jmg_vjoint_index_;
-
-  /** \brief A state machine for biped states */
-  char is_connected_[5][5];
 };
 
 typedef boost::shared_ptr<HumanoidModelStateSpace> HumanoidModelStateSpacePtr;
