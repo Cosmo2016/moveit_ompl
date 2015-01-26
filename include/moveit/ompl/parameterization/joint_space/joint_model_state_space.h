@@ -38,6 +38,7 @@
 #define MOVEIT_OMPL_PARAMETERIZATION_JOINT_SPACE_JOINT_MODEL_STATE_SPACE_
 
 #include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 namespace moveit_ompl
 {
@@ -48,7 +49,7 @@ public:
 
   static const std::string PARAMETERIZATION_TYPE;
 
-  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools);
 
 };
 

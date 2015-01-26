@@ -36,9 +36,10 @@
 
 #include <moveit/ompl/parameterization/model_based_state_space_factory.h>
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::ModelBasedStateSpaceFactory::getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::ModelBasedStateSpaceFactory::getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec, 
+                                                                                                moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
-  ModelBasedStateSpacePtr ss = allocStateSpace(space_spec);
+  ModelBasedStateSpacePtr ss = allocStateSpace(space_spec, visual_tools);
   ss->computeLocations();
   return ss;
 }

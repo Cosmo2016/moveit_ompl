@@ -40,7 +40,9 @@
 
 const std::string moveit_ompl::PoseModelStateSpace::PARAMETERIZATION_TYPE = "PoseModel";
 
-moveit_ompl::PoseModelStateSpace::PoseModelStateSpace(const ModelBasedStateSpaceSpecification &spec) : ModelBasedStateSpace(spec)
+moveit_ompl::PoseModelStateSpace::PoseModelStateSpace(const ModelBasedStateSpaceSpecification &spec,
+                                                      moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
+  : ModelBasedStateSpace(spec, visual_tools)
 {
   jump_factor_ = 3; // \todo make this a param
   
@@ -54,7 +56,7 @@ moveit_ompl::PoseModelStateSpace::PoseModelStateSpace(const ModelBasedStateSpace
         poses_.push_back(PoseComponent(it->first, it->second));
     }
   if (poses_.empty())
-    logError("No kinematics solvers specified. Unable to construct a PoseModelStateSpace");
+    ROS_ERROR("No kinematics solvers specified. Unable to construct a PoseModelStateSpace");
   else
     std::sort(poses_.begin(), poses_.end());
   setName(getName() + "_" + PARAMETERIZATION_TYPE);

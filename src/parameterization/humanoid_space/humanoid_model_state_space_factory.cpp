@@ -49,21 +49,21 @@ int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::
                                                                         const robot_model::RobotModelConstPtr &kmodel) const
 {
   // This state space is for robots with fixed fake bases such as feet
-  if (req.start_state.fixed_links.joint_names.size())
+  if (req.start_state.humanoid_state.fixed_link_names.size())
   {
-    logWarn("Using humanoid model state space");
+    ROS_WARN("Using humanoid model state space");
     return 200;
   }
   else
   {
-    logWarn("NOT using humanoid model state space ");
+    ROS_WARN("NOT using humanoid model state space ");
     return 25;
   }
 
   return 1;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::HumanoidModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::HumanoidModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
-  return ModelBasedStateSpacePtr(new HumanoidModelStateSpace(space_spec));
+  return ModelBasedStateSpacePtr(new HumanoidModelStateSpace(space_spec, visual_tools));
 }

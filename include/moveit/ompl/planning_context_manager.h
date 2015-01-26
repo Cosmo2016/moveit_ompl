@@ -56,7 +56,8 @@ class PlanningContextManager
 {
 public:
 
-  PlanningContextManager(const robot_model::RobotModelConstPtr &robot_model, const constraint_samplers::ConstraintSamplerManagerPtr &csm);
+  PlanningContextManager(const robot_model::RobotModelConstPtr &robot_model, 
+                         const constraint_samplers::ConstraintSamplerManagerPtr &csm);
   ~PlanningContextManager();
 
   /** @brief Specify configurations for the planners.
@@ -147,11 +148,14 @@ public:
 
   ModelBasedPlanningContextPtr getLastPlanningContext() const;
 
-  ModelBasedPlanningContextPtr getPlanningContext(const std::string &config, const std::string &factory_type = "") const;
+  ModelBasedPlanningContextPtr getPlanningContext(const std::string &config, const std::string &factory_type = "", 
+                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools = 
+                                                  moveit_visual_tools::MoveItVisualToolsPtr()) const;
 
   ModelBasedPlanningContextPtr getPlanningContext(const planning_scene::PlanningSceneConstPtr &planning_scene,
                                                   const planning_interface::MotionPlanRequest &req,
-                                                  moveit_msgs::MoveItErrorCodes &error_code) const;
+                                                  moveit_msgs::MoveItErrorCodes &error_code,
+                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 
   void registerPlannerAllocator(const std::string &planner_id, const ConfiguredPlannerAllocator &pa)
   {
@@ -185,7 +189,10 @@ protected:
   void registerDefaultStateSpaces();
 
   /** \brief This is the function that constructs new planning contexts if no previous ones exist that are suitable */
-  ModelBasedPlanningContextPtr getPlanningContext(const planning_interface::PlannerConfigurationSettings &config, const StateSpaceFactoryTypeSelector &factory_selector, const moveit_msgs::MotionPlanRequest &req) const;
+  ModelBasedPlanningContextPtr getPlanningContext(const planning_interface::PlannerConfigurationSettings &config, 
+                                                  const StateSpaceFactoryTypeSelector &factory_selector, 
+                                                  const moveit_msgs::MotionPlanRequest &req,
+                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 
   const ModelBasedStateSpaceFactoryPtr& getStateSpaceFactory1(const std::string &group_name, const std::string &factory_type) const;
   const ModelBasedStateSpaceFactoryPtr& getStateSpaceFactory2(const std::string &group_name, const moveit_msgs::MotionPlanRequest &req) const;

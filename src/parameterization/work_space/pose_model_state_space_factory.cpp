@@ -82,7 +82,7 @@ int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::stri
   return -1;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::PoseModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::PoseModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
-  return ModelBasedStateSpacePtr(new PoseModelStateSpace(space_spec));
+  return ModelBasedStateSpacePtr(new PoseModelStateSpace(space_spec, visual_tools));
 }

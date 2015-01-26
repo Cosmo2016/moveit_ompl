@@ -56,6 +56,11 @@ bool OMPLPlannerManager::initialize(const robot_model::RobotModelConstPtr& robot
 {
   ROS_INFO("Initializing OMPL interface");
 
+  // Load visualizer
+  visual_tools_.reset(new moveit_visual_tools::MoveItVisualTools("/odom", "/moveit_ompl_markers", robot_model));
+  visual_tools_->loadRobotStatePub("/moveit_ompl/display_robot_state");
+  visual_tools_->hideRobot();
+
   // Save parameters
   robot_model_ = robot_model;
   if (!ns.empty())
@@ -231,7 +236,7 @@ planning_interface::PlanningContextPtr OMPLPlannerManager::getPlanningContext(co
                                                                               const planning_interface::MotionPlanRequest &req,
                                                                               moveit_msgs::MoveItErrorCodes &error_code) const
 {
-  ModelBasedPlanningContextPtr ctx = context_manager_->getPlanningContext(planning_scene, req, error_code);
+  ModelBasedPlanningContextPtr ctx = context_manager_->getPlanningContext(planning_scene, req, error_code, visual_tools_);
   if (ctx)
     configureContext(ctx);
   return ctx;

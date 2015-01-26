@@ -39,6 +39,7 @@
 
 #include <moveit/ompl/parameterization/model_based_state_space.h>
 #include <ompl/base/spaces/SE3StateSpace.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 namespace moveit_ompl
 {
@@ -94,7 +95,7 @@ public:
     ompl::base::SE3StateSpace::StateType **poses;
   };
   
-  PoseModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  PoseModelStateSpace(const ModelBasedStateSpaceSpecification &spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools);
   virtual ~PoseModelStateSpace();
   
   virtual ompl::base::State* allocState() const;

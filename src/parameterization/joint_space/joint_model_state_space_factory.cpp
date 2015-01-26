@@ -49,7 +49,7 @@ int moveit_ompl::JointModelStateSpaceFactory::canRepresentProblem(const std::str
   return 100;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::JointModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::JointModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
-  return ModelBasedStateSpacePtr(new JointModelStateSpace(space_spec));
+  return ModelBasedStateSpacePtr(new JointModelStateSpace(space_spec, visual_tools));
 }

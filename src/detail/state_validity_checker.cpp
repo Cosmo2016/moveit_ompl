@@ -120,7 +120,7 @@ bool moveit_ompl::StateValidityChecker::isValidWithoutCache(const ompl::base::St
   if (!si_->satisfiesBounds(state))
   {
     if (verbose)
-      logInform("State outside bounds");
+      ROS_INFO("State outside bounds");
     return false;
   }
 
@@ -148,7 +148,7 @@ bool moveit_ompl::StateValidityChecker::isValidWithoutCache(const ompl::base::St
   if (!si_->satisfiesBounds(state))
   {
     if (verbose)
-      logInform("State outside bounds");
+      ROS_INFO("State outside bounds");
     return false;
   }
 
@@ -190,7 +190,7 @@ bool moveit_ompl::StateValidityChecker::isValidWithCache(const ompl::base::State
   if (!si_->satisfiesBounds(state))
   {
     if (verbose)
-      logInform("State outside bounds");
+      ROS_INFO("State outside bounds");
     const_cast<ob::State*>(state)->as<ModelBasedStateSpace::StateType>()->markInvalid();
     return false;
   }
@@ -239,7 +239,7 @@ bool moveit_ompl::StateValidityChecker::isValidWithCache(const ompl::base::State
   if (!si_->satisfiesBounds(state))
   {
     if (verbose)
-      logInform("State outside bounds");
+      ROS_INFO("State outside bounds");
     const_cast<ob::State*>(state)->as<ModelBasedStateSpace::StateType>()->markInvalid(0.0);
     return false;
   }

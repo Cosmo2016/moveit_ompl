@@ -32,7 +32,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Dave Coleman */
 
 #ifndef MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
 #define MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
@@ -81,7 +81,8 @@ class ModelBasedPlanningContext : public planning_interface::PlanningContext
 {
 public:
 
-  ModelBasedPlanningContext(const std::string &name, const ModelBasedPlanningContextSpecification &spec);
+  ModelBasedPlanningContext(const std::string &name, const ModelBasedPlanningContextSpecification &spec,
+                            moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
 
   virtual ~ModelBasedPlanningContext()
   {
@@ -302,6 +303,9 @@ public:
 
   virtual void configure();
 
+  /** \brief Display a state in Rviz */
+  void visualizationStateCallback(ompl::base::State *state, std::size_t type, double neighborRadius);
+
 protected:
 
   void preSolve();
@@ -321,6 +325,9 @@ protected:
   ModelBasedPlanningContextSpecification spec_;
 
   robot_state::RobotState complete_initial_robot_state_;
+
+  /// Used for the visualization callback
+  robot_state::RobotStatePtr shared_robot_state_;
 
   /// the OMPL planning context; this contains the problem definition and the planner used
   og::SimpleSetupPtr ompl_simple_setup_;
@@ -368,8 +375,8 @@ protected:
 
   bool                                                    simplify_solutions_;
 
-  // For visualizing things in rviz
-  moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
+  // Visualize in Rviz
+  moveit_visual_tools::MoveItVisualToolsPtr               visual_tools_;
 };
 
 }

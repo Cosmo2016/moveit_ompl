@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Author: Ioan Sucan */
+/* Author: Ioan Sucan, Dave Coleman */
 
 #ifndef MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
 #define MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
@@ -42,6 +42,7 @@
 #include <moveit/robot_state/robot_state.h>
 #include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <moveit/constraint_samplers/constraint_sampler.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 namespace moveit_ompl
 {
@@ -174,7 +175,8 @@ public:
     double distance;
   };
 
-  ModelBasedStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  ModelBasedStateSpace(const ModelBasedStateSpaceSpecification &spec, 
+                       moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
   virtual ~ModelBasedStateSpace();
 
   void setInterpolationFunction(const InterpolationFunction &fun)
@@ -275,6 +277,8 @@ protected:
   double tag_snap_to_segment_;
   double tag_snap_to_segment_complement_;
 
+  // For visualizing things in rviz
+  moveit_visual_tools::MoveItVisualToolsPtr               visual_tools_;
 };
 
 typedef boost::shared_ptr<ModelBasedStateSpace> ModelBasedStateSpacePtr;

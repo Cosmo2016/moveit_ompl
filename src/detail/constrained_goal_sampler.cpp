@@ -60,11 +60,11 @@ moveit_ompl::ConstrainedGoalSampler::ConstrainedGoalSampler(const ModelBasedPlan
 {
   if (!constraint_sampler_)
   {
-    logDebug("Allocating new constraint sampler for default");
+    ROS_DEBUG("Allocating new constraint sampler for default");
     default_sampler_ = si_->allocStateSampler();
   }
   constraint_sampler_->setVerbose(false); // be default it *is* verbose during testing
-  logDebug("Constructed a ConstrainedGoalSampler instance at address %p", this);
+  ROS_DEBUG("Constructed a ConstrainedGoalSampler instance at address %p", this);
   startSampling();
 }
 
@@ -158,18 +158,6 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
       {
         work_state_.update();
 
-        /*
-        work_state_.updateWithDynamicRoot();
-
-        std::cout << " >> Project returned true " << std::endl;
-        if (work_state_.dynamicRootEnabled())
-          std::cout << "Dynamic root ENABLED " << std::endl;
-        else
-          std::cout << "Dynamic root DISABLED " << std::endl;
-        visual_tools_->publishRobotState(work_state_, rviz_visual_tools::BLUE);
-        ros::Duration(.1).sleep();
-        */
-
         if (kinematic_constraint_set_->decide(work_state_, verbose).satisfied)
         {
           if (verbose)
@@ -191,12 +179,12 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
         }
         else
         {
-          logWarn(" >> Kinematic constraint decided satisfied FALSE ");
+          ROS_WARN(" >> Kinematic constraint decided satisfied FALSE ");
           invalid_sampled_constraints_++;
           if (!warned_invalid_samples_ && invalid_sampled_constraints_ >= (attempts_so_far * 8) / 10)
           {
             warned_invalid_samples_ = true;
-            logWarn("More than 80%% of the sampled goal states fail to satisfy the constraints imposed on the goal sampler. Is the constrained sampler working correctly?");
+            ROS_WARN("More than 80%% of the sampled goal states fail to satisfy the constraints imposed on the goal sampler. Is the constrained sampler working correctly?");
           }
         }
       }

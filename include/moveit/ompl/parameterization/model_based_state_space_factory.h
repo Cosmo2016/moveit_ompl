@@ -58,7 +58,7 @@ public:
   {
   }
 
-  ModelBasedStateSpacePtr getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const;
+  ModelBasedStateSpacePtr getNewStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 
   const std::string& getType() const
   {
@@ -73,7 +73,8 @@ public:
 
 protected:
 
-  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec) const = 0;
+  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, 
+                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const = 0;
   std::string type_;
 };
 

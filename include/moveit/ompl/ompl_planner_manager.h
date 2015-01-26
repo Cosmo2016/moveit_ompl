@@ -44,6 +44,7 @@
 #include <moveit/profiler/profiler.h>
 #include <moveit/constraint_samplers/constraint_sampler_manager.h>
 #include <moveit/constraint_sampler_manager_loader/constraint_sampler_manager_loader.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 #include <moveit_msgs/MotionPlanRequest.h>
 #include <moveit_msgs/MotionPlanResponse.h>
 #include <ros/ros.h>
@@ -156,6 +157,9 @@ protected:
   ros::Publisher pub_valid_states_;
   ros::Publisher pub_valid_traj_;
   std::string planner_data_link_name_;
+
+  // Visualize in Rviz
+  moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
 
 private:
 

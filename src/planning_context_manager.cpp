@@ -102,7 +102,8 @@ struct PlanningContextManager::CachedContexts
 
 } // namespace moveit_ompl
 
-moveit_ompl::PlanningContextManager::PlanningContextManager(const robot_model::RobotModelConstPtr &robot_model, const constraint_samplers::ConstraintSamplerManagerPtr &csm) :
+moveit_ompl::PlanningContextManager::PlanningContextManager(const robot_model::RobotModelConstPtr &robot_model, 
+                                                            const constraint_samplers::ConstraintSamplerManagerPtr &csm) :
   robot_model_(robot_model), 
   constraint_sampler_manager_(csm),
   max_goal_samples_(10), 
@@ -145,7 +146,7 @@ moveit_ompl::ConfiguredPlannerAllocator moveit_ompl::PlanningContextManager::pla
     return it->second;
   else
   {
-    logError("Unknown planner: '%s'", planner.c_str());
+    ROS_ERROR("Unknown planner: '%s'", planner.c_str());
     return ConfiguredPlannerAllocator();
   }
 }
@@ -183,25 +184,27 @@ void moveit_ompl::PlanningContextManager::setPlannerConfigurations(const plannin
   planner_configs_ = pconfig;
 }
 
-moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::getPlanningContext(const std::string &config, const std::string& factory_type) const
+moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::getPlanningContext(const std::string &config, const std::string& factory_type, 
+                                                                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   planning_interface::PlannerConfigurationMap::const_iterator pc = planner_configs_.find(config);
 
   if (pc != planner_configs_.end())
   {
     moveit_msgs::MotionPlanRequest req; // dummy request with default values
-    return getPlanningContext(pc->second, boost::bind(&PlanningContextManager::getStateSpaceFactory1, this, _1, factory_type), req);
+    return getPlanningContext(pc->second, boost::bind(&PlanningContextManager::getStateSpaceFactory1, this, _1, factory_type), req, visual_tools);
   }
   else
   {
-    logError("Planning configuration '%s' was not found", config.c_str());
+    ROS_ERROR("Planning configuration '%s' was not found", config.c_str());
     return ModelBasedPlanningContextPtr();
   }
 }
 
 moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::getPlanningContext(const planning_interface::PlannerConfigurationSettings &config,
-                                                                                                        const StateSpaceFactoryTypeSelector &factory_selector,
-                                                                                                        const moveit_msgs::MotionPlanRequest &req) const
+                                                                                                  const StateSpaceFactoryTypeSelector &factory_selector,
+                                                                                                  const moveit_msgs::MotionPlanRequest &req,
+                                                                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   const moveit_ompl::ModelBasedStateSpaceFactoryPtr &factory = factory_selector(config.group);
 
@@ -220,7 +223,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
       {
         //if (cc->second[i].unique()) // check if the context is being shared by anything else
         {
-          logDebug("Reusing cached planning context");
+          ROS_DEBUG("Reusing cached planning context");
           context = cc->second[i];
           break;
         }
@@ -236,7 +239,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     context_spec.config_ = config.config;
     context_spec.planner_selector_ = getPlannerSelector();
     context_spec.constraint_sampler_manager_ = constraint_sampler_manager_;
-    context_spec.state_space_ = factory->getNewStateSpace(space_spec);
+    context_spec.state_space_ = factory->getNewStateSpace(space_spec, visual_tools);
 
 
     enum SimpleSetupType
@@ -271,13 +274,13 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     {
       case REGULAR:
         {
-          logDebug("planning_context_manager: Using regular framework for planning");
+          ROS_DEBUG("planning_context_manager: Using regular framework for planning");
           context_spec.ompl_simple_setup_.reset(new ompl::geometric::SimpleSetup(context_spec.state_space_));
         }
         break;
       case LIGHTNING:
         {
-          logDebug("planning_context_manager: Using LIGHTNING Framework for planning");
+          ROS_DEBUG("planning_context_manager: Using LIGHTNING Framework for planning");
           context_spec.ompl_simple_setup_.reset(new ompl::tools::Lightning(context_spec.state_space_));
 
           // Load the experience database
@@ -286,14 +289,14 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
           if (!req.use_experience)
           {
-            logWarn("Lightning Framework is loaded but recall is disabled");
+            ROS_WARN("Lightning Framework is loaded but recall is disabled");
             lightning_handle.enablePlanningFromRecall(false);
           }
         }
         break;
       case THUNDER:
         {
-          logDebug("planning_context_manager: Using THUNDER Framework for planning");
+          ROS_DEBUG("planning_context_manager: Using THUNDER Framework for planning");
           context_spec.ompl_simple_setup_.reset(new ompl::tools::Thunder(context_spec.state_space_));
 
           // Load the experience database
@@ -324,15 +327,14 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
           if (!req.use_experience)
           {
-            logWarn("Thunder Framework is loaded but recall is disabled");
+            ROS_WARN("Thunder Framework is loaded but recall is disabled");
             thunder_handle.enablePlanningFromRecall(false);
           }
         }
         break;
       default:
-        logError("planning_context_manager: No simple setup type found");
+        ROS_ERROR("planning_context_manager: No simple setup type found");
     }    
-
 
     bool state_validity_cache = true;
     if (config.config.find("subspaces") != config.config.end())
@@ -348,13 +350,13 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
         if (sub_fact)
         {
           ModelBasedStateSpaceSpecification sub_space_spec(robot_model_, *beg);
-          context_spec.subspaces_.push_back(sub_fact->getNewStateSpace(sub_space_spec));
+          context_spec.subspaces_.push_back(sub_fact->getNewStateSpace(sub_space_spec, visual_tools));
         }
       }
     }
 
-    logDebug("Creating new planning context");
-    context.reset(new ModelBasedPlanningContext(config.name, context_spec));
+    ROS_DEBUG("Creating new planning context");
+    context.reset(new ModelBasedPlanningContext(config.name, context_spec, visual_tools));
     context->useStateValidityCache(state_validity_cache);
     {
       boost::mutex::scoped_lock slock(cached_contexts_->lock_);
@@ -386,7 +388,7 @@ const moveit_ompl::ModelBasedStateSpaceFactoryPtr& moveit_ompl::PlanningContextM
     return f->second;
   else
   {
-    logError("Factory of type '%s' was not found", factory_type.c_str());
+    ROS_ERROR("Factory of type '%s' was not found", factory_type.c_str());
     static const ModelBasedStateSpaceFactoryPtr empty;
     return empty;
   }
@@ -410,25 +412,26 @@ const moveit_ompl::ModelBasedStateSpaceFactoryPtr& moveit_ompl::PlanningContextM
 
   if (best == state_space_factories_.end())
   {
-    logError("There are no known state spaces that can represent the given planning problem");
+    ROS_ERROR("There are no known state spaces that can represent the given planning problem");
     static const ModelBasedStateSpaceFactoryPtr empty;
     return empty;
   }
   else
   {
-    logDebug("Using '%s' parameterization for solving problem", best->first.c_str());
+    ROS_DEBUG("Using '%s' parameterization for solving problem", best->first.c_str());
     return best->second;
   }
 }
 
 moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::getPlanningContext(const planning_scene::PlanningSceneConstPtr &planning_scene,
-                                                                                                        const moveit_msgs::MotionPlanRequest &req,
-                                                                                                        moveit_msgs::MoveItErrorCodes &error_code) const
+                                                                                                  const moveit_msgs::MotionPlanRequest &req,
+                                                                                                  moveit_msgs::MoveItErrorCodes &error_code,
+                                                                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   // Error check
   if (req.group_name.empty())
   {
-    logError("No group specified to plan for");
+    ROS_ERROR("No group specified to plan for");
     error_code.val = moveit_msgs::MoveItErrorCodes::INVALID_GROUP_NAME;
     return ModelBasedPlanningContextPtr();
   }
@@ -438,7 +441,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
   // Error check
   if (!planning_scene)
   {
-    logError("No planning scene supplied as input");
+    ROS_ERROR("No planning scene supplied as input");
     return ModelBasedPlanningContextPtr();
   }
 
@@ -448,7 +451,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
   {
     pc = planner_configs_.find(req.planner_id.find(req.group_name) == std::string::npos ? req.group_name + "[" + req.planner_id + "]" : req.planner_id);
     if (pc == planner_configs_.end())
-      logWarn("Cannot find planning configuration for group '%s' using planner '%s'. Will use defaults instead.",
+      ROS_WARN("Cannot find planning configuration for group '%s' using planner '%s'. Will use defaults instead.",
               req.group_name.c_str(), req.planner_id.c_str());
 
   }
@@ -457,13 +460,13 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     pc = planner_configs_.find(req.group_name);
     if (pc == planner_configs_.end())
     {
-      logError("Cannot find planning configuration for group '%s'", req.group_name.c_str());
+      ROS_ERROR("Cannot find planning configuration for group '%s'", req.group_name.c_str());
       return ModelBasedPlanningContextPtr();
     }
   }
 
   // Choose best planning context
-  ModelBasedPlanningContextPtr context = getPlanningContext(pc->second, boost::bind(&PlanningContextManager::getStateSpaceFactory2, this, _1, req), req);
+  ModelBasedPlanningContextPtr context = getPlanningContext(pc->second, boost::bind(&PlanningContextManager::getStateSpaceFactory2, this, _1, req), req, visual_tools);
   if (context)
   {
     context->clear();
@@ -486,12 +489,12 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     try
     {
       context->configure();
-      logDebug("%s: New planning context is set.", context->getName().c_str());
+      ROS_DEBUG("%s: New planning context is set.", context->getName().c_str());
       error_code.val = moveit_msgs::MoveItErrorCodes::SUCCESS;
     }
     catch (ompl::Exception &ex)
     {
-      logError("OMPL encountered an error: %s", ex.what());
+      ROS_ERROR("OMPL encountered an error: %s", ex.what());
       context.reset();
     }
   }

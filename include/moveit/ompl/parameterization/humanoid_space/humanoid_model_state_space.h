@@ -170,7 +170,8 @@ public:
 
   static const std::string PARAMETERIZATION_TYPE;
 
-  HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec);
+  HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec, 
+                          moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
 
   virtual ompl::base::State* allocState() const;
 
@@ -191,8 +192,8 @@ public:
 
   virtual moveit_ompl::BipedFootModes getBipedFootMode(const ompl::base::State *state) const;
 
-  virtual bool equalJoint(const ompl::base::State *state1, const ompl::base::State *state2,
-                          int index_state1, int index_state2) const;
+  virtual bool equalTransform(const ompl::base::State *state1, const ompl::base::State *state2,
+                              int index_state1, int index_state2) const;
 
   virtual bool equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
@@ -206,7 +207,7 @@ public:
 protected:
 
   /** \brief Used to calculate the fake base transform of the vjoint */
-  moveit::core::RobotStatePtr moveit_robot_state1_;
+  moveit::core::RobotStatePtr moveit_robot_state_;
 
   /** \brief Used to calculate the fake base transform of the vjoint */
   const moveit::core::JointModel* vjoint_model_;
