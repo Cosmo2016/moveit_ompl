@@ -256,7 +256,7 @@ ompl::base::StateSamplerPtr moveit_ompl::ModelBasedStateSpace::allocDefaultState
     
     virtual void sampleUniform(ompl::base::State *state)
     {
-      std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniform() " << std::endl;
+      //std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniform() " << std::endl;
       joint_model_group_->getVariableRandomPositions(moveit_rng_, state->as<StateType>()->values, *joint_bounds_);
       state->as<StateType>()->clearKnownInformation();
     }

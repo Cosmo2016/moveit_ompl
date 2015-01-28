@@ -136,7 +136,7 @@ ompl::base::ProjectionEvaluatorPtr moveit_ompl::ModelBasedPlanningContext::getPr
 
 ompl::base::StateSamplerPtr moveit_ompl::ModelBasedPlanningContext::allocPathConstrainedSampler(const ompl::base::StateSpace *ss) const
 {
-  std::cout << "moveit_ompl::ModelBasedPlanningContext::allocPathConstrainedSampler() " << std::endl;
+  //std::cout << "moveit_ompl::ModelBasedPlanningContext::allocPathConstrainedSampler() " << std::endl;
 
   if (spec_.state_space_.get() != ss)
   {
