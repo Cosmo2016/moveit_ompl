@@ -41,7 +41,6 @@
 #include <moveit/ompl/detail/goal_union.h>
 #include <moveit/ompl/detail/projection_evaluators.h>
 #include <moveit/kinematic_constraints/utils.h>
-#include <moveit/profiler/profiler.h>
 #include <eigen_conversions/eigen_msg.h>
 
 #include <ompl/base/samplers/UniformValidStateSampler.h>
@@ -54,11 +53,11 @@ moveit_ompl::ModelBasedPlanningContext::ModelBasedPlanningContext(const std::str
                                                                   const ModelBasedPlanningContextSpecification &spec,
                                                                   moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : planning_interface::PlanningContext(name, spec.state_space_->getJointModelGroup()->getName()),
-    spec_(spec),
+  spec_(spec),
   complete_initial_robot_state_(spec.state_space_->getRobotModel()),
-  shared_robot_state_(new moveit::core::RobotState(complete_initial_robot_state_)),
+    shared_robot_state_(new moveit::core::RobotState(complete_initial_robot_state_)),
   ompl_simple_setup_(spec.ompl_simple_setup_),
-    ompl_benchmark_(*ompl_simple_setup_),
+  ompl_benchmark_(*ompl_simple_setup_),
   ompl_parallel_plan_(ompl_simple_setup_->getProblemDefinition()),
   ptc_(NULL),
   last_plan_time_(0.0),
@@ -122,7 +121,7 @@ ompl::base::ProjectionEvaluatorPtr moveit_ompl::ModelBasedPlanningContext::getPr
         }
         else
           ROS_ERROR("%s -  Attempted to set projection evaluator with respect to value of joint '%s', but that joint is not known to the group '%s'.",
-                   name_.c_str(), v.c_str(), getGroupName().c_str());
+                    name_.c_str(), v.c_str(), getGroupName().c_str());
       }
       if (j.empty())
         ROS_ERROR("%s -  No valid joints specified for joint projection", name_.c_str());
@@ -148,7 +147,7 @@ ompl::base::StateSamplerPtr moveit_ompl::ModelBasedPlanningContext::allocPathCon
 
   if (path_constraints_)
   {
-    constraint_samplers::ConstraintSamplerPtr cs 
+    constraint_samplers::ConstraintSamplerPtr cs
       = spec_.constraint_sampler_manager_->selectSampler(getPlanningScene(), getGroupName(), path_constraints_->getAllConstraints());
 
     if (cs)
@@ -234,7 +233,7 @@ void moveit_ompl::ModelBasedPlanningContext::useConfig()
     ompl_simple_setup_->setPlannerAllocator(boost::bind(spec_.planner_selector_(type), _1,
                                                         name_ != getGroupName() ? name_ : "", spec_));
     ROS_INFO("Planner configuration '%s' will use planner '%s'. Additional configuration parameters will be set when the planner is constructed.",
-              name_.c_str(), type.c_str());
+             name_.c_str(), type.c_str());
   }
 
   // call the setParams() after setup(), so we know what the params are
@@ -252,7 +251,7 @@ void moveit_ompl::ModelBasedPlanningContext::setPlanningVolume(const moveit_msgs
     ROS_WARN("It looks like the planning volume was not specified.");
 
   ROS_DEBUG("%s -  Setting planning volume (affects SE2 & SE3 joints only) to x = [%f, %f], y = [%f, %f], z = [%f, %f]", name_.c_str(),
-           wparams.min_corner.x, wparams.max_corner.x, wparams.min_corner.y, wparams.max_corner.y, wparams.min_corner.z, wparams.max_corner.z);
+            wparams.min_corner.x, wparams.max_corner.x, wparams.min_corner.y, wparams.max_corner.y, wparams.min_corner.z, wparams.max_corner.z);
 
   spec_.state_space_->setPlanningVolume(wparams.min_corner.x, wparams.max_corner.x,
                                         wparams.min_corner.y, wparams.max_corner.y,
@@ -465,12 +464,20 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
   {
     double ptime = getLastPlanTime();
 
-    ROS_WARN("Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
 
-    if (simplify_solutions_ && ptime < request_.allowed_planning_time && false)
+    bool disableSimplifyAndInterpolate = true;
+    
+    if (disableSimplifyAndInterpolate)
     {
-      simplifySolution(request_.allowed_planning_time - ptime);
-      ptime += getLastSimplifyTime();
+      ROS_WARN("Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
+    }
+    else
+    {
+      if (simplify_solutions_ && ptime < request_.allowed_planning_time)
+      {
+        simplifySolution(request_.allowed_planning_time - ptime);
+        ptime += getLastSimplifyTime();
+      }
     }
 
     ROS_WARN("moveit_ompl::ModelBasedPlanningContext::solve() Interpolating solution");
@@ -478,7 +485,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
 
     // fill the response
     ROS_INFO("%s -  Returning successful solution with %lu states", getName().c_str(),
-              getOMPLSimpleSetup()->getSolutionPath().getStateCount());
+             getOMPLSimpleSetup()->getSolutionPath().getStateCount());
 
     res.trajectory_.reset(new robot_trajectory::RobotTrajectory(getRobotModel(), getGroupName()));
     getSolutionPath(*res.trajectory_);
@@ -495,6 +502,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
 
 bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPlanDetailedResponse &res)
 {
+  ROS_ERROR_STREAM_NAMED("temp","Using detailed solve function");
   std::cout << "moveit_ompl::ModelBasedPlanningContext::solve - with detail " << std::endl;
   if (solve(request_.allowed_planning_time, request_.num_planning_attempts))
   {
@@ -529,7 +537,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
 
     // fill the response
     ROS_DEBUG("%s -  Returning successful solution with %lu states", getName().c_str(),
-             getOMPLSimpleSetup()->getSolutionPath().getStateCount());
+              getOMPLSimpleSetup()->getSolutionPath().getStateCount());
     return true;
   }
   else
@@ -544,82 +552,101 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(double timeout, unsigned int 
 {
   std::cout << "moveit_ompl::ModelBasedPlanningContext::solve main" << std::endl;
 
-  moveit::tools::Profiler::ScopedBlock sblock("PlanningContext:Solve");
-  ompl::time::point start = ompl::time::now();
-
   // Start goal sampling thread
   preSolve();
 
   bool result = false;
-  if (count <= 1)
+  if (count <= 1 || request_.use_experience)
   {
-    ROS_DEBUG("%s -  Solving the planning problem once...", name_.c_str());
+    result = solveOnce(timeout, count);
+  }
+  else
+  {
+    result = solveParallel(timeout, count);
+  }
+
+  postSolve();
+
+  return result;
+}
+
+bool moveit_ompl::ModelBasedPlanningContext::solveOnce(double timeout, unsigned int count)
+{
+  bool result = false;
+
+  ROS_DEBUG("%s -  Solving the planning problem once...", name_.c_str());
+  ompl::time::point start = ompl::time::now();
+
+  ob::PlannerTerminationCondition ptc = ob::timedPlannerTerminationCondition(timeout - ompl::time::seconds(ompl::time::now() - start));
+  registerTerminationCondition(ptc);
+
+  // OMPL Simple Setup
+  result = ompl_simple_setup_->solve(ptc) == ompl::base::PlannerStatus::EXACT_SOLUTION;
+
+  last_plan_time_ = ompl_simple_setup_->getLastPlanComputationTime();
+  unregisterTerminationCondition();
+
+  return result;
+}
+
+bool moveit_ompl::ModelBasedPlanningContext::solveParallel(double timeout, unsigned int count)
+{
+  bool result = false;
+  ompl::time::point start = ompl::time::now();
+
+
+  ROS_DEBUG("%s - Solving the planning problem %u times...", name_.c_str(), count);
+  ompl_parallel_plan_.clearHybridizationPaths();
+  if (count <= max_planning_threads_)
+  {
+    ompl_parallel_plan_.clearPlanners();
+    if (ompl_simple_setup_->getPlannerAllocator())
+      for (unsigned int i = 0 ; i < count ; ++i)
+        ompl_parallel_plan_.addPlannerAllocator(ompl_simple_setup_->getPlannerAllocator());
+    else
+      for (unsigned int i = 0 ; i < count ; ++i)
+        ompl_parallel_plan_.addPlanner(ompl::tools::SelfConfig::getDefaultPlanner(ompl_simple_setup_->getGoal()));
+
     ob::PlannerTerminationCondition ptc = ob::timedPlannerTerminationCondition(timeout - ompl::time::seconds(ompl::time::now() - start));
     registerTerminationCondition(ptc);
-
-    // OMPL Simple Setup
-    result = ompl_simple_setup_->solve(ptc) == ompl::base::PlannerStatus::EXACT_SOLUTION;
-
-    last_plan_time_ = ompl_simple_setup_->getLastPlanComputationTime();
+    result = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
+    last_plan_time_ = ompl::time::seconds(ompl::time::now() - start);
     unregisterTerminationCondition();
   }
   else
   {
-    ROS_DEBUG("%s - Solving the planning problem %u times...", name_.c_str(), count);
-    ompl_parallel_plan_.clearHybridizationPaths();
-    if (count <= max_planning_threads_)
+    ob::PlannerTerminationCondition ptc = ob::timedPlannerTerminationCondition(timeout - ompl::time::seconds(ompl::time::now() - start));
+    registerTerminationCondition(ptc);
+    int n = count / max_planning_threads_;
+    result = true;
+    for (int i = 0 ; i < n && ptc() == false ; ++i)
     {
       ompl_parallel_plan_.clearPlanners();
       if (ompl_simple_setup_->getPlannerAllocator())
-        for (unsigned int i = 0 ; i < count ; ++i)
+        for (unsigned int i = 0 ; i < max_planning_threads_ ; ++i)
           ompl_parallel_plan_.addPlannerAllocator(ompl_simple_setup_->getPlannerAllocator());
       else
-        for (unsigned int i = 0 ; i < count ; ++i)
+        for (unsigned int i = 0 ; i < max_planning_threads_ ; ++i)
           ompl_parallel_plan_.addPlanner(ompl::tools::SelfConfig::getDefaultPlanner(ompl_simple_setup_->getGoal()));
-
-      ob::PlannerTerminationCondition ptc = ob::timedPlannerTerminationCondition(timeout - ompl::time::seconds(ompl::time::now() - start));
-      registerTerminationCondition(ptc);
-      result = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
-      last_plan_time_ = ompl::time::seconds(ompl::time::now() - start);
-      unregisterTerminationCondition();
+      bool r = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
+      result = result && r;
     }
-    else
+    n = count % max_planning_threads_;
+    if (n && ptc() == false)
     {
-      ob::PlannerTerminationCondition ptc = ob::timedPlannerTerminationCondition(timeout - ompl::time::seconds(ompl::time::now() - start));
-      registerTerminationCondition(ptc);
-      int n = count / max_planning_threads_;
-      result = true;
-      for (int i = 0 ; i < n && ptc() == false ; ++i)
-      {
-        ompl_parallel_plan_.clearPlanners();
-        if (ompl_simple_setup_->getPlannerAllocator())
-          for (unsigned int i = 0 ; i < max_planning_threads_ ; ++i)
-            ompl_parallel_plan_.addPlannerAllocator(ompl_simple_setup_->getPlannerAllocator());
-        else
-          for (unsigned int i = 0 ; i < max_planning_threads_ ; ++i)
-            ompl_parallel_plan_.addPlanner(ompl::tools::SelfConfig::getDefaultPlanner(ompl_simple_setup_->getGoal()));
-        bool r = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
-        result = result && r;
-      }
-      n = count % max_planning_threads_;
-      if (n && ptc() == false)
-      {
-        ompl_parallel_plan_.clearPlanners();
-        if (ompl_simple_setup_->getPlannerAllocator())
-          for (int i = 0 ; i < n ; ++i)
-            ompl_parallel_plan_.addPlannerAllocator(ompl_simple_setup_->getPlannerAllocator());
-        else
-          for (int i = 0 ; i < n ; ++i)
-            ompl_parallel_plan_.addPlanner(ompl::tools::SelfConfig::getDefaultPlanner(ompl_simple_setup_->getGoal()));
-        bool r = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
-        result = result && r;
-      }
-      last_plan_time_ = ompl::time::seconds(ompl::time::now() - start);
-      unregisterTerminationCondition();
+      ompl_parallel_plan_.clearPlanners();
+      if (ompl_simple_setup_->getPlannerAllocator())
+        for (int i = 0 ; i < n ; ++i)
+          ompl_parallel_plan_.addPlannerAllocator(ompl_simple_setup_->getPlannerAllocator());
+      else
+        for (int i = 0 ; i < n ; ++i)
+          ompl_parallel_plan_.addPlanner(ompl::tools::SelfConfig::getDefaultPlanner(ompl_simple_setup_->getGoal()));
+      bool r = ompl_parallel_plan_.solve(ptc, 1, count, true) == ompl::base::PlannerStatus::EXACT_SOLUTION;
+      result = result && r;
     }
+    last_plan_time_ = ompl::time::seconds(ompl::time::now() - start);
+    unregisterTerminationCondition();
   }
-
-  postSolve();
 
   return result;
 }

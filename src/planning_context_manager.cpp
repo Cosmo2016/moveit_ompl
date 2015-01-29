@@ -253,8 +253,11 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     SimpleSetupType chosen_type;
 
     // Choose the correct simple setup type to load
-    if (req.use_experience || false) // TODO remove this true hack - allows me to easily benchmarking w and w/o experience
+    if (req.use_experience) // TODO remove this true hack - allows me to easily benchmarking w and w/o experience
     {
+      if (req.num_planning_attempts > 1)
+        ROS_ERROR_STREAM_NAMED("planning_context_manager","Number of planning attempts is greater than one, which is not allowed for experienced-based planning. Reducing to 1");
+
       if (req.experience_method == "lightning")
       {
         chosen_type = LIGHTNING;

@@ -269,6 +269,8 @@ public:
      @param count The number of runs to combine the paths of, in an attempt to generate better quality paths
   */
   bool solve(double timeout, unsigned int count);
+  bool solveOnce(double timeout, unsigned int count);
+  bool solveParallel(double timeout, unsigned int count);
 
   /* @brief Benchmark the planning problem. Return true on succesful saving of benchmark results
      @param timeout The time to spend on solving
