@@ -465,7 +465,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
     double ptime = getLastPlanTime();
 
 
-    bool disableSimplifyAndInterpolate = true;
+    bool disableSimplifyAndInterpolate = false;
     
     if (disableSimplifyAndInterpolate)
     {
