@@ -92,7 +92,7 @@ bool moveit_ompl::ConstrainedGoalSampler::stateValidityCallback(ob::State* new_g
 bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob::GoalLazySamples *gls, ob::State *new_goal)
 {
   unsigned int max_attempts = planning_context_->getMaximumGoalSamplingAttempts();
-  std::cout << "moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler() max_attempts= " << max_attempts << std::endl;
+  //std::cout << "moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler() max_attempts= " << max_attempts << std::endl;
 
   bool verbose = false;
 
