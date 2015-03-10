@@ -459,7 +459,6 @@ void moveit_ompl::ModelBasedPlanningContext::postSolve()
 
 bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPlanResponse &res)
 {
-  std::cout << "moveit_ompl::ModelBasedPlanningContext::solve - no detail " << std::endl;
   if (solve(request_.allowed_planning_time, request_.num_planning_attempts))
   {
     double ptime = getLastPlanTime();
@@ -550,8 +549,6 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
 
 bool moveit_ompl::ModelBasedPlanningContext::solve(double timeout, unsigned int count)
 {
-  std::cout << "moveit_ompl::ModelBasedPlanningContext::solve main" << std::endl;
-
   // Start goal sampling thread
   preSolve();
 
