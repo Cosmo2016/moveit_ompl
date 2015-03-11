@@ -479,7 +479,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
       }
     }
 
-    ROS_WARN("moveit_ompl::ModelBasedPlanningContext::solve() Interpolating solution");
+    ROS_INFO("moveit_ompl::ModelBasedPlanningContext::solve() Interpolating solution");
     interpolateSolution();
 
     // fill the response
