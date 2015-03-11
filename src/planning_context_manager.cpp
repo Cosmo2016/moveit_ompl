@@ -39,9 +39,8 @@
 #include <moveit/ompl/planning_context_manager.h>
 #include <moveit/robot_state/conversions.h>
 #include <moveit/profiler/profiler.h>
-#include <algorithm>
-#include <set>
 
+// OMPL
 #include <ompl/geometric/planners/rrt/RRT.h>
 #include <ompl/geometric/planners/rrt/pRRT.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -62,6 +61,13 @@
 #include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space_factory.h>
 
 #include <ompl_thunder/Thunder.h>
+
+// C++
+#include <algorithm>
+#include <set>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 namespace moveit_ompl
 {
@@ -288,7 +294,15 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
           // Load the experience database
           ompl::tools::Lightning &lightning_handle = static_cast<ompl::tools::Lightning&>(*context_spec.ompl_simple_setup_);
-          lightning_handle.setFile(context_spec.state_space_->getJointModelGroup()->getName());
+
+          // Choose the file location
+          std::string file_path;
+          if (!getFilePath(file_path, context_spec.state_space_->getJointModelGroup()->getName(), "ompl_storage"))
+          {
+            ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
+          }
+
+          lightning_handle.setFilePath(file_path);
 
           if (!req.use_experience)
           {
@@ -304,7 +318,15 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
           // Load the experience database
           ompl::tools::Thunder &thunder_handle = static_cast<ompl::tools::Thunder&>(*context_spec.ompl_simple_setup_);
-          thunder_handle.setFile(context_spec.state_space_->getJointModelGroup()->getName());
+
+          // Choose the file location
+          std::string file_path;
+          if (!getFilePath(file_path, context_spec.state_space_->getJointModelGroup()->getName(), "ompl_storage"))
+          {
+            ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
+          }
+
+          thunder_handle.setFilePath(file_path);
 
           // Set other possible parameters
           ros::NodeHandle nh = ros::NodeHandle("~");
@@ -381,6 +403,44 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
   last_planning_context_->setContext(context);
   return context;
+}
+
+bool moveit_ompl::PlanningContextManager::getFilePath(std::string &file_path, const std::string &database_name, 
+                                                      const std::string &database_directory) const
+                                                      
+{
+  namespace fs = boost::filesystem;
+
+  // Check that the directory exists, if not, create it
+  fs::path rootPath;
+  if (!std::string(getenv("HOME")).empty())
+    rootPath = fs::path(getenv("HOME")); // Support Linux/Mac
+  else if (!std::string(getenv("HOMEPATH")).empty())
+    rootPath = fs::path(getenv("HOMEPATH")); // Support Windows
+  else
+  {
+    ROS_WARN("Unable to find a home path for this computer");
+    rootPath = fs::path("");
+  }
+
+  rootPath = rootPath / fs::path(database_directory);
+
+  boost::system::error_code returnedError;
+  fs::create_directories( rootPath, returnedError );
+
+  if ( returnedError )
+  {
+    //did not successfully create directories
+    ROS_ERROR("Unable to create directory %s", database_directory.c_str());
+    return false;
+  }
+
+  //directories successfully created, append the group name as the file name
+  rootPath = rootPath / fs::path(database_name + ".ompl");
+  file_path = rootPath.string();
+  ROS_INFO_STREAM_NAMED("planning_context_manager","Setting database to " << file_path);
+
+  return true;
 }
 
 const moveit_ompl::ModelBasedStateSpaceFactoryPtr& moveit_ompl::PlanningContextManager::getStateSpaceFactory1(const std::string & /* dummy */, const std::string &factory_type) const

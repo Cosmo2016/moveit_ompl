@@ -194,6 +194,17 @@ protected:
                                                   const moveit_msgs::MotionPlanRequest &req,
                                                   moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 
+  /**
+   * \brief Creates a directory names *database_direction* in the user's *home* folder, and inside that creates a file
+   *        named *database_name.ompl*
+   * \param file_path - result to generate
+   * \param database_name - name of file to create
+   * \param database_directory - name of folder to save in user directory
+   * \return true on success
+   */
+  bool getFilePath(std::string &file_path, const std::string &database_name = "lightning_default_group", 
+                   const std::string &database_directory = "ompl_storage") const;
+
   const ModelBasedStateSpaceFactoryPtr& getStateSpaceFactory1(const std::string &group_name, const std::string &factory_type) const;
   const ModelBasedStateSpaceFactoryPtr& getStateSpaceFactory2(const std::string &group_name, const moveit_msgs::MotionPlanRequest &req) const;
 
