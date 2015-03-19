@@ -49,7 +49,6 @@ OMPLPlannerManager::OMPLPlannerManager()
     nh_("~"),
     simplify_solutions_(true)
 {
-  std::cout << "loading OMPLPlannerManager " << std::endl;
 }
 
 bool OMPLPlannerManager::initialize(const robot_model::RobotModelConstPtr& robot_model, const std::string &ns)
