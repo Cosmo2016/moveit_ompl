@@ -274,20 +274,20 @@ void moveit_ompl::ModelBasedPlanningContext::interpolateSolution()
 
   if (ompl_simple_setup_->haveSolutionPath())
   {
-    og::PathGeometric &pg = ompl_simple_setup_->getSolutionPath();
-    pg.interpolate(std::max((unsigned int)floor(0.5 + pg.length() / max_solution_segment_length_), minimum_waypoint_count_));
+    og::PathGeometric &path_geometric = ompl_simple_setup_->getSolutionPath();
+    std::size_t prev_path_states = path_geometric.getStateCount();
+    path_geometric.interpolate(std::max((unsigned int)floor(0.5 + path_geometric.length() / max_solution_segment_length_), minimum_waypoint_count_));
 
-
-    //ROS_INFO("%s -  Path states from interpolation increased from %d to %d", getName().c_str(), path_states, pg.getStateCount());
+    ROS_INFO("%s -  Path states from interpolation increased from %d to %d", getName().c_str(), prev_path_states, path_geometric.getStateCount());
   }
 }
 
-void moveit_ompl::ModelBasedPlanningContext::convertPath(const ompl::geometric::PathGeometric &pg, robot_trajectory::RobotTrajectory &traj) const
+void moveit_ompl::ModelBasedPlanningContext::convertPath(const ompl::geometric::PathGeometric &path_geometric, robot_trajectory::RobotTrajectory &traj) const
 {
   robot_state::RobotState ks = complete_initial_robot_state_;
-  for (std::size_t i = 0 ; i < pg.getStateCount() ; ++i)
+  for (std::size_t i = 0 ; i < path_geometric.getStateCount() ; ++i)
   {
-    spec_.state_space_->copyToRobotState(ks, pg.getState(i));
+    spec_.state_space_->copyToRobotState(ks, path_geometric.getState(i));
     traj.addSuffixWayPoint(ks, 0.0);
   }
 }
