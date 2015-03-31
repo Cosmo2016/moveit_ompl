@@ -101,14 +101,14 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
   // terminate after too many attempts
   if (attempts_so_far >= max_attempts)
   {
-    std::cout << "terminate after too many attempts " << std::endl;
+    //std::cout << "terminate after too many attempts " << std::endl;
     return false;
   }
   
   // terminate after a maximum number of samples
   if (gls->getStateCount() >= planning_context_->getMaximumGoalSamples())
   {
-    std::cout << "terminate after a maximum number of samples " << std::endl;
+    //std::cout << "terminate after a maximum number of samples " << std::endl;
     return false;
   }
   
