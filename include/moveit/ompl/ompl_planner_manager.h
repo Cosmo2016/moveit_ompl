@@ -49,12 +49,13 @@
 #include <moveit_msgs/MotionPlanResponse.h>
 #include <ros/ros.h>
 #include <class_loader/class_loader.h>
+#include <moveit/macros/class_forward.h>
 
 /** \brief The MoveIt interface to OMPL */
 namespace moveit_ompl
 {
 
-//using namespace moveit_ompl;
+MOVEIT_CLASS_FORWARD(OMPLPlannerManager); 
 
 /** @class OMPLPlannerManager
  *  This class defines the interface to the motion planners in OMPL*/

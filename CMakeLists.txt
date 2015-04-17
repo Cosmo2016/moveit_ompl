@@ -74,10 +74,10 @@ target_link_libraries(${MOVEIT_LIB_NAME} ${OMPL_LIBRARIES} ${catkin_LIBRARIES} $
 #target_link_libraries(test_state_space ${MOVEIT_LIB_NAME} ${OMPL_LIBRARIES} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #set_target_properties(test_state_space PROPERTIES LINK_FLAGS "${OpenMP_CXX_FLAGS}")
 
-add_library(moveit_ompl_planner_plugin src/ompl_planner_manager.cpp)
-target_link_libraries(moveit_ompl_planner_plugin ${MOVEIT_LIB_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_library(ompl_planner_manager src/ompl_planner_manager.cpp)
+target_link_libraries(ompl_planner_manager ${MOVEIT_LIB_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-install(TARGETS ${MOVEIT_LIB_NAME} moveit_ompl_planner_plugin
+install(TARGETS ${MOVEIT_LIB_NAME} ompl_planner_manager
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(DIRECTORY include/ DESTINATION include)
