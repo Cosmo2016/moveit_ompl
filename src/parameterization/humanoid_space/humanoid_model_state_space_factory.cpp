@@ -51,12 +51,12 @@ int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::
   // This state space is for robots with fixed fake bases such as feet
   if (req.start_state.humanoid_state.fixed_link_names.size())
   {
-    ROS_INFO("Using humanoid model state space");
+    ROS_DEBUG("Using humanoid model state space");
     return 200;
   }
   else
   {
-    ROS_INFO("Not using humanoid model state space ");
+    //ROS_INFO("Not using humanoid model state space ");
     return 25;
   }
 

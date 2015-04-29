@@ -69,6 +69,9 @@
 // Boost
 #include <boost/filesystem.hpp>
 
+// Parameter loading
+#include <rviz_visual_tools/ros_param_utilities.h>
+
 namespace moveit_ompl
 {
 class PlanningContextManager::LastPlanningContext
@@ -259,7 +262,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
     SimpleSetupType chosen_type;
 
     // Choose the correct simple setup type to load
-    if (req.use_experience) // TODO remove this true hack - allows me to easily benchmarking w and w/o experience
+    if (req.use_experience)
     {
       if (req.num_planning_attempts > 1)
         ROS_ERROR_STREAM_NAMED("planning_context_manager","Number of planning attempts is greater than one, which is not allowed for experienced-based planning. Reducing to 1");
@@ -293,21 +296,22 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           context_spec.ompl_simple_setup_.reset(new ompl::tools::Lightning(context_spec.state_space_));
 
           // Load the experience database
-          ompl::tools::Lightning &lightning_handle = static_cast<ompl::tools::Lightning&>(*context_spec.ompl_simple_setup_);
+          ompl::tools::ExperienceSetup &experience_handle = static_cast<ompl::tools::ExperienceSetup&>(*context_spec.ompl_simple_setup_);
 
           // Choose the file location
           std::string file_path;
-          if (!getFilePath(file_path, context_spec.state_space_->getJointModelGroup()->getName(), "ompl_storage"))
+          if (!getFilePath(file_path, "lightning_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database", 
+                           "ompl_storage"))
           {
             ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
           }
 
-          lightning_handle.setFilePath(file_path);
+          experience_handle.setFilePath(file_path);
 
           if (!req.use_experience)
           {
             ROS_WARN("Lightning Framework is loaded but recall is disabled");
-            lightning_handle.enablePlanningFromRecall(false);
+            experience_handle.enablePlanningFromRecall(false);
           }
         }
         break;
@@ -321,40 +325,47 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
 
           // Choose the file location
           std::string file_path;
-          if (!getFilePath(file_path, context_spec.state_space_->getJointModelGroup()->getName(), "ompl_storage"))
+          if (!getFilePath(file_path, "thunder_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database", 
+                           "ompl_storage"))
           {
             ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
           }
 
           thunder_handle.setFilePath(file_path);
 
-          // Set other possible parameters
-          ros::NodeHandle nh = ros::NodeHandle("~");
+          // Set other parameters
+          ros::NodeHandle nh("~");
+          const std::string parent_name = "planning_context_manager"; // for namespacing logging messages
+
           bool use_scratch;
-          if (nh.getParam("use_scratch", use_scratch))
+          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/use_scratch", use_scratch);
+          if (!use_scratch)
           {
-            if (!use_scratch)
-            {
-              ROS_INFO_STREAM_NAMED("planning_context_manager","Planning from scratch disabled via rosparam server");
-              thunder_handle.enablePlanningFromScratch(false);
-            }
+            ROS_INFO_STREAM_NAMED("planning_context_manager","Planning from scratch disabled via rosparam server");
+            thunder_handle.enablePlanningFromScratch(false);
           }
+
           bool saving_enabled;
-          if (nh.getParam("saving_enabled", saving_enabled))
+          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/saving_enabled", saving_enabled);
+          if (!saving_enabled)
           {
-            if (!saving_enabled)
-            {
-              ROS_INFO_STREAM_NAMED("planning_context_manager","Saving database disabled via rosparam server");
-              thunder_handle.getExperienceDB()->setSavingEnabled(false);
-            }
+            ROS_INFO_STREAM_NAMED("planning_context_manager","Saving database disabled via rosparam server");
+            thunder_handle.getExperienceDB()->setSavingEnabled(false);
           }
 
-
-          if (!req.use_experience)
+          bool use_experience;
+          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/use_experience", use_experience);
+          if (!use_experience)
           {
-            ROS_WARN("Thunder Framework is loaded but recall is disabled");
+            ROS_WARN("Thunder Framework is loaded but planning from recall has been disabled via rosparam server by user");
             thunder_handle.enablePlanningFromRecall(false);
           }
+
+          double sparse_delta_fraction;
+          rviz_visual_tools::getDoubleParameter(parent_name, nh, "moveit_ompl/sparse_delta_fraction", sparse_delta_fraction);
+          //ROS_ERROR_STREAM_NAMED("planning_context_manager","Setting sparse delta fraction to " << sparse_delta_fraction);
+          //thunder_handle.getExperienceDB()->getSPARSdb()->setSparseDeltaFraction( sparse_delta_fraction );
+
         }
         break;
       default:
