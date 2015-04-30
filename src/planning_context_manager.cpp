@@ -301,7 +301,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           // Choose the file location
           std::string file_path;
           if (!getFilePath(file_path, "lightning_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database", 
-                           "ompl_storage"))
+                           "ros/ompl_storage"))
           {
             ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
           }
@@ -326,7 +326,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           // Choose the file location
           std::string file_path;
           if (!getFilePath(file_path, "thunder_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database", 
-                           "ompl_storage"))
+                           "ros/ompl_storage"))
           {
             ROS_ERROR_STREAM_NAMED("planning_context_manager","Unable to find file path for experience framework");
           }
