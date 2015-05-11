@@ -200,6 +200,6 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
       }
     }
   }
-  std::cout << "at end of function " << std::endl;
+
   return false;
 }
