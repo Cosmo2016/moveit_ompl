@@ -44,7 +44,7 @@
 
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/tools/lightning/Lightning.h>
-#include <ompl_thunder/Thunder.h>
+#include <ompl/tools/thunder/Thunder.h>
 #include <ompl/tools/benchmark/Benchmark.h>
 #include <ompl/tools/multiplan/ParallelPlan.h>
 #include <ompl/base/StateStorage.h>

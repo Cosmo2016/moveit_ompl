@@ -60,7 +60,7 @@
 #include <moveit/ompl/parameterization/work_space/pose_model_state_space_factory.h>
 #include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space_factory.h>
 
-#include <ompl_thunder/Thunder.h>
+#include <ompl/tools/thunder/Thunder.h>
 
 // C++
 #include <algorithm>
@@ -70,7 +70,7 @@
 #include <boost/filesystem.hpp>
 
 // Parameter loading
-#include <rviz_visual_tools/ros_param_utilities.h>
+#include <ros_param_shortcuts/ros_param_utilities.h>
 
 namespace moveit_ompl
 {

@@ -163,7 +163,7 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
           if (verbose)
           {
             std::cout << " >> Kinematic constraint decided satisfied true " << std::endl;
-            work_state_.printFixedLinks();
+            //work_state_.printFixedLinks();
           } 
           if (checkStateValidity(new_goal, work_state_, verbose))
           {

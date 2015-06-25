@@ -196,7 +196,7 @@ void moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback(ompl::ba
   ros::spinOnce();
 
   // Debug data
-  std::cout << "Fixed link stability: " << shared_robot_state_->getFixedLinkStability() << std::endl;
+  //std::cout << "Fixed link stability: " << shared_robot_state_->getFixedLinkStability() << std::endl;
 
   ros::Duration(5.0).sleep();
 }

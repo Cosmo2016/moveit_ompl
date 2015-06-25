@@ -10,12 +10,12 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_core 
   moveit_ros_planning
   moveit_visual_tools
+  ros_param_shortcuts
   roscpp
   rosconsole
   pluginlib
   tf
   eigen_conversions
-  ompl_thunder
 )
 find_package(OMPL REQUIRED)
 #find_package(OpenMP)
@@ -29,7 +29,6 @@ catkin_package(
     ${OMPL_INCLUDE_DIRS}
   CATKIN_DEPENDS
     moveit_core
-    ompl_thunder
 )
 
 include_directories(SYSTEM
@@ -52,8 +51,8 @@ add_library(${MOVEIT_LIB_NAME}
   src/parameterization/model_based_state_space_factory.cpp
   src/parameterization/joint_space/joint_model_state_space.cpp
   src/parameterization/joint_space/joint_model_state_space_factory.cpp  
-  src/parameterization/humanoid_space/humanoid_model_state_space.cpp
-  src/parameterization/humanoid_space/humanoid_model_state_space_factory.cpp
+#  src/parameterization/humanoid_space/humanoid_model_state_space.cpp
+#  src/parameterization/humanoid_space/humanoid_model_state_space_factory.cpp
   src/parameterization/work_space/pose_model_state_space.cpp  
   src/parameterization/work_space/pose_model_state_space_factory.cpp
   src/detail/threadsafe_state_storage.cpp
