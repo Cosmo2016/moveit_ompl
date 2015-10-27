@@ -173,7 +173,7 @@ void moveit_ompl::ModelBasedPlanningContext::configure()
     ompl_simple_setup_->setup();
 
   // Set the visualization callbacks
-  ompl_simple_setup_->setVisualizationStateCallback(boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback, this, _1, _2, _3));
+  //ompl_simple_setup_->setVisualizationStateCallback(boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback, this, _1, _2, _3));
 }
 
 void moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback(ompl::base::State *state, std::size_t type,

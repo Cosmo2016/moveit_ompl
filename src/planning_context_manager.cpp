@@ -70,7 +70,7 @@
 #include <boost/filesystem.hpp>
 
 // Parameter loading
-#include <ros_param_shortcuts/ros_param_utilities.h>
+#include <ros_param_utilities/ros_param_utilities.h>
 
 namespace moveit_ompl
 {
@@ -338,7 +338,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           const std::string parent_name = "planning_context_manager"; // for namespacing logging messages
 
           bool use_scratch;
-          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/use_scratch", use_scratch);
+          ros_param_utilities::getBoolParameter(parent_name, nh, "moveit_ompl/use_scratch", use_scratch);
           if (!use_scratch)
           {
             ROS_INFO_STREAM_NAMED("planning_context_manager","Planning from scratch disabled via rosparam server");
@@ -346,7 +346,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           }
 
           bool saving_enabled;
-          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/saving_enabled", saving_enabled);
+          ros_param_utilities::getBoolParameter(parent_name, nh, "moveit_ompl/saving_enabled", saving_enabled);
           if (!saving_enabled)
           {
             ROS_INFO_STREAM_NAMED("planning_context_manager","Saving database disabled via rosparam server");
@@ -354,7 +354,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           }
 
           bool use_experience;
-          rviz_visual_tools::getBoolParameter(parent_name, nh, "moveit_ompl/use_experience", use_experience);
+          ros_param_utilities::getBoolParameter(parent_name, nh, "moveit_ompl/use_experience", use_experience);
           if (!use_experience)
           {
             ROS_WARN("Thunder Framework is loaded but planning from recall has been disabled via rosparam server by user");
@@ -362,7 +362,7 @@ moveit_ompl::ModelBasedPlanningContextPtr moveit_ompl::PlanningContextManager::g
           }
 
           double sparse_delta_fraction;
-          rviz_visual_tools::getDoubleParameter(parent_name, nh, "moveit_ompl/sparse_delta_fraction", sparse_delta_fraction);
+          ros_param_utilities::getDoubleParameter(parent_name, nh, "moveit_ompl/sparse_delta_fraction", sparse_delta_fraction);
           //ROS_ERROR_STREAM_NAMED("planning_context_manager","Setting sparse delta fraction to " << sparse_delta_fraction);
           //thunder_handle.getExperienceDB()->getSPARSdb()->setSparseDeltaFraction( sparse_delta_fraction );
 
