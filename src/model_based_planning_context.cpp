@@ -1,4 +1,4 @@
-/*********************************************************************
+ /*********************************************************************
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2012, Willow Garage, Inc.
@@ -173,6 +173,7 @@ void moveit_ompl::ModelBasedPlanningContext::configure()
     ompl_simple_setup_->setup();
 
   // Set the visualization callbacks
+  ROS_ERROR_STREAM_NAMED("temp","setVisualizationStateCallback disabled in moveit_ompl/src/model_based_planning_context.cpp");
   //ompl_simple_setup_->setVisualizationStateCallback(boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback, this, _1, _2, _3));
 }
 
