@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_core 
   moveit_ros_planning
   moveit_visual_tools
-  ros_param_utilities
+  ros_param_shortcuts
   roscpp
   rosconsole
   pluginlib
