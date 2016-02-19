@@ -48,18 +48,18 @@ moveit_ompl::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpa
   variable_count_ = spec_.joint_model_group_->getVariableCount();
   state_values_size_ = variable_count_ * sizeof(double);
   joint_model_vector_ = spec_.joint_model_group_->getActiveJointModels();
-  
+
   // make sure we have bounds for every joint stored within the spec (use default bounds if not specified)
   if (!spec_.joint_bounds_.empty() && spec_.joint_bounds_.size() != joint_model_vector_.size())
   {
     ROS_ERROR("Joint group '%s' has incorrect bounds specified. Using the default bounds instead.",  spec_.joint_model_group_->getName().c_str());
     spec_.joint_bounds_.clear();
   }
-  
+
   // copy the default joint bounds if needed
   if (spec_.joint_bounds_.empty())
     spec_.joint_bounds_ = spec_.joint_model_group_->getActiveJointModelsBounds();
-  
+
   // new perform a deep copy of the bounds, in case we need to modify them
   joint_bounds_storage_.resize(spec_.joint_bounds_.size());
   for (std::size_t i = 0 ; i < joint_bounds_storage_.size() ; ++i)
@@ -67,7 +67,7 @@ moveit_ompl::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpa
     joint_bounds_storage_[i] = *spec_.joint_bounds_[i];
     spec_.joint_bounds_[i] = &joint_bounds_storage_[i];
   }
-  
+
   // default settings
   setTagSnapToSegment(0.95);
 
@@ -185,7 +185,7 @@ void moveit_ompl::ModelBasedStateSpace::enforceBounds(ompl::base::State *state) 
 
 bool moveit_ompl::ModelBasedStateSpace::satisfiesBounds(const ompl::base::State *state) const
 {
-  return spec_.joint_model_group_->satisfiesPositionBounds(state->as<StateType>()->values, spec_.joint_bounds_, 
+  return spec_.joint_model_group_->satisfiesPositionBounds(state->as<StateType>()->values, spec_.joint_bounds_,
                                                            std::numeric_limits<double>::epsilon());
 }
 
@@ -198,7 +198,7 @@ void moveit_ompl::ModelBasedStateSpace::interpolate(const ompl::base::State *fro
   {
     // perform the actual interpolation
     spec_.joint_model_group_->interpolate(from->as<StateType>()->values, to->as<StateType>()->values, t, state->as<StateType>()->values);
-    
+
     // compute tag
     if (from->as<StateType>()->tag >= 0 && t < 1.0 - tag_snap_to_segment_)
       state->as<StateType>()->tag = from->as<StateType>()->tag;
@@ -253,21 +253,21 @@ ompl::base::StateSamplerPtr moveit_ompl::ModelBasedStateSpace::allocDefaultState
       , joint_bounds_(joint_bounds)
     {
     }
-    
+
     virtual void sampleUniform(ompl::base::State *state)
     {
       //std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniform() " << std::endl;
       joint_model_group_->getVariableRandomPositions(moveit_rng_, state->as<StateType>()->values, *joint_bounds_);
       state->as<StateType>()->clearKnownInformation();
     }
-    
+
     virtual void sampleUniformNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
     {
       //std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniformNear() " << std::endl;
       joint_model_group_->getVariableRandomPositionsNearBy(moveit_rng_, state->as<StateType>()->values, *joint_bounds_, near->as<StateType>()->values, distance);
       state->as<StateType>()->clearKnownInformation();
     }
-    
+
     virtual void sampleGaussian(ompl::base::State *state, const ompl::base::State *mean, const double stdDev)
     {
       std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleGaussian() " << std::endl;
@@ -301,11 +301,11 @@ void moveit_ompl::ModelBasedStateSpace::printState(const ompl::base::State *stat
       out << state->as<StateType>()->values[idx + i] << " ";
     out << std::endl;
   }
-  
-  if (state->as<StateType>()->isStartState())
-    out << "* start state"  << std::endl;
-  if (state->as<StateType>()->isGoalState())
-    out << "* goal state"  << std::endl;
+
+  // if (state->as<StateType>()->isStartState())
+  //   out << "* start state"  << std::endl;
+  // if (state->as<StateType>()->isGoalState())
+  //   out << "* goal state"  << std::endl;
   if (state->as<StateType>()->isValidityKnown())
   {
     if (state->as<StateType>()->isMarkedValid())
