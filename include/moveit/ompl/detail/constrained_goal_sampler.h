@@ -47,7 +47,6 @@
 
 namespace moveit_ompl
 {
-
 class ModelBasedPlanningContext;
 
 /** @class ConstrainedGoalSampler
@@ -55,27 +54,27 @@ class ModelBasedPlanningContext;
 class ConstrainedGoalSampler : public ompl::base::GoalLazySamples
 {
 public:
-
-  ConstrainedGoalSampler(const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
-                           const constraint_samplers::ConstraintSamplerPtr &cs = constraint_samplers::ConstraintSamplerPtr(),
-                           moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
+  ConstrainedGoalSampler(
+      const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
+      const constraint_samplers::ConstraintSamplerPtr &cs = constraint_samplers::ConstraintSamplerPtr(),
+      moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
 
 private:
-
   bool sampleUsingConstraintSampler(const ompl::base::GoalLazySamples *gls, ompl::base::State *new_goal);
-  bool stateValidityCallback(ompl::base::State* new_goal, robot_state::RobotState const* state,
-                              const robot_model::JointModelGroup*, const double*, bool verbose=false) const;
-  bool checkStateValidity(ompl::base::State* new_goal, const robot_state::RobotState& state, bool verbose=false) const;
+  bool stateValidityCallback(ompl::base::State *new_goal, robot_state::RobotState const *state,
+                             const robot_model::JointModelGroup *jmg, const double *joint_pos, bool verbose = false) const;
+  bool checkStateValidity(ompl::base::State *new_goal, const robot_state::RobotState &state,
+                          bool verbose = false) const;
 
-  const ModelBasedPlanningContext                 *planning_context_;
+  const ModelBasedPlanningContext *planning_context_;
   kinematic_constraints::KinematicConstraintSetPtr kinematic_constraint_set_;
-  constraint_samplers::ConstraintSamplerPtr        constraint_sampler_;
-  ompl::base::StateSamplerPtr                      default_sampler_;
-  robot_state::RobotState                          work_state_;
-  unsigned int                                     invalid_sampled_constraints_;
-  bool                                             warned_invalid_samples_;
-  unsigned int                                     verbose_display_;
-  moveit_visual_tools::MoveItVisualToolsPtr        visual_tools_;
+  constraint_samplers::ConstraintSamplerPtr constraint_sampler_;
+  ompl::base::StateSamplerPtr default_sampler_;
+  robot_state::RobotState work_state_;
+  unsigned int invalid_sampled_constraints_;
+  bool warned_invalid_samples_;
+  unsigned int verbose_display_;
+  moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
 };
 }
 

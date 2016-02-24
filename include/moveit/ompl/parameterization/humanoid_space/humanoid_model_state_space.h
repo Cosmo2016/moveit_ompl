@@ -33,7 +33,7 @@
  *********************************************************************/
 
 /* Author: Dave Coleman
-   Desc:   
+   Desc:
 */
 
 #ifndef MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_
@@ -43,61 +43,57 @@
 
 namespace moveit_ompl
 {
-
-
 /** \brief Store what mode the feet are in */
-enum BipedFootModes { 
+enum BipedFootModes
+{
   ERROR = 0,
-  LEFT_COM_LEFT_FIXED = 1, // left foot is fixed with COM within left foot
-  LEFT_COM_BOTH_FIXED = 2, // both feet fixed with COM within left foot
-  BOTH_COM_BOTH_FIXED = 3, // both feet fixed with COM between feet
-  RIGHT_COM_BOTH_FIXED = 4, // both feet fixed with COM within right foot
-  RIGHT_COM_RIGHT_FIXED = 5 // right foot is fixed with COM within right foot
+  LEFT_COM_LEFT_FIXED = 1,   // left foot is fixed with COM within left foot
+  LEFT_COM_BOTH_FIXED = 2,   // both feet fixed with COM within left foot
+  BOTH_COM_BOTH_FIXED = 3,   // both feet fixed with COM between feet
+  RIGHT_COM_BOTH_FIXED = 4,  // both feet fixed with COM within right foot
+  RIGHT_COM_RIGHT_FIXED = 5  // right foot is fixed with COM within right foot
 };
-
 
 class HumanoidModelStateSpace : public ModelBasedStateSpace
 {
 public:
-
   class StateType : public ompl::base::State
   {
   public:
-    
     enum
-      {
-        VALIDITY_KNOWN = 1,
-        GOAL_DISTANCE_KNOWN = 2,
-        VALIDITY_TRUE = 4,
-        IS_START_STATE = 8,
-        IS_GOAL_STATE = 16
-      };
-    
-    StateType() 
+    {
+      VALIDITY_KNOWN = 1,
+      GOAL_DISTANCE_KNOWN = 2,
+      VALIDITY_TRUE = 4,
+      IS_START_STATE = 8,
+      IS_GOAL_STATE = 16
+    };
+
+    StateType()
       : ompl::base::State()
       , values(NULL)
       , tag(-1)
       , flags(0)
       , distance(0.0)
-        // Humanoid variables
+      // Humanoid variables
       , fixed_link_primary(-1)
       , fixed_links(0)
       , fixed_link_stability(moveit::core::UNKNOWN)
     {
     }
-    
+
     void markValid(double d)
     {
       distance = d;
       flags |= GOAL_DISTANCE_KNOWN;
       markValid();
     }
-    
+
     void markValid()
     {
       flags |= (VALIDITY_KNOWN | VALIDITY_TRUE);
     }
-    
+
     void markInvalid(double d)
     {
       distance = d;
@@ -160,7 +156,7 @@ public:
     int tag;
     int flags;
     double distance;
-    
+
     // Humanoid properties
     int fixed_link_primary;
     int fixed_links;
@@ -170,10 +166,11 @@ public:
 
   static const std::string PARAMETERIZATION_TYPE;
 
-  HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec, 
-                          moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
+  HumanoidModelStateSpace(
+      const ModelBasedStateSpaceSpecification &spec,
+      moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
 
-  virtual ompl::base::State* allocState() const;
+  virtual ompl::base::State *allocState() const;
 
   virtual void freeState(ompl::base::State *state) const;
 
@@ -185,19 +182,21 @@ public:
 
   virtual void deserialize(ompl::base::State *state, const void *serialization) const;
 
-  /** \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed fake base link */
-  virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const;
+  /** \brief Custom interpolation function for adjusting a floating virtual joint at the real base to follow a fixed
+   * fake base link */
+  virtual void interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t,
+                           ompl::base::State *state) const;
 
   virtual double distance(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
   virtual moveit_ompl::BipedFootModes getBipedFootMode(const ompl::base::State *state) const;
 
-  virtual bool equalTransform(const ompl::base::State *state1, const ompl::base::State *state2,
-                              int index_state1, int index_state2) const;
+  virtual bool equalTransform(const ompl::base::State *state1, const ompl::base::State *state2, int index_state1,
+                              int index_state2) const;
 
   virtual bool equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const;
 
-  virtual void copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const;
+  virtual void copyToRobotState(robot_state::RobotState &rstate, const ompl::base::State *state) const;
 
   virtual void copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const;
 
@@ -205,18 +204,15 @@ public:
   bool is_connected_[5][5];
 
 protected:
-
   /** \brief Used to calculate the fake base transform of the vjoint */
   moveit::core::RobotStatePtr moveit_robot_state_;
 
   /** \brief Used to calculate the fake base transform of the vjoint */
-  const moveit::core::JointModel* vjoint_model_;
+  const moveit::core::JointModel *vjoint_model_;
   int jmg_vjoint_index_;
 };
 
 typedef boost::shared_ptr<HumanoidModelStateSpace> HumanoidModelStateSpacePtr;
-
 }
-
 
 #endif

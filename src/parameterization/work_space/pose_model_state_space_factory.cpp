@@ -43,36 +43,38 @@ moveit_ompl::PoseModelStateSpaceFactory::PoseModelStateSpaceFactory() : ModelBas
 }
 
 int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::string &group,
-                                                                    const moveit_msgs::MotionPlanRequest &req,
-                                                                    const robot_model::RobotModelConstPtr &kmodel) const
+                                                                 const moveit_msgs::MotionPlanRequest &req,
+                                                                 const robot_model::RobotModelConstPtr &kmodel) const
 {
   const robot_model::JointModelGroup *jmg = kmodel->getJointModelGroup(group);
   if (jmg)
   {
-    const std::pair<robot_model::JointModelGroup::KinematicsSolver, robot_model::JointModelGroup::KinematicsSolverMap>& slv = jmg->getGroupKinematics();
+    const std::pair<robot_model::JointModelGroup::KinematicsSolver, robot_model::JointModelGroup::KinematicsSolverMap> &
+        slv = jmg->getGroupKinematics();
     bool ik = false;
     // check that we have a direct means to compute IK
     if (slv.first)
       ik = jmg->getVariableCount() == slv.first.bijection_.size();
-    else
-      if (!slv.second.empty())
+    else if (!slv.second.empty())
+    {
+      // or an IK solver for each of the subgroups
+      unsigned int vc = 0;
+      unsigned int bc = 0;
+      for (robot_model::JointModelGroup::KinematicsSolverMap::const_iterator jt = slv.second.begin();
+           jt != slv.second.end(); ++jt)
       {
-        // or an IK solver for each of the subgroups
-        unsigned int vc = 0;
-        unsigned int bc = 0;
-        for (robot_model::JointModelGroup::KinematicsSolverMap::const_iterator jt = slv.second.begin() ; jt != slv.second.end() ; ++jt)
-        {
-          vc += jt->first->getVariableCount();
-          bc += jt->second.bijection_.size();
-        }
-        if (vc == jmg->getVariableCount() && vc == bc)
-          ik = true;
+        vc += jt->first->getVariableCount();
+        bc += jt->second.bijection_.size();
       }
-    
+      if (vc == jmg->getVariableCount() && vc == bc)
+        ik = true;
+    }
+
     if (ik)
     {
       // if we have path constraints, we prefer interpolating in pose space
-      if ((!req.path_constraints.position_constraints.empty() || !req.path_constraints.orientation_constraints.empty()) &&
+      if ((!req.path_constraints.position_constraints.empty() ||
+           !req.path_constraints.orientation_constraints.empty()) &&
           req.path_constraints.joint_constraints.empty() && req.path_constraints.visibility_constraints.empty())
         return 150;
       else
@@ -82,7 +84,8 @@ int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::stri
   return -1;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::PoseModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::PoseModelStateSpaceFactory::allocStateSpace(
+    const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   return ModelBasedStateSpacePtr(new PoseModelStateSpace(space_spec, visual_tools));
 }

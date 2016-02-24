@@ -47,7 +47,6 @@
 class LoadPlanningModelsPr2 : public testing::Test
 {
 protected:
-
   virtual void SetUp()
   {
     srdf_model_.reset(new srdf::Model());
@@ -56,10 +55,10 @@ protected:
     std::fstream xml_file("../kinematic_state/test/urdf/robot.xml", std::fstream::in);
     if (xml_file.is_open())
     {
-      while ( xml_file.good() )
+      while (xml_file.good())
       {
         std::string line;
-        std::getline( xml_file, line);
+        std::getline(xml_file, line);
         xml_string += (line + "\n");
       }
       xml_file.close();
@@ -81,10 +80,9 @@ protected:
 protected:
   robot_model::RobotModelPtr kmodel_;
   boost::shared_ptr<urdf::ModelInterface> urdf_model_;
-  boost::shared_ptr<srdf::Model>     srdf_model_;
-  bool                               urdf_ok_;
-  bool                               srdf_ok_;
-
+  boost::shared_ptr<srdf::Model> srdf_model_;
+  bool urdf_ok_;
+  bool srdf_ok_;
 };
 
 TEST_F(LoadPlanningModelsPr2, StateSpace)
@@ -101,7 +99,7 @@ TEST_F(LoadPlanningModelsPr2, StateSpace)
     ss.sanityChecks();
     passed = true;
   }
-  catch(ompl::Exception &ex)
+  catch (ompl::Exception &ex)
   {
     ROS_ERROR("Sanity checks did not pass: %s", ex.what());
   }
@@ -144,7 +142,7 @@ TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
     ss.sanityChecks();
     passed = true;
   }
-  catch(ompl::Exception &ex)
+  catch (ompl::Exception &ex)
   {
     ROS_ERROR("Sanity checks did not pass: %s", ex.what());
   }
@@ -154,7 +152,7 @@ TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
   kstate.setToRandomPositions();
   EXPECT_TRUE(kstate.distance(kstate) < 1e-12);
   ompl::base::State *state = ss.allocState();
-  for (int i = 0 ; i < 10 ; ++i)
+  for (int i = 0; i < 10; ++i)
   {
     robot_state::RobotState kstate2(kstate);
     EXPECT_TRUE(kstate.distance(kstate2) < 1e-12);
@@ -174,6 +172,6 @@ TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
 
 int main(int argc, char **argv)
 {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

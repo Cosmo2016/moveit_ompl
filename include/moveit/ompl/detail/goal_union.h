@@ -38,12 +38,10 @@
 
 namespace moveit_ompl
 {
-
 /** @class GoalSampleableRegionMux*/
 class GoalSampleableRegionMux : public ompl::base::GoalSampleableRegion
 {
 public:
-
   /** @brief Constructor
    *  @param goals The input set of goals*/
   GoalSampleableRegionMux(const std::vector<ompl::base::GoalPtr> &goals);
@@ -63,7 +61,7 @@ public:
 
   /** @brief Query if sampler could find a sample in the future */
   virtual bool couldSample() const;
-  
+
   /** @brief Is the goal satisfied for this state (given a distance)*/
   virtual bool isSatisfied(const ompl::base::State *st, double *distance) const;
 
@@ -75,14 +73,12 @@ public:
 
   /** @brief If there are any member lazy samplers, stop them */
   void stopSampling();
-  
+
   /** @brief Pretty print goal information*/
   virtual void print(std::ostream &out = std::cout) const;
 
 protected:
-
   std::vector<ompl::base::GoalPtr> goals_;
-  mutable unsigned int             gindex_;
+  mutable unsigned int gindex_;
 };
-
 }

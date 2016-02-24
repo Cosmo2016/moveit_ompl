@@ -36,7 +36,6 @@
    Desc:   This state space is for robots with fixed fake bases such as feet
 */
 
-
 #include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space.h>
 #include <limits>
 
@@ -45,7 +44,7 @@ const std::string moveit_ompl::HumanoidModelStateSpace::PARAMETERIZATION_TYPE = 
 moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedStateSpaceSpecification &spec,
                                                               moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : ModelBasedStateSpace(spec, visual_tools)
-  , is_connected_() // create a matrix that is base 1 (ignore 0) and initialize to 0
+  , is_connected_()  // create a matrix that is base 1 (ignore 0) and initialize to 0
 {
   setName(getName() + "_" + PARAMETERIZATION_TYPE);
 
@@ -93,7 +92,7 @@ moveit_ompl::HumanoidModelStateSpace::HumanoidModelStateSpace(const ModelBasedSt
     }
 }
 
-ompl::base::State* moveit_ompl::HumanoidModelStateSpace::allocState() const
+ompl::base::State *moveit_ompl::HumanoidModelStateSpace::allocState() const
 {
   StateType *state = new StateType();
   state->values = new double[variable_count_];
@@ -106,7 +105,8 @@ void moveit_ompl::HumanoidModelStateSpace::freeState(ompl::base::State *state) c
   delete state->as<StateType>();
 }
 
-void moveit_ompl::HumanoidModelStateSpace::copyState(ompl::base::State *destination, const ompl::base::State *source) const
+void moveit_ompl::HumanoidModelStateSpace::copyState(ompl::base::State *destination,
+                                                     const ompl::base::State *source) const
 {
   memcpy(destination->as<StateType>()->values, source->as<StateType>()->values, state_values_size_);
   destination->as<StateType>()->tag = source->as<StateType>()->tag;
@@ -133,16 +133,16 @@ void moveit_ompl::HumanoidModelStateSpace::serialize(void *serialization, const 
   ROS_WARN("serialize may not work properly");
 
   // Serialize the ints
-  *(reinterpret_cast<int*>(serialization))                 = state->as<StateType>()->tag;
-  *(reinterpret_cast<int*>(serialization) + sizeof(int)*1) = state->as<StateType>()->fixed_link_primary;
-  *(reinterpret_cast<int*>(serialization) + sizeof(int)*2) = state->as<StateType>()->fixed_links;
-  *(reinterpret_cast<int*>(serialization) + sizeof(int)*3) = int(state->as<StateType>()->fixed_link_stability);
+  *(reinterpret_cast<int *>(serialization)) = state->as<StateType>()->tag;
+  *(reinterpret_cast<int *>(serialization) + sizeof(int) * 1) = state->as<StateType>()->fixed_link_primary;
+  *(reinterpret_cast<int *>(serialization) + sizeof(int) * 2) = state->as<StateType>()->fixed_links;
+  *(reinterpret_cast<int *>(serialization) + sizeof(int) * 3) = int(state->as<StateType>()->fixed_link_stability);
 
   // Serialize the double values
-  memcpy(reinterpret_cast<char*>(serialization) + sizeof(int)*4, state->as<StateType>()->values, state_values_size_);
+  memcpy(reinterpret_cast<char *>(serialization) + sizeof(int) * 4, state->as<StateType>()->values, state_values_size_);
 
   // Serialize the transforms
-  //TODO
+  // TODO
 }
 
 void moveit_ompl::HumanoidModelStateSpace::deserialize(ompl::base::State *state, const void *serialization) const
@@ -150,17 +150,15 @@ void moveit_ompl::HumanoidModelStateSpace::deserialize(ompl::base::State *state,
   ROS_WARN("deserialize may not work properly");
 
   // Deserialize ints
-  state->as<StateType>()->tag =
-    *(reinterpret_cast<const int*>(serialization));
-  state->as<StateType>()->fixed_link_primary =
-    *(reinterpret_cast<const int*>(serialization) + sizeof(int)*1);
-  state->as<StateType>()->fixed_links =
-    *(reinterpret_cast<const int*>(serialization) + sizeof(int)*2);
+  state->as<StateType>()->tag = *(reinterpret_cast<const int *>(serialization));
+  state->as<StateType>()->fixed_link_primary = *(reinterpret_cast<const int *>(serialization) + sizeof(int) * 1);
+  state->as<StateType>()->fixed_links = *(reinterpret_cast<const int *>(serialization) + sizeof(int) * 2);
   state->as<StateType>()->fixed_link_stability =
-    static_cast<moveit::core::FixedLinkStability>(*(reinterpret_cast<const int*>(serialization) + sizeof(int)*3));
+      static_cast<moveit::core::FixedLinkStability>(*(reinterpret_cast<const int *>(serialization) + sizeof(int) * 3));
 
   // Deserialize double values
-  memcpy(state->as<StateType>()->values, reinterpret_cast<const char*>(serialization) + sizeof(int)*4, state_values_size_);
+  memcpy(state->as<StateType>()->values, reinterpret_cast<const char *>(serialization) + sizeof(int) * 4,
+         state_values_size_);
 
   // Deserialize the transforms
   // TODO
@@ -170,7 +168,8 @@ void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *
                                                        const double t, ompl::base::State *state) const
 {
   std::cout << std::endl;
-  std::cout << "moveit_ompl::HumanoidModelStateSpace::interpolate() ------------------------------------------------" << std::endl;
+  std::cout << "moveit_ompl::HumanoidModelStateSpace::interpolate() ------------------------------------------------"
+            << std::endl;
 
   // interpolate in joint space
   ModelBasedStateSpace::interpolate(from, to, t, state);
@@ -195,24 +194,25 @@ void moveit_ompl::HumanoidModelStateSpace::interpolate(const ompl::base::State *
   copyJointToOMPLState(state, *moveit_robot_state_, vjoint_model_, jmg_vjoint_index_);
 }
 
-double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *state1, const ompl::base::State *state2) const
+double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *state1,
+                                                      const ompl::base::State *state2) const
 {
   std::cout << "moveit_ompl::HumanoidModelStateSpace::distance() " << std::endl;
   bool super_debug = true && visual_tools_;
   std::size_t super_debug_sleep = super_debug ? 3 : 0;
 
   // Only for use with bipeds
-  assert( moveit_robot_state_->getRobotModel()->getFixableLinks().size() == 2);
+  assert(moveit_robot_state_->getRobotModel()->getFixableLinks().size() == 2);
 
   if (distance_function_)
   {
-    ROS_ERROR("Has custom distance function "); // I'm not sure when this would happen
+    ROS_ERROR("Has custom distance function ");  // I'm not sure when this would happen
     return distance_function_(state1, state2);
   }
 
   // Get index of right foot (0 or 1)
-  const int& right_foot_index = moveit_robot_state_->getRobotModel()->getFixableLinkRightIndex();
-  assert(right_foot_index == 0 || right_foot_index == 1); // must have a right foot
+  const int &right_foot_index = moveit_robot_state_->getRobotModel()->getFixableLinkRightIndex();
+  assert(right_foot_index == 0 || right_foot_index == 1);  // must have a right foot
 
   // Debug
   if (super_debug)
@@ -226,40 +226,41 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
     }
     else
     {
-      copyToRobotState( *moveit_robot_state_, state1 );
+      copyToRobotState(*moveit_robot_state_, state1);
       visual_tools_->publishRobotState(moveit_robot_state_, rviz_visual_tools::GREEN);
       ros::Duration(3.0).sleep();
-      copyToRobotState( *moveit_robot_state_, state2 );
+      copyToRobotState(*moveit_robot_state_, state2);
       visual_tools_->publishRobotState(moveit_robot_state_, rviz_visual_tools::ORANGE);
     }
   }
 
   // Determine what state (mode) we are in the state machine
-  moveit_ompl::BipedFootModes s1_biped_mode = getBipedFootMode( state1 );
+  moveit_ompl::BipedFootModes s1_biped_mode = getBipedFootMode(state1);
   if (s1_biped_mode == moveit_ompl::ERROR)
   {
     if (visual_tools_)
     {
       ROS_ERROR("Biped foot mode is in error state. Displaying s1");
-      copyToRobotState( *moveit_robot_state_, state1 );
+      copyToRobotState(*moveit_robot_state_, state1);
       visual_tools_->publishRobotState(moveit_robot_state_, rviz_visual_tools::RED);
       ros::Duration(5.0).sleep();
     }
   }
 
-  moveit_ompl::BipedFootModes s2_biped_mode = getBipedFootMode( state2 );
+  moveit_ompl::BipedFootModes s2_biped_mode = getBipedFootMode(state2);
   if (s2_biped_mode == moveit_ompl::ERROR)
   {
     if (visual_tools_)
     {
       ROS_ERROR("Biped foot mode is in error state. Displaying s2");
-      copyToRobotState( *moveit_robot_state_, state2 );
+      copyToRobotState(*moveit_robot_state_, state2);
       visual_tools_->publishRobotState(moveit_robot_state_, rviz_visual_tools::RED);
       ros::Duration(5.0).sleep();
     }
   }
 
-  std::cout << "BIPED MODES: state1: " << s1_biped_mode << " state2: " << s2_biped_mode << " is_connected: " << is_connected_[s1_biped_mode][s2_biped_mode] << std::endl;
+  std::cout << "BIPED MODES: state1: " << s1_biped_mode << " state2: " << s2_biped_mode
+            << " is_connected: " << is_connected_[s1_biped_mode][s2_biped_mode] << std::endl;
   // Check if the states cannot connect
   if (!is_connected_[s1_biped_mode][s2_biped_mode])
   {
@@ -269,9 +270,9 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
   }
 
   // Check if moving between s1 and s2, OR s1->s1
-  if ( (s1_biped_mode == LEFT_COM_LEFT_FIXED && s2_biped_mode == LEFT_COM_BOTH_FIXED) ||
-       (s1_biped_mode == LEFT_COM_BOTH_FIXED && s2_biped_mode == LEFT_COM_LEFT_FIXED) ||
-       (s1_biped_mode == s2_biped_mode && s1_biped_mode == LEFT_COM_LEFT_FIXED) ) // staying on same state
+  if ((s1_biped_mode == LEFT_COM_LEFT_FIXED && s2_biped_mode == LEFT_COM_BOTH_FIXED) ||
+      (s1_biped_mode == LEFT_COM_BOTH_FIXED && s2_biped_mode == LEFT_COM_LEFT_FIXED) ||
+      (s1_biped_mode == s2_biped_mode && s1_biped_mode == LEFT_COM_LEFT_FIXED))  // staying on same state
   {
     // Only must have same left foot
     if (equalTransform(state1, state2, int(!right_foot_index), int(!right_foot_index)))
@@ -287,9 +288,9 @@ double moveit_ompl::HumanoidModelStateSpace::distance(const ompl::base::State *s
   }
 
   // Check if moving between s4 and s5, OR s5->s5
-  if ( (s1_biped_mode == RIGHT_COM_BOTH_FIXED && s2_biped_mode == RIGHT_COM_RIGHT_FIXED) ||
-       (s1_biped_mode == RIGHT_COM_RIGHT_FIXED && s2_biped_mode == RIGHT_COM_BOTH_FIXED) ||
-       (s1_biped_mode == s2_biped_mode && s1_biped_mode == RIGHT_COM_RIGHT_FIXED) ) // staying on same state
+  if ((s1_biped_mode == RIGHT_COM_BOTH_FIXED && s2_biped_mode == RIGHT_COM_RIGHT_FIXED) ||
+      (s1_biped_mode == RIGHT_COM_RIGHT_FIXED && s2_biped_mode == RIGHT_COM_BOTH_FIXED) ||
+      (s1_biped_mode == s2_biped_mode && s1_biped_mode == RIGHT_COM_RIGHT_FIXED))  // staying on same state
   {
     // Only must have same right foot
     if (equalTransform(state1, state2, right_foot_index, right_foot_index))
@@ -324,11 +325,12 @@ moveit_ompl::BipedFootModes moveit_ompl::HumanoidModelStateSpace::getBipedFootMo
   assert(state->as<StateType>()->fixed_link_primary < 2);
 
   // Check if both fixed
-  if (moveit::core::RobotState::fixedLinkEnabledHelper(!state->as<StateType>()->fixed_link_primary, // opposite of primary is secondary
-                                                       state->as<StateType>()->fixed_links)) // use bitmask
+  if (moveit::core::RobotState::fixedLinkEnabledHelper(
+          !state->as<StateType>()->fixed_link_primary,  // opposite of primary is secondary
+          state->as<StateType>()->fixed_links))         // use bitmask
   {
     // Both fixed
-    switch( state->as<StateType>()->fixed_link_stability )
+    switch (state->as<StateType>()->fixed_link_stability)
     {
       case moveit::core::COM_LEFT_FOOT:
         return LEFT_COM_BOTH_FIXED;
@@ -348,7 +350,7 @@ moveit_ompl::BipedFootModes moveit_ompl::HumanoidModelStateSpace::getBipedFootMo
   else
   {
     // Only 1 foot fixed
-    switch( state->as<StateType>()->fixed_link_stability )
+    switch (state->as<StateType>()->fixed_link_stability)
     {
       case moveit::core::COM_LEFT_FOOT:
         return LEFT_COM_LEFT_FIXED;
@@ -368,20 +370,20 @@ moveit_ompl::BipedFootModes moveit_ompl::HumanoidModelStateSpace::getBipedFootMo
   }
 }
 
-bool moveit_ompl::HumanoidModelStateSpace::equalTransform(const ompl::base::State *state1, const ompl::base::State *state2,
-                                                          int index_state1, int index_state2) const
+bool moveit_ompl::HumanoidModelStateSpace::equalTransform(const ompl::base::State *state1,
+                                                          const ompl::base::State *state2, int index_state1,
+                                                          int index_state2) const
 {
   // Compare two Affine3d matricies for equality
-  for (unsigned int i = 0 ; i < 16; ++i)
+  for (unsigned int i = 0; i < 16; ++i)
   {
-    //std::cout << "moveit_ompl::HumanoidModelStateSpace::equalTransform - getting variable " << i
+    // std::cout << "moveit_ompl::HumanoidModelStateSpace::equalTransform - getting variable " << i
     //          << " state1: " << state1->as<StateType>()->fixed_link_transforms[index_state1].data()[i]
     //          << " state1: " << state2->as<StateType>()->fixed_link_transforms[index_state2].data()[i] << std::endl;
 
     // Check if equal
-    if ( fabs(state1->as<StateType>()->fixed_link_transforms[index_state1].data()[i] -
-              state2->as<StateType>()->fixed_link_transforms[index_state2].data()[i]) >
-         0.0001 )
+    if (fabs(state1->as<StateType>()->fixed_link_transforms[index_state1].data()[i] -
+             state2->as<StateType>()->fixed_link_transforms[index_state2].data()[i]) > 0.0001)
     {
       // Not equal
       return false;
@@ -390,25 +392,28 @@ bool moveit_ompl::HumanoidModelStateSpace::equalTransform(const ompl::base::Stat
   return true;
 }
 
-bool moveit_ompl::HumanoidModelStateSpace::equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const
+bool moveit_ompl::HumanoidModelStateSpace::equalStates(const ompl::base::State *state1,
+                                                       const ompl::base::State *state2) const
 {
   // Compare all the joints values
-  for (unsigned int i = 0 ; i < variable_count_; ++i)
-    if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) > std::numeric_limits<double>::epsilon())
+  for (unsigned int i = 0; i < variable_count_; ++i)
+    if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) >
+        std::numeric_limits<double>::epsilon())
       return false;
 
   return true;
 }
 
-void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotState& rstate, const ompl::base::State *state) const
+void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotState &rstate,
+                                                            const ompl::base::State *state) const
 {
   rstate.setJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 
   // Copy humanoid variables
-  rstate.setPrimaryFixedLink( state->as<StateType>()->fixed_link_primary );
-  rstate.setFixedLinksMode( state->as<StateType>()->fixed_links );
-  rstate.setFixedLinkStability( state->as<StateType>()->fixed_link_stability );
-  rstate.setFixedLinkTransforms( state->as<StateType>()->fixed_link_transforms );
+  rstate.setPrimaryFixedLink(state->as<StateType>()->fixed_link_primary);
+  rstate.setFixedLinksMode(state->as<StateType>()->fixed_links);
+  rstate.setFixedLinkStability(state->as<StateType>()->fixed_link_stability);
+  rstate.setFixedLinkTransforms(state->as<StateType>()->fixed_link_transforms);
 
   // Update transforms in robot state
   if (rstate.hasFixedLinks())
@@ -417,7 +422,8 @@ void moveit_ompl::HumanoidModelStateSpace::copyToRobotState(robot_state::RobotSt
     rstate.update();
 }
 
-void moveit_ompl::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const
+void moveit_ompl::HumanoidModelStateSpace::copyToOMPLState(ompl::base::State *state,
+                                                           const robot_state::RobotState &rstate) const
 {
   rstate.copyJointGroupPositions(spec_.joint_model_group_, state->as<StateType>()->values);
 

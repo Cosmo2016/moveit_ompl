@@ -42,17 +42,14 @@
 
 namespace moveit_ompl
 {
-
 class JointModelStateSpace : public ModelBasedStateSpace
 {
 public:
-
   static const std::string PARAMETERIZATION_TYPE;
 
-  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools);
-
+  JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec,
+                       moveit_visual_tools::MoveItVisualToolsPtr visual_tools);
 };
-
 }
 
 #endif

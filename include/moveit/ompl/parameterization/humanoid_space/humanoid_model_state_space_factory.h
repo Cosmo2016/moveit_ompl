@@ -33,7 +33,7 @@
  *********************************************************************/
 
 /* Author: Dave Coleman
-   Desc:   
+   Desc:
 */
 
 #ifndef MOVEIT_OMPL_PARAMETERIZATION_HUMANOID_SPACE_HUMANOID_MODEL_STATE_SPACE_FACTORY_
@@ -46,17 +46,14 @@ namespace moveit_ompl
 class HumanoidModelStateSpaceFactory : public ModelBasedStateSpaceFactory
 {
 public:
-  
   HumanoidModelStateSpaceFactory();
-  
-  virtual int canRepresentProblem(const std::string &group,
-                                  const moveit_msgs::MotionPlanRequest &req,
-                                  const robot_model::RobotModelConstPtr &robot_model) const;
-  
-protected:
-  
-  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 
+  virtual int canRepresentProblem(const std::string &group, const moveit_msgs::MotionPlanRequest &req,
+                                  const robot_model::RobotModelConstPtr &robot_model) const;
+
+protected:
+  virtual ModelBasedStateSpacePtr allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec,
+                                                  moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const;
 };
 }
 

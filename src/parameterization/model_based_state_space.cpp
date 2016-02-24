@@ -35,6 +35,7 @@
 /* Author: Ioan Sucan */
 
 #include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit/ompl/detail/default_state_sampler.h>
 #include <boost/bind.hpp>
 
 namespace mo = moveit_ompl;
@@ -75,7 +76,7 @@ mo::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpaceSpecifi
   for (std::size_t i = 0; i < joint_bounds_storage_.size(); ++i)
   {
     // Get the variable bounds - only 1 var supported currently
-    const std::vector<moveit::core::VariableBounds> var_bounds = joint_bounds_storage_[i];
+    const std::vector<moveit::core::VariableBounds> &var_bounds = joint_bounds_storage_[i];
     if (var_bounds.size() != 1)
     {
       ROS_ERROR_STREAM("JointModel does not have just one variable - feature not supported yet! " << var_bounds.size());
@@ -132,6 +133,17 @@ void mo::ModelBasedStateSpace::freeState(ompl::base::State *state) const
 {
   delete[] state->as<StateType>()->values;
   delete state->as<StateType>();
+}
+
+bool mo::ModelBasedStateSpace::populateState(ompl::base::State *state, const std::vector<double> &values)
+{
+  // TODO(davetcoleman): make more efficient
+  for (std::size_t i = 0; i < values.size(); ++i)
+  {
+    state->as<ModelBasedStateSpace::StateType>()->values[i] = values[i];
+  }
+  //memcpy((void *) &values[0], state->as<ModelBasedStateSpace::StateType>()->values,
+  //values.size() * sizeof(double));
 }
 
 void mo::ModelBasedStateSpace::copyState(ompl::base::State *destination, const ompl::base::State *source) const
@@ -268,41 +280,6 @@ void mo::ModelBasedStateSpace::setPlanningVolume(double minX, double maxX, doubl
 
 ompl::base::StateSamplerPtr mo::ModelBasedStateSpace::allocDefaultStateSampler() const
 {
-  class DefaultStateSampler : public ompl::base::StateSampler
-  {
-  public:
-    DefaultStateSampler(const ompl::base::StateSpace *space, const robot_model::JointModelGroup *group,
-                        const robot_model::JointBoundsVector *joint_bounds)
-      : ompl::base::StateSampler(space), joint_model_group_(group), joint_bounds_(joint_bounds)
-    {
-    }
-
-    virtual void sampleUniform(ompl::base::State *state)
-    {
-      // std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniform() " << std::endl;
-      joint_model_group_->getVariableRandomPositions(moveit_rng_, state->as<StateType>()->values, *joint_bounds_);
-      state->as<StateType>()->clearKnownInformation();
-    }
-
-    virtual void sampleUniformNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
-    {
-      // std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleUniformNear() " << std::endl;
-      joint_model_group_->getVariableRandomPositionsNearBy(moveit_rng_, state->as<StateType>()->values, *joint_bounds_,
-                                                           near->as<StateType>()->values, distance);
-      state->as<StateType>()->clearKnownInformation();
-    }
-
-    virtual void sampleGaussian(ompl::base::State *state, const ompl::base::State *mean, const double stdDev)
-    {
-      std::cout << "ModelBasedStateSpace::DefaultStateSampler::sampleGaussian() " << std::endl;
-      sampleUniformNear(state, mean, rng_.gaussian(0.0, stdDev));
-    }
-
-  protected:
-    random_numbers::RandomNumberGenerator moveit_rng_;
-    const robot_model::JointModelGroup *joint_model_group_;
-    const robot_model::JointBoundsVector *joint_bounds_;
-  };
 
   return ompl::base::StateSamplerPtr(static_cast<ompl::base::StateSampler *>(
       new DefaultStateSampler(this, spec_.joint_model_group_, &spec_.joint_bounds_)));

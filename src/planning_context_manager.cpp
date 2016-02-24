@@ -196,6 +196,190 @@ void mo::PlanningContextManager::setPlannerConfigurations(const planning_interfa
   planner_configs_ = pconfig;
 }
 
+void mo::PlanningContextManager::createPlanningContext(ModelBasedPlanningContextPtr &context,
+                                                       const planning_interface::PlannerConfigurationSettings &config,
+                                                       const moveit_msgs::MotionPlanRequest &req,
+                                                       const mo::ModelBasedStateSpaceFactoryPtr &factory,
+                                                       moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
+{
+  ROS_INFO_STREAM_NAMED(name_, "Creating new planning context");
+
+  ModelBasedStateSpaceSpecification space_spec(robot_model_, config.group);
+  ModelBasedPlanningContextSpecification context_spec;
+
+  context_spec.config_ = config.config;
+  context_spec.planner_selector_ = getPlannerSelector();
+  context_spec.constraint_sampler_manager_ = constraint_sampler_manager_;
+  context_spec.state_space_ = factory->getNewStateSpace(space_spec, visual_tools);
+
+  enum SimpleSetupType
+  {
+    REGULAR,
+    LIGHTNING,
+    THUNDER,
+    BOLT
+  };
+
+  // Choose simple setup type
+  SimpleSetupType chosen_type;
+
+  // Choose the correct simple setup type to load
+  if (req.use_experience)
+  {
+    if (req.num_planning_attempts > 1)
+      ROS_ERROR_STREAM_NAMED(name_, "Number of planning attempts is greater than one, which is not allowed for "
+                                    "experienced-based planning. Reducing to 1");
+
+    if (req.experience_method == "lightning")
+      chosen_type = LIGHTNING;
+    else if (req.experience_method == "thunder")
+      chosen_type = THUNDER;
+    else if (req.experience_method == "bolt")
+      chosen_type = BOLT;
+    else
+    {
+      ROS_ERROR_STREAM_NAMED(name_, "Invalid experience method specified " << req.experience_method);
+      chosen_type = REGULAR;
+    }
+  }
+  else
+  {
+    chosen_type = REGULAR;
+  }
+
+  // Load correct OMPL setup type
+  switch (chosen_type)
+  {
+    case REGULAR:
+    {
+      ROS_DEBUG("planning_context_manager: Using regular framework for planning");
+      context_spec.ompl_simple_setup_.reset(new ompl::geometric::SimpleSetup(context_spec.state_space_));
+    }
+    break;
+    case LIGHTNING:
+    {
+      ROS_DEBUG("planning_context_manager: Using LIGHTNING Framework for planning");
+      context_spec.ompl_simple_setup_.reset(new ompl::tools::Lightning(context_spec.state_space_));
+
+      // Load the experience database
+      ompl::tools::ExperienceSetup &experience_handle =
+          static_cast<ompl::tools::ExperienceSetup &>(*context_spec.ompl_simple_setup_);
+
+      // Choose the file location
+      std::string file_path;
+      if (!getFilePath(file_path,
+                       "lightning_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
+                       "ros/ompl_storage"))
+      {
+        ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
+      }
+
+      experience_handle.setFilePath(file_path);
+
+      if (!req.use_experience)
+      {
+        ROS_WARN("Lightning Framework is loaded but recall is disabled");
+        experience_handle.enablePlanningFromRecall(false);
+      }
+    }
+    break;
+    case THUNDER:
+    {
+      ROS_DEBUG("planning_context_manager: Using THUNDER Framework for planning");
+      context_spec.ompl_simple_setup_.reset(new ompl::tools::Thunder(context_spec.state_space_));
+
+      // Load the experience database
+      ompl::tools::Thunder &thunder_handle = static_cast<ompl::tools::Thunder &>(*context_spec.ompl_simple_setup_);
+
+      // Choose the file location
+      std::string file_path;
+      if (!getFilePath(file_path, "thunder_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
+                       "ros/ompl_storage"))
+      {
+        ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
+      }
+
+      thunder_handle.setFilePath(file_path);
+
+      // Set other parameters
+      ros::NodeHandle nh("~");
+
+      bool use_scratch;
+      rosparam_shortcuts::get(name_, nh, "moveit_ompl/use_scratch", use_scratch);
+      if (!use_scratch)
+      {
+        ROS_INFO_STREAM_NAMED(name_, "Planning from scratch disabled via rosparam server");
+        thunder_handle.enablePlanningFromScratch(false);
+      }
+
+      bool saving_enabled;
+      rosparam_shortcuts::get(name_, nh, "moveit_ompl/saving_enabled", saving_enabled);
+      if (!saving_enabled)
+      {
+        ROS_INFO_STREAM_NAMED(name_, "Saving database disabled via rosparam server");
+        thunder_handle.getExperienceDB()->setSavingEnabled(false);
+      }
+
+      bool use_experience;
+      rosparam_shortcuts::get(name_, nh, "moveit_ompl/use_experience", use_experience);
+      if (!use_experience)
+      {
+        ROS_WARN("Thunder Framework is loaded but planning from recall has been disabled via rosparam server by "
+                 "user");
+        thunder_handle.enablePlanningFromRecall(false);
+      }
+
+      double sparse_delta_fraction;
+      rosparam_shortcuts::get(name_, nh, "moveit_ompl/sparse_delta_fraction", sparse_delta_fraction);
+      // ROS_ERROR_STREAM_NAMED(name_,"Setting sparse delta fraction to " << sparse_delta_fraction);
+      // thunder_handle.getExperienceDB()->getSPARSdb()->setSparseDeltaFraction( sparse_delta_fraction );
+    }
+    break;
+    case BOLT:
+    {
+      ROS_DEBUG("planning_context_manager: Using BOLT Framework for planning");
+      context_spec.ompl_simple_setup_.reset(new ompl::tools::Bolt(context_spec.state_space_));
+
+      // Load the experience database
+      ompl::tools::Bolt &bolt_handle = static_cast<ompl::tools::Bolt &>(*context_spec.ompl_simple_setup_);
+
+      // Choose the file location
+      std::string file_path;
+      if (!getFilePath(file_path, "bolt_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
+                       "ros/ompl_storage"))
+      {
+        ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
+      }
+
+      bolt_handle.setFilePath(file_path);
+
+      // Set other parameters
+      ros::NodeHandle nh("~");
+
+      bool saving_enabled;
+      rosparam_shortcuts::get(name_, nh, "moveit_ompl/saving_enabled", saving_enabled);
+      if (!saving_enabled)
+      {
+        ROS_INFO_STREAM_NAMED(name_, "Saving database disabled via rosparam server");
+        bolt_handle.getExperienceDB()->setSavingEnabled(false);
+      }
+    }
+    break;
+    default:
+      ROS_ERROR("planning_context_manager: No simple setup type found");
+  }
+
+  ROS_DEBUG("Creating new planning context");
+  context.reset(new ModelBasedPlanningContext(config.name, context_spec, visual_tools));
+  context->useStateValidityCache(true);
+
+  // Add new context to cache
+  {
+    boost::mutex::scoped_lock slock(cached_contexts_->lock_);
+    cached_contexts_->contexts_[std::make_pair(config.name, factory->getType())].push_back(context);
+  }
+}
+
 mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
     const planning_interface::PlannerConfigurationSettings &config,
     const StateSpaceFactoryTypeSelector &factory_selector, const moveit_msgs::MotionPlanRequest &req,
@@ -229,197 +413,7 @@ mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
   // Create a new planning context
   if (!context)
   {
-    ModelBasedStateSpaceSpecification space_spec(robot_model_, config.group);
-    ModelBasedPlanningContextSpecification context_spec;
-    context_spec.config_ = config.config;
-    context_spec.planner_selector_ = getPlannerSelector();
-    context_spec.constraint_sampler_manager_ = constraint_sampler_manager_;
-    context_spec.state_space_ = factory->getNewStateSpace(space_spec, visual_tools);
-
-    enum SimpleSetupType
-    {
-      REGULAR,
-      LIGHTNING,
-      THUNDER,
-      BOLT
-    };
-
-    // Choose simple setup type
-    SimpleSetupType chosen_type;
-
-    // Choose the correct simple setup type to load
-    if (req.use_experience)
-    {
-      if (req.num_planning_attempts > 1)
-        ROS_ERROR_STREAM_NAMED(name_, "Number of planning attempts is greater than one, which is not allowed for "
-                                      "experienced-based planning. Reducing to 1");
-
-      if (req.experience_method == "lightning")
-        chosen_type = LIGHTNING;
-      else if (req.experience_method == "thunder")
-        chosen_type = THUNDER;
-      else if (req.experience_method == "bolt")
-        chosen_type = BOLT;
-      else
-      {
-        ROS_ERROR_STREAM_NAMED(name_, "Invalid experience method specified " << req.experience_method);
-        chosen_type = REGULAR;
-      }
-    }
-    else
-    {
-      chosen_type = REGULAR;
-    }
-
-    // Load correct OMPL setup type
-    switch (chosen_type)
-    {
-      case REGULAR:
-      {
-        ROS_DEBUG("planning_context_manager: Using regular framework for planning");
-        context_spec.ompl_simple_setup_.reset(new ompl::geometric::SimpleSetup(context_spec.state_space_));
-      }
-      break;
-      case LIGHTNING:
-      {
-        ROS_DEBUG("planning_context_manager: Using LIGHTNING Framework for planning");
-        context_spec.ompl_simple_setup_.reset(new ompl::tools::Lightning(context_spec.state_space_));
-
-        // Load the experience database
-        ompl::tools::ExperienceSetup &experience_handle =
-            static_cast<ompl::tools::ExperienceSetup &>(*context_spec.ompl_simple_setup_);
-
-        // Choose the file location
-        std::string file_path;
-        if (!getFilePath(file_path,
-                         "lightning_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
-                         "ros/ompl_storage"))
-        {
-          ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
-        }
-
-        experience_handle.setFilePath(file_path);
-
-        if (!req.use_experience)
-        {
-          ROS_WARN("Lightning Framework is loaded but recall is disabled");
-          experience_handle.enablePlanningFromRecall(false);
-        }
-      }
-      break;
-      case THUNDER:
-      {
-        ROS_DEBUG("planning_context_manager: Using THUNDER Framework for planning");
-        context_spec.ompl_simple_setup_.reset(new ompl::tools::Thunder(context_spec.state_space_));
-
-        // Load the experience database
-        ompl::tools::Thunder &thunder_handle = static_cast<ompl::tools::Thunder &>(*context_spec.ompl_simple_setup_);
-
-        // Choose the file location
-        std::string file_path;
-        if (!getFilePath(file_path,
-                         "thunder_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
-                         "ros/ompl_storage"))
-        {
-          ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
-        }
-
-        thunder_handle.setFilePath(file_path);
-
-        // Set other parameters
-        ros::NodeHandle nh("~");
-
-        bool use_scratch;
-        rosparam_shortcuts::get(name_, nh, "moveit_ompl/use_scratch", use_scratch);
-        if (!use_scratch)
-        {
-          ROS_INFO_STREAM_NAMED(name_, "Planning from scratch disabled via rosparam server");
-          thunder_handle.enablePlanningFromScratch(false);
-        }
-
-        bool saving_enabled;
-        rosparam_shortcuts::get(name_, nh, "moveit_ompl/saving_enabled", saving_enabled);
-        if (!saving_enabled)
-        {
-          ROS_INFO_STREAM_NAMED(name_, "Saving database disabled via rosparam server");
-          thunder_handle.getExperienceDB()->setSavingEnabled(false);
-        }
-
-        bool use_experience;
-        rosparam_shortcuts::get(name_, nh, "moveit_ompl/use_experience", use_experience);
-        if (!use_experience)
-        {
-          ROS_WARN("Thunder Framework is loaded but planning from recall has been disabled via rosparam server by "
-                   "user");
-          thunder_handle.enablePlanningFromRecall(false);
-        }
-
-        double sparse_delta_fraction;
-        rosparam_shortcuts::get(name_, nh, "moveit_ompl/sparse_delta_fraction", sparse_delta_fraction);
-        // ROS_ERROR_STREAM_NAMED(name_,"Setting sparse delta fraction to " << sparse_delta_fraction);
-        // thunder_handle.getExperienceDB()->getSPARSdb()->setSparseDeltaFraction( sparse_delta_fraction );
-      }
-      break;
-      case BOLT:
-      {
-        ROS_DEBUG("planning_context_manager: Using BOLT Framework for planning");
-        context_spec.ompl_simple_setup_.reset(new ompl::tools::Bolt(context_spec.state_space_));
-
-        // Load the experience database
-        ompl::tools::Bolt &bolt_handle = static_cast<ompl::tools::Bolt &>(*context_spec.ompl_simple_setup_);
-
-        // Choose the file location
-        std::string file_path;
-        if (!getFilePath(file_path, "bolt_" + context_spec.state_space_->getJointModelGroup()->getName() + "_database",
-                         "ros/ompl_storage"))
-        {
-          ROS_ERROR_STREAM_NAMED(name_, "Unable to find file path for experience framework");
-        }
-
-        bolt_handle.setFilePath(file_path);
-
-        // Set other parameters
-        ros::NodeHandle nh("~");
-
-        bool saving_enabled;
-        rosparam_shortcuts::get(name_, nh, "moveit_ompl/saving_enabled", saving_enabled);
-        if (!saving_enabled)
-        {
-          ROS_INFO_STREAM_NAMED(name_, "Saving database disabled via rosparam server");
-          bolt_handle.getExperienceDB()->setSavingEnabled(false);
-        }
-      }
-      break;
-      default:
-        ROS_ERROR("planning_context_manager: No simple setup type found");
-    }
-
-    bool state_validity_cache = true;
-    if (config.config.find("subspaces") != config.config.end())
-    {
-      context_spec.config_.erase("subspaces");
-      // if the planner operates at subspace level the cache may be unsafe
-      state_validity_cache = false;
-      boost::char_separator<char> sep(" ");
-      boost::tokenizer<boost::char_separator<char> > tok(config.config.at("subspaces"), sep);
-      for (boost::tokenizer<boost::char_separator<char> >::iterator beg = tok.begin(); beg != tok.end(); ++beg)
-      {
-        const moveit_ompl::ModelBasedStateSpaceFactoryPtr &sub_fact = factory_selector(*beg);
-        if (sub_fact)
-        {
-          ModelBasedStateSpaceSpecification sub_space_spec(robot_model_, *beg);
-          context_spec.subspaces_.push_back(sub_fact->getNewStateSpace(sub_space_spec, visual_tools));
-        }
-      }
-    }
-
-    ROS_DEBUG("Creating new planning context");
-    context.reset(new ModelBasedPlanningContext(config.name, context_spec, visual_tools));
-    context->useStateValidityCache(state_validity_cache);
-    {
-      boost::mutex::scoped_lock slock(cached_contexts_->lock_);
-      cached_contexts_->contexts_[std::make_pair(config.name, factory->getType())].push_back(context);
-    }
+    createPlanningContext(context, config, req, factory, visual_tools);
   }
 
   context->setMaximumPlanningThreads(max_planning_threads_);
@@ -520,6 +514,7 @@ mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
     return ModelBasedPlanningContextPtr();
   }
 
+  // Set default error value
   error_code.val = moveit_msgs::MoveItErrorCodes::FAILURE;
 
   // Error check
@@ -531,6 +526,8 @@ mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
 
   // Identify the correct planning configuration
   planning_interface::PlannerConfigurationMap::const_iterator pc = planner_configs_.end();
+
+  // User has requested specific planner, attempt to find it
   if (!req.planner_id.empty())
   {
     pc = planner_configs_.find(req.planner_id.find(req.group_name) == std::string::npos ?
@@ -540,8 +537,11 @@ mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
       ROS_WARN("Cannot find planning configuration for group '%s' using planner '%s'. Will use defaults instead.",
                req.group_name.c_str(), req.planner_id.c_str());
   }
+
+  // Has a specific planner been found yet?
   if (pc == planner_configs_.end())
   {
+    // Just choose first planner config that works for our group
     pc = planner_configs_.find(req.group_name);
     if (pc == planner_configs_.end())
     {
@@ -553,36 +553,40 @@ mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
   // Choose best planning context
   ModelBasedPlanningContextPtr context = getPlanningContext(
       pc->second, boost::bind(&PlanningContextManager::getStateSpaceFactory, this, _1, req), req, visual_tools);
-  if (context)
+
+  // Error check
+  if (!context)
   {
-    context->clear();
+    ROS_ERROR("Cannot find planning context for group '%s'", req.group_name.c_str());
+    return ModelBasedPlanningContextPtr();
+  }
 
-    robot_state::RobotStatePtr start_state = planning_scene->getCurrentStateUpdated(req.start_state);
+  context->clear();
+  robot_state::RobotStatePtr start_state = planning_scene->getCurrentStateUpdated(req.start_state);
 
-    // Setup the context
-    context->setPlanningScene(planning_scene);
-    context->setMotionPlanRequest(req);
-    context->setCompleteInitialState(*start_state);
+  // Setup the context
+  context->setPlanningScene(planning_scene);
+  context->setMotionPlanRequest(req);
+  context->setCompleteInitialState(*start_state);
 
-    context->setPlanningVolume(req.workspace_parameters);
-    if (!context->setPathConstraints(req.path_constraints, &error_code))
-      return ModelBasedPlanningContextPtr();
+  context->setPlanningVolume(req.workspace_parameters);
+  if (!context->setPathConstraints(req.path_constraints, &error_code))
+    return ModelBasedPlanningContextPtr();
 
-    // Create the goal
-    if (!context->setGoalConstraints(req.goal_constraints, req.path_constraints, &error_code))
-      return ModelBasedPlanningContextPtr();
+  // Create the goal
+  if (!context->setGoalConstraints(req.goal_constraints, req.path_constraints, &error_code))
+    return ModelBasedPlanningContextPtr();
 
-    try
-    {
-      context->configure();
-      ROS_DEBUG("%s: New planning context is set.", context->getName().c_str());
-      error_code.val = moveit_msgs::MoveItErrorCodes::SUCCESS;
-    }
-    catch (ompl::Exception &ex)
-    {
-      ROS_ERROR("OMPL encountered an error: %s", ex.what());
-      context.reset();
-    }
+  try
+  {
+    context->configure();
+    ROS_DEBUG("%s: New planning context is set.", context->getName().c_str());
+    error_code.val = moveit_msgs::MoveItErrorCodes::SUCCESS;
+  }
+  catch (ompl::Exception &ex)
+  {
+    ROS_ERROR("OMPL encountered an error: %s", ex.what());
+    context.reset();
   }
 
   return context;

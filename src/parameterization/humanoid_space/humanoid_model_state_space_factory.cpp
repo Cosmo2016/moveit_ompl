@@ -44,9 +44,9 @@ moveit_ompl::HumanoidModelStateSpaceFactory::HumanoidModelStateSpaceFactory() : 
   type_ = HumanoidModelStateSpace::PARAMETERIZATION_TYPE;
 }
 
-int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::string &group,
-                                                                        const moveit_msgs::MotionPlanRequest &req,
-                                                                        const robot_model::RobotModelConstPtr &kmodel) const
+int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(
+    const std::string &group, const moveit_msgs::MotionPlanRequest &req,
+    const robot_model::RobotModelConstPtr &kmodel) const
 {
   // This state space is for robots with fixed fake bases such as feet
   if (req.start_state.humanoid_state.fixed_link_names.size())
@@ -56,14 +56,15 @@ int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(const std::
   }
   else
   {
-    //ROS_INFO("Not using humanoid model state space ");
+    // ROS_INFO("Not using humanoid model state space ");
     return 25;
   }
 
   return 1;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::HumanoidModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::HumanoidModelStateSpaceFactory::allocStateSpace(
+    const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   return ModelBasedStateSpacePtr(new HumanoidModelStateSpace(space_spec, visual_tools));
 }

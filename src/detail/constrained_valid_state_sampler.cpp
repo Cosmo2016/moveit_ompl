@@ -38,10 +38,9 @@
 #include <moveit/ompl/model_based_planning_context.h>
 #include <moveit/profiler/profiler.h>
 
-moveit_ompl::ValidConstrainedSampler::ValidConstrainedSampler(const ModelBasedPlanningContext *pc,
-                                                                 const kinematic_constraints::KinematicConstraintSetPtr &ks,
-                                                                 const constraint_samplers::ConstraintSamplerPtr &cs,
-                                                                 moveit_visual_tools::MoveItVisualToolsPtr visual_tools) 
+moveit_ompl::ValidConstrainedSampler::ValidConstrainedSampler(
+    const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
+    const constraint_samplers::ConstraintSamplerPtr &cs, moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : ob::ValidStateSampler(pc->getOMPLSimpleSetup()->getSpaceInformation().get())
   , planning_context_(pc)
   , kinematic_constraint_set_(ks)
@@ -49,16 +48,18 @@ moveit_ompl::ValidConstrainedSampler::ValidConstrainedSampler(const ModelBasedPl
   , work_state_(pc->getCompleteInitialRobotState())
   , visual_tools_(visual_tools)
 {
-  //constraint_sampler_->setVerbose(true); // dave hack
+  // constraint_sampler_->setVerbose(true); // dave hack
   if (!constraint_sampler_)
     default_sampler_ = si_->allocStateSampler();
   inv_dim_ = si_->getStateSpace()->getDimension() > 0 ? 1.0 / (double)si_->getStateSpace()->getDimension() : 1.0;
-  ROS_DEBUG("Constructed a ValidConstrainedSampler instance at address %p", this);
+
+  ROS_ERROR("Constructed a ValidConstrainedSampler instance at address %p", this);
 }
 
 bool moveit_ompl::ValidConstrainedSampler::project(ompl::base::State *state)
 {
-  std::cout << "moveit_ompl::ValidConstrainedSampler::project() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
+  std::cout << "moveit_ompl::ValidConstrainedSampler::project() with attempts "
+            << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
 
   if (constraint_sampler_)
   {
@@ -68,7 +69,7 @@ bool moveit_ompl::ValidConstrainedSampler::project(ompl::base::State *state)
       if (kinematic_constraint_set_->decide(work_state_).satisfied)
       {
         std::cout << " >> Kinematic constraint decided satisfied true " << std::endl;
-        if (!visual_tools_)
+        if (visual_tools_)
           visual_tools_->publishRobotState(work_state_, rviz_visual_tools::PURPLE);
         planning_context_->getOMPLStateSpace()->copyToOMPLState(state, work_state_);
         return true;
@@ -80,16 +81,18 @@ bool moveit_ompl::ValidConstrainedSampler::project(ompl::base::State *state)
 
 bool moveit_ompl::ValidConstrainedSampler::sample(ob::State *state)
 {
-  std::cout << "moveit_ompl::ValidConstrainedSampler::sample() with attempts " << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
+  std::cout << "moveit_ompl::ValidConstrainedSampler::sample() with attempts "
+            << planning_context_->getMaximumStateSamplingAttempts() << std::endl;
 
   if (constraint_sampler_)
   {
-    if (constraint_sampler_->sample(work_state_, planning_context_->getCompleteInitialRobotState(), planning_context_->getMaximumStateSamplingAttempts()))
+    if (constraint_sampler_->sample(work_state_, planning_context_->getCompleteInitialRobotState(),
+                                    planning_context_->getMaximumStateSamplingAttempts()))
     {
       if (kinematic_constraint_set_->decide(work_state_).satisfied)
       {
         std::cout << " >> Kinematic constraint decided satisfied true " << std::endl;
-        if (!visual_tools_)
+        if (visual_tools_)
           visual_tools_->publishRobotState(work_state_, rviz_visual_tools::BROWN);
         planning_context_->getOMPLStateSpace()->copyToOMPLState(state, work_state_);
         return true;
@@ -107,7 +110,8 @@ bool moveit_ompl::ValidConstrainedSampler::sample(ob::State *state)
   return false;
 }
 
-bool moveit_ompl::ValidConstrainedSampler::sampleNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
+bool moveit_ompl::ValidConstrainedSampler::sampleNear(ompl::base::State *state, const ompl::base::State *near,
+                                                      const double distance)
 {
   std::cout << "moveit_ompl::ValidConstrainedSampler::sampleNear() " << std::endl;
 
@@ -123,4 +127,24 @@ bool moveit_ompl::ValidConstrainedSampler::sampleNear(ompl::base::State *state, 
       return false;
   }
   return true;
+}
+
+bool moveit_ompl::ValidConstrainedSampler::createState(ob::State *state, std::vector<double> &values)
+{
+  std::cout << "moveit_ompl::ValidConstrainedSampler::createState()" << std::endl;
+
+  // Copy vector to moveit::RobotState
+  work_state_.setVariablePositions(values);
+
+  if (visual_tools_)
+    visual_tools_->publishRobotState(work_state_, rviz_visual_tools::PURPLE);
+  ros::Duration(1).sleep();
+
+  // Convert to OMPL
+  planning_context_->getOMPLStateSpace()->copyToRobotState(work_state_, state);
+
+  //if (kinematic_constraint_set_->decide(work_state_).satisfied)
+  //return true;
+
+  return false;
 }

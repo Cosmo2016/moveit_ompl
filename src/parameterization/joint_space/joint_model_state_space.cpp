@@ -39,7 +39,7 @@
 const std::string moveit_ompl::JointModelStateSpace::PARAMETERIZATION_TYPE = "JointModel";
 
 moveit_ompl::JointModelStateSpace::JointModelStateSpace(const ModelBasedStateSpaceSpecification &spec,
-                                                              moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
+                                                        moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : ModelBasedStateSpace(spec, visual_tools)
 {
   setName(getName() + "_" + PARAMETERIZATION_TYPE);

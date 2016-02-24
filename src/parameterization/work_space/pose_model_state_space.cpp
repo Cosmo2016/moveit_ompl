@@ -44,17 +44,16 @@ moveit_ompl::PoseModelStateSpace::PoseModelStateSpace(const ModelBasedStateSpace
                                                       moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : ModelBasedStateSpace(spec, visual_tools)
 {
-  jump_factor_ = 3; // \todo make this a param
-  
+  jump_factor_ = 3;  // \todo make this a param
+
   if (spec.joint_model_group_->getGroupKinematics().first)
     poses_.push_back(PoseComponent(spec.joint_model_group_, spec.joint_model_group_->getGroupKinematics().first));
-  else
-    if (!spec.joint_model_group_->getGroupKinematics().second.empty())
-    {
-      const robot_model::JointModelGroup::KinematicsSolverMap &m = spec.joint_model_group_->getGroupKinematics().second;
-      for (robot_model::JointModelGroup::KinematicsSolverMap::const_iterator it = m.begin() ; it != m.end() ; ++it)
-        poses_.push_back(PoseComponent(it->first, it->second));
-    }
+  else if (!spec.joint_model_group_->getGroupKinematics().second.empty())
+  {
+    const robot_model::JointModelGroup::KinematicsSolverMap &m = spec.joint_model_group_->getGroupKinematics().second;
+    for (robot_model::JointModelGroup::KinematicsSolverMap::const_iterator it = m.begin(); it != m.end(); ++it)
+      poses_.push_back(PoseComponent(it->first, it->second));
+  }
   if (poses_.empty())
     ROS_ERROR("No kinematics solvers specified. Unable to construct a PoseModelStateSpace");
   else
@@ -66,10 +65,11 @@ moveit_ompl::PoseModelStateSpace::~PoseModelStateSpace()
 {
 }
 
-double moveit_ompl::PoseModelStateSpace::distance(const ompl::base::State *state1, const ompl::base::State *state2) const
+double moveit_ompl::PoseModelStateSpace::distance(const ompl::base::State *state1,
+                                                  const ompl::base::State *state2) const
 {
   double total = 0;
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     total += poses_[i].state_space_->distance(state1->as<StateType>()->poses[i], state2->as<StateType>()->poses[i]);
   return total;
 }
@@ -77,24 +77,25 @@ double moveit_ompl::PoseModelStateSpace::distance(const ompl::base::State *state
 double moveit_ompl::PoseModelStateSpace::getMaximumExtent() const
 {
   double total = 0.0;
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     total += poses_[i].state_space_->getMaximumExtent();
   return total;
 }
 
-ompl::base::State* moveit_ompl::PoseModelStateSpace::allocState() const
+ompl::base::State *moveit_ompl::PoseModelStateSpace::allocState() const
 {
   StateType *state = new StateType();
-  state->values = new double[variable_count_]; // need to allocate this here since ModelBasedStateSpace::allocState() is not called
-  state->poses = new ompl::base::SE3StateSpace::StateType*[poses_.size()];
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  state->values =
+      new double[variable_count_];  // need to allocate this here since ModelBasedStateSpace::allocState() is not called
+  state->poses = new ompl::base::SE3StateSpace::StateType *[poses_.size()];
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     state->poses[i] = poses_[i].state_space_->allocState()->as<ompl::base::SE3StateSpace::StateType>();
   return state;
 }
 
 void moveit_ompl::PoseModelStateSpace::freeState(ompl::base::State *state) const
 {
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     poses_[i].state_space_->freeState(state->as<StateType>()->poses[i]);
   delete[] state->as<StateType>()->poses;
   ModelBasedStateSpace::freeState(state);
@@ -104,20 +105,22 @@ void moveit_ompl::PoseModelStateSpace::copyState(ompl::base::State *destination,
 {
   // copy the state data
   ModelBasedStateSpace::copyState(destination, source);
-  
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     poses_[i].state_space_->copyState(destination->as<StateType>()->poses[i], source->as<StateType>()->poses[i]);
-  
+
   // compute additional stuff if needed
   computeStateK(destination);
 }
 
 void moveit_ompl::PoseModelStateSpace::sanityChecks() const
 {
-  ModelBasedStateSpace::sanityChecks(std::numeric_limits<double>::epsilon(), std::numeric_limits<float>::epsilon(), ~ompl::base::StateSpace::STATESPACE_TRIANGLE_INEQUALITY);
+  ModelBasedStateSpace::sanityChecks(std::numeric_limits<double>::epsilon(), std::numeric_limits<float>::epsilon(),
+                                     ~ompl::base::StateSpace::STATESPACE_TRIANGLE_INEQUALITY);
 }
 
-void moveit_ompl::PoseModelStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to, const double t, ompl::base::State *state) const
+void moveit_ompl::PoseModelStateSpace::interpolate(const ompl::base::State *from, const ompl::base::State *to,
+                                                   const double t, ompl::base::State *state) const
 {
   //  moveit::Profiler::ScopedBlock sblock("interpolate");
 
@@ -128,9 +131,10 @@ void moveit_ompl::PoseModelStateSpace::interpolate(const ompl::base::State *from
   ModelBasedStateSpace::interpolate(from, to, t, state);
 
   // interpolate SE3 components
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
-    poses_[i].state_space_->interpolate(from->as<StateType>()->poses[i], to->as<StateType>()->poses[i], t, state->as<StateType>()->poses[i]);
-  
+  for (std::size_t i = 0; i < poses_.size(); ++i)
+    poses_[i].state_space_->interpolate(from->as<StateType>()->poses[i], to->as<StateType>()->poses[i], t,
+                                        state->as<StateType>()->poses[i]);
+
   // the call above may reset all flags for state; but we know the pose we want flag should be set
   state->as<StateType>()->setPoseComputed(true);
 
@@ -141,7 +145,7 @@ void moveit_ompl::PoseModelStateSpace::interpolate(const ompl::base::State *from
   printState(state, std::cout);
   std::cout << "\n\n";
   */
-  
+
   // after interpolation we cannot be sure about the joint values (we use them as seed only)
   // so we recompute IK if needed
   if (computeStateIK(state))
@@ -149,28 +153,31 @@ void moveit_ompl::PoseModelStateSpace::interpolate(const ompl::base::State *from
     double dj = jump_factor_ * ModelBasedStateSpace::distance(from, to);
     double d_from = ModelBasedStateSpace::distance(from, state);
     double d_to = ModelBasedStateSpace::distance(state, to);
-    
+
     // if the joint value jumped too much
-    if (d_from + d_to > std::max(0.2, dj)) // \todo make 0.2 a param
+    if (d_from + d_to > std::max(0.2, dj))  // \todo make 0.2 a param
       state->as<StateType>()->markInvalid();
   }
 }
 
-void moveit_ompl::PoseModelStateSpace::setPlanningVolume(double minX, double maxX, double minY, double maxY, double minZ, double maxZ)
+void moveit_ompl::PoseModelStateSpace::setPlanningVolume(double minX, double maxX, double minY, double maxY,
+                                                         double minZ, double maxZ)
 {
   ModelBasedStateSpace::setPlanningVolume(minX, maxX, minY, maxY, minZ, maxZ);
   ompl::base::RealVectorBounds b(3);
-  b.low[0] = minX; b.low[1] = minY; b.low[2] = minZ;
-  b.high[0] = maxX; b.high[1] = maxY; b.high[2] = maxZ;
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  b.low[0] = minX;
+  b.low[1] = minY;
+  b.low[2] = minZ;
+  b.high[0] = maxX;
+  b.high[1] = maxY;
+  b.high[2] = maxZ;
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     poses_[i].state_space_->as<ompl::base::SE3StateSpace>()->setBounds(b);
 }
 
 moveit_ompl::PoseModelStateSpace::PoseComponent::PoseComponent(const robot_model::JointModelGroup *subgroup,
-                                                                  const robot_model::JointModelGroup::KinematicsSolver &k)
-  : subgroup_(subgroup)
-  , kinematics_solver_(k.allocator_(subgroup))
-  , bijection_(k.bijection_)
+                                                               const robot_model::JointModelGroup::KinematicsSolver &k)
+  : subgroup_(subgroup), kinematics_solver_(k.allocator_(subgroup)), bijection_(k.bijection_)
 {
   state_space_.reset(new ompl::base::SE3StateSpace());
   state_space_->setName(subgroup_->getName() + "_Workspace");
@@ -183,14 +190,14 @@ bool moveit_ompl::PoseModelStateSpace::PoseComponent::computeStateFK(StateType *
 {
   // read the values from the joint state, in the order expected by the kinematics solver
   std::vector<double> values(bijection_.size());
-  for (unsigned int i = 0 ; i < bijection_.size() ; ++i)
+  for (unsigned int i = 0; i < bijection_.size(); ++i)
     values[i] = full_state->values[bijection_[i]];
-  
+
   // compute forward kinematics for the link of interest
   std::vector<geometry_msgs::Pose> poses;
   if (!kinematics_solver_->getPositionFK(fk_link_, values, poses))
     return false;
-  
+
   // copy the resulting data to the desired location in the state
   ompl::base::SE3StateSpace::StateType *se3_state = full_state->poses[idx];
   se3_state->setXYZ(poses[0].position.x, poses[0].position.y, poses[0].position.z);
@@ -199,7 +206,7 @@ bool moveit_ompl::PoseModelStateSpace::PoseComponent::computeStateFK(StateType *
   so3_state.y = poses[0].orientation.y;
   so3_state.z = poses[0].orientation.z;
   so3_state.w = poses[0].orientation.w;
-  
+
   return true;
 }
 
@@ -207,7 +214,7 @@ bool moveit_ompl::PoseModelStateSpace::PoseComponent::computeStateIK(StateType *
 {
   // read the values from the joint state, in the order expected by the kinematics solver; use these as the seed
   std::vector<double> seed_values(bijection_.size());
-  for (std::size_t i = 0 ; i < bijection_.size() ; ++i)
+  for (std::size_t i = 0; i < bijection_.size(); ++i)
     seed_values[i] = full_state->values[bijection_[i]];
 
   /*
@@ -235,13 +242,14 @@ bool moveit_ompl::PoseModelStateSpace::PoseComponent::computeStateIK(StateType *
   if (!kinematics_solver_->getPositionIK(pose, seed_values, solution, err_code))
   {
     if (err_code.val != moveit_msgs::MoveItErrorCodes::TIMED_OUT ||
-        !kinematics_solver_->searchPositionIK(pose, seed_values, kinematics_solver_->getDefaultTimeout() * 2.0, solution, err_code))
+        !kinematics_solver_->searchPositionIK(pose, seed_values, kinematics_solver_->getDefaultTimeout() * 2.0,
+                                              solution, err_code))
       return false;
   }
-  
-  for (std::size_t i = 0 ; i < bijection_.size() ; ++i)
+
+  for (std::size_t i = 0; i < bijection_.size(); ++i)
     full_state->values[bijection_[i]] = solution[i];
-  
+
   return true;
 }
 
@@ -249,7 +257,7 @@ bool moveit_ompl::PoseModelStateSpace::computeStateFK(ompl::base::State *state) 
 {
   if (state->as<StateType>()->poseComputed())
     return true;
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     if (!poses_[i].computeStateFK(state->as<StateType>(), i))
     {
       state->as<StateType>()->markInvalid();
@@ -263,7 +271,7 @@ bool moveit_ompl::PoseModelStateSpace::computeStateIK(ompl::base::State *state) 
 {
   if (state->as<StateType>()->jointsComputed())
     return true;
-  for (std::size_t i = 0 ; i < poses_.size() ; ++i)
+  for (std::size_t i = 0; i < poses_.size(); ++i)
     if (!poses_[i].computeStateIK(state->as<StateType>(), i))
     {
       state->as<StateType>()->markInvalid();
@@ -290,25 +298,23 @@ ompl::base::StateSamplerPtr moveit_ompl::PoseModelStateSpace::allocDefaultStateS
   class PoseModelStateSampler : public ompl::base::StateSampler
   {
   public:
-    PoseModelStateSampler(const ompl::base::StateSpace *space,
-                          const ompl::base::StateSamplerPtr &sampler) 
-      : ompl::base::StateSampler(space)
-      , sampler_(sampler)
+    PoseModelStateSampler(const ompl::base::StateSpace *space, const ompl::base::StateSamplerPtr &sampler)
+      : ompl::base::StateSampler(space), sampler_(sampler)
     {
     }
-    
+
     virtual void sampleUniform(ompl::base::State *state)
     {
       sampler_->sampleUniform(state);
       afterStateSample(state);
     }
-    
+
     virtual void sampleUniformNear(ompl::base::State *state, const ompl::base::State *near, const double distance)
     {
       sampler_->sampleUniformNear(state, near, distance);
       afterStateSample(state);
     }
-    
+
     virtual void sampleGaussian(ompl::base::State *state, const ompl::base::State *mean, const double stdDev)
     {
       sampler_->sampleGaussian(state, mean, stdDev);
@@ -316,22 +322,22 @@ ompl::base::StateSamplerPtr moveit_ompl::PoseModelStateSpace::allocDefaultStateS
     }
 
   protected:
-
     void afterStateSample(ompl::base::State *sample) const
     {
       sample->as<StateType>()->setJointsComputed(true);
       sample->as<StateType>()->setPoseComputed(false);
       space_->as<PoseModelStateSpace>()->computeStateFK(sample);
     }
-    
+
     ompl::base::StateSamplerPtr sampler_;
   };
-  
-  return ompl::base::StateSamplerPtr(static_cast<ompl::base::StateSampler*>
-                                     (new PoseModelStateSampler(this, ModelBasedStateSpace::allocDefaultStateSampler())));
+
+  return ompl::base::StateSamplerPtr(static_cast<ompl::base::StateSampler *>(
+      new PoseModelStateSampler(this, ModelBasedStateSpace::allocDefaultStateSampler())));
 }
 
-void moveit_ompl::PoseModelStateSpace::copyToOMPLState(ompl::base::State *state, const robot_state::RobotState &rstate) const
+void moveit_ompl::PoseModelStateSpace::copyToOMPLState(ompl::base::State *state,
+                                                       const robot_state::RobotState &rstate) const
 {
   ModelBasedStateSpace::copyToOMPLState(state, rstate);
   state->as<StateType>()->setJointsComputed(true);

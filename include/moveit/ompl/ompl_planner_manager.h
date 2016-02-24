@@ -54,22 +54,23 @@
 /** \brief The MoveIt interface to OMPL */
 namespace moveit_ompl
 {
-
-MOVEIT_CLASS_FORWARD(OMPLPlannerManager); 
+MOVEIT_CLASS_FORWARD(OMPLPlannerManager);
 
 /** @class OMPLPlannerManager
  *  This class defines the interface to the motion planners in OMPL*/
 class OMPLPlannerManager : public planning_interface::PlannerManager
 {
 public:
-
-  /** \brief Initialize OMPL-based planning for a particular robot model. ROS configuration is read from the specified NodeHandle */
+  /** \brief Initialize OMPL-based planning for a particular robot model. ROS configuration is read from the specified
+   * NodeHandle */
   OMPLPlannerManager();
 
-  /// Initialize a planner. This function will be called after the construction of the plugin, before any other call is made.
-  /// It is assumed that motion plans will be computed for the robot described by \e model and that any exposed ROS functionality
+  /// Initialize a planner. This function will be called after the construction of the plugin, before any other call is
+  /// made.
+  /// It is assumed that motion plans will be computed for the robot described by \e model and that any exposed ROS
+  /// functionality
   /// or required ROS parameters are namespaced by \e ns
-  virtual bool initialize(const robot_model::RobotModelConstPtr& robot_model, const std::string &ns);
+  virtual bool initialize(const robot_model::RobotModelConstPtr &robot_model, const std::string &ns);
 
   /// Get \brief a short string that identifies the planning interface
   virtual std::string getDescription() const
@@ -77,7 +78,8 @@ public:
     return "OMPL";
   }
 
-  /// \brief Get the names of the known planning algorithms (values that can be filled as planner_id in the planning request)
+  /// \brief Get the names of the known planning algorithms (values that can be filled as planner_id in the planning
+  /// request)
   virtual void getPlanningAlgorithms(std::vector<std::string> &algs) const;
 
   /// \brief Determine whether this plugin instance is able to represent this planning request
@@ -89,29 +91,27 @@ public:
 
   /** @brief Get the configurations for the planners that are already loaded
       @param pconfig Configurations for the different planners */
-  const planning_interface::PlannerConfigurationMap& getPlannerConfigurations() const
+  const planning_interface::PlannerConfigurationMap &getPlannerConfigurations() const
   {
     return context_manager_->getPlannerConfigurations();
   }
 
   /// \brief Calls the function above but ignores the error_code
-  virtual planning_interface::PlanningContextPtr getPlanningContext(const planning_scene::PlanningSceneConstPtr& planning_scene,
-                                                  const planning_interface::MotionPlanRequest &req,
-                                                  moveit_msgs::MoveItErrorCodes &error_code) const;
-
-  //ModelBasedPlanningContextPtr getPlanningContext(const std::string &config, const std::string &factory_type = "") const;
+  virtual planning_interface::PlanningContextPtr
+  getPlanningContext(const planning_scene::PlanningSceneConstPtr &planning_scene,
+                     const planning_interface::MotionPlanRequest &req, moveit_msgs::MoveItErrorCodes &error_code) const;
 
   ModelBasedPlanningContextPtr getLastPlanningContext() const
   {
     return context_manager_->getLastPlanningContext();
   }
 
-  const PlanningContextManagerPtr& getPlanningContextManager() const
+  const PlanningContextManagerPtr &getPlanningContextManager() const
   {
     return context_manager_;
   }
 
-  PlanningContextManagerPtr& getPlanningContextManager()
+  PlanningContextManagerPtr &getPlanningContextManager()
   {
     return context_manager_;
   }
@@ -130,7 +130,6 @@ public:
   void printStatus();
 
 protected:
-
   /** @brief Configure the planners*/
   void loadPlannerConfigurations();
 
@@ -138,12 +137,11 @@ protected:
 
   /** \brief Configure the OMPL planning context for a new planning request */
   ModelBasedPlanningContextPtr prepareForSolve(const planning_interface::MotionPlanRequest &req,
-                                               const planning_scene::PlanningSceneConstPtr& planning_scene,
-                                               moveit_msgs::MoveItErrorCodes *error_code,
-                                               unsigned int *attempts, double *timeout) const;
+                                               const planning_scene::PlanningSceneConstPtr &planning_scene,
+                                               moveit_msgs::MoveItErrorCodes *error_code, unsigned int *attempts,
+                                               double *timeout) const;
 
-
-  ros::NodeHandle nh_; /// The ROS node handle
+  ros::NodeHandle nh_;  /// The ROS node handle
 
   /** \brief The kinematic model for which motion plans are computed */
   robot_model::RobotModelConstPtr robot_model_;
@@ -163,14 +161,11 @@ protected:
   moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
 
 private:
-
   constraint_sampler_manager_loader::ConstraintSamplerManagerLoaderPtr constraint_sampler_manager_loader_;
-
 };
 
-} // ompl
+}  // ompl
 
 CLASS_LOADER_REGISTER_CLASS(moveit_ompl::OMPLPlannerManager, planning_interface::PlannerManager);
-
 
 #endif

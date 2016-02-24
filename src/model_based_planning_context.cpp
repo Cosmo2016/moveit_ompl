@@ -320,6 +320,7 @@ void moveit_ompl::ModelBasedPlanningContext::setVerboseStateValidityChecks(bool 
 ompl::base::GoalPtr moveit_ompl::ModelBasedPlanningContext::constructGoal()
 {
   // ******************* set up the goal representation, based on goal constraints
+  ROS_ERROR_STREAM_NAMED(name_, "constructing goal with " << goal_constraints_.size() << " constraints");
 
   std::vector<ob::GoalPtr> goals;
   for (std::size_t i = 0; i < goal_constraints_.size(); ++i)
@@ -331,18 +332,28 @@ ompl::base::GoalPtr moveit_ompl::ModelBasedPlanningContext::constructGoal()
 
     if (constraint_sampler)
     {
+      std::cout << "has constraint sampler " << std::endl;
       ob::GoalPtr g =
           ob::GoalPtr(new ConstrainedGoalSampler(this, goal_constraints_[i], constraint_sampler, visual_tools_));
       goals.push_back(g);
     }
   }
 
-  if (!goals.empty())
-    return goals.size() == 1 ? goals[0] : ompl::base::GoalPtr(new GoalSampleableRegionMux(goals));
-  else
+  if (goals.empty())
+  {
     ROS_ERROR("Unable to construct goal representation");
+    return ob::GoalPtr();
+  }
 
-  return ob::GoalPtr();
+  if (goals.size() == 1)
+  {
+    ROS_INFO_STREAM_NAMED(name_, "Problem has only one goal");
+    return goals[0];
+  }
+
+  // More than one goal
+  ROS_INFO_STREAM_NAMED(name_, "Using goal sampleable region mux");
+  return ompl::base::GoalPtr(new GoalSampleableRegionMux(goals));
 }
 
 void moveit_ompl::ModelBasedPlanningContext::setCompleteInitialState(
@@ -424,7 +435,7 @@ bool moveit_ompl::ModelBasedPlanningContext::benchmark(double timeout, unsigned 
   return filename.empty() ? ompl_benchmark_.saveResultsToFile() : ompl_benchmark_.saveResultsToFile(filename.c_str());
 }
 
-void moveit_ompl::ModelBasedPlanningContext::startSampling()
+/*void moveit_ompl::ModelBasedPlanningContext::startSampling()
 {
   std::cout << "moveit_ompl::ModelBasedPlanningContext::startSampling()" << std::endl;
 
@@ -448,6 +459,7 @@ void moveit_ompl::ModelBasedPlanningContext::stopSampling()
     // we know this is a GoalSampleableMux by elimination
     static_cast<GoalSampleableRegionMux *>(ompl_simple_setup_->getGoal().get())->stopSampling();
 }
+*/
 
 void moveit_ompl::ModelBasedPlanningContext::preSolve()
 {
@@ -462,7 +474,7 @@ void moveit_ompl::ModelBasedPlanningContext::preSolve()
 
 void moveit_ompl::ModelBasedPlanningContext::postSolve()
 {
-  stopSampling();
+  //stopSampling();
   int v = ompl_simple_setup_->getSpaceInformation()->getMotionValidator()->getValidMotionCount();
   int iv = ompl_simple_setup_->getSpaceInformation()->getMotionValidator()->getInvalidMotionCount();
   ROS_DEBUG("There were %d valid motions and %d invalid motions.", v, iv);

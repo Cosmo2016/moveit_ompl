@@ -183,6 +183,8 @@ public:
 
   virtual ompl::base::State *allocState() const;
   virtual void freeState(ompl::base::State *state) const;
+  /** \brief Populate a state with values in vector */
+  virtual bool populateState(ompl::base::State *state, const std::vector<double> &values);
   virtual unsigned int getDimension() const;
   virtual void enforceBounds(ompl::base::State *state) const;
   virtual bool satisfiesBounds(const ompl::base::State *state) const;

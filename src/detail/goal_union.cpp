@@ -43,38 +43,38 @@ ompl::base::SpaceInformationPtr getGoalsSI(const std::vector<ompl::base::GoalPtr
 {
   if (goals.empty())
     return ompl::base::SpaceInformationPtr();
-  for (std::size_t i = 0 ; i < goals.size() ; ++i)
+  for (std::size_t i = 0; i < goals.size(); ++i)
     if (!goals[i]->hasType(ompl::base::GOAL_SAMPLEABLE_REGION))
       throw ompl::Exception("Multiplexed goals must be instances of GoalSampleableRegion");
-  for (std::size_t i = 1 ; i < goals.size() ; ++i)
+  for (std::size_t i = 1; i < goals.size(); ++i)
     if (goals[i]->getSpaceInformation() != goals[0]->getSpaceInformation())
       throw ompl::Exception("The instance of SpaceInformation must be the same among the goals to be considered");
   return goals[0]->getSpaceInformation();
 }
 }
 
-moveit_ompl::GoalSampleableRegionMux::GoalSampleableRegionMux(const std::vector<ompl::base::GoalPtr> &goals) :
-  ompl::base::GoalSampleableRegion(getGoalsSI(goals)), goals_(goals), gindex_(0)
+moveit_ompl::GoalSampleableRegionMux::GoalSampleableRegionMux(const std::vector<ompl::base::GoalPtr> &goals)
+  : ompl::base::GoalSampleableRegion(getGoalsSI(goals)), goals_(goals), gindex_(0)
 {
 }
 
 void moveit_ompl::GoalSampleableRegionMux::startSampling()
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     if (goals_[i]->hasType(ompl::base::GOAL_LAZY_SAMPLES))
-      static_cast<ompl::base::GoalLazySamples*>(goals_[i].get())->startSampling();
+      static_cast<ompl::base::GoalLazySamples *>(goals_[i].get())->startSampling();
 }
 
 void moveit_ompl::GoalSampleableRegionMux::stopSampling()
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     if (goals_[i]->hasType(ompl::base::GOAL_LAZY_SAMPLES))
-      static_cast<ompl::base::GoalLazySamples*>(goals_[i].get())->stopSampling();
+      static_cast<ompl::base::GoalLazySamples *>(goals_[i].get())->stopSampling();
 }
 
 void moveit_ompl::GoalSampleableRegionMux::sampleGoal(ompl::base::State *st) const
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
   {
     if (goals_[gindex_]->as<ompl::base::GoalSampleableRegion>()->maxSampleCount() > 0)
     {
@@ -89,14 +89,14 @@ void moveit_ompl::GoalSampleableRegionMux::sampleGoal(ompl::base::State *st) con
 unsigned int moveit_ompl::GoalSampleableRegionMux::maxSampleCount() const
 {
   unsigned int sc = 0;
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     sc += goals_[i]->as<GoalSampleableRegion>()->maxSampleCount();
   return sc;
 }
 
 bool moveit_ompl::GoalSampleableRegionMux::canSample() const
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     if (goals_[i]->as<ompl::base::GoalSampleableRegion>()->canSample())
       return true;
   return false;
@@ -104,7 +104,7 @@ bool moveit_ompl::GoalSampleableRegionMux::canSample() const
 
 bool moveit_ompl::GoalSampleableRegionMux::couldSample() const
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     if (goals_[i]->as<ompl::base::GoalSampleableRegion>()->couldSample())
       return true;
   return false;
@@ -112,7 +112,7 @@ bool moveit_ompl::GoalSampleableRegionMux::couldSample() const
 
 bool moveit_ompl::GoalSampleableRegionMux::isSatisfied(const ompl::base::State *st, double *distance) const
 {
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     if (goals_[i]->isSatisfied(st, distance))
       return true;
   return false;
@@ -121,7 +121,7 @@ bool moveit_ompl::GoalSampleableRegionMux::isSatisfied(const ompl::base::State *
 double moveit_ompl::GoalSampleableRegionMux::distanceGoal(const ompl::base::State *st) const
 {
   double min_d = std::numeric_limits<double>::infinity();
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
   {
     double d = goals_[i]->as<ompl::base::GoalRegion>()->distanceGoal(st);
     if (d < min_d)
@@ -133,7 +133,7 @@ double moveit_ompl::GoalSampleableRegionMux::distanceGoal(const ompl::base::Stat
 void moveit_ompl::GoalSampleableRegionMux::print(std::ostream &out) const
 {
   out << "MultiGoal [" << std::endl;
-  for (std::size_t i = 0 ; i < goals_.size() ; ++i)
+  for (std::size_t i = 0; i < goals_.size(); ++i)
     goals_[i]->print(out);
   out << "]" << std::endl;
 }

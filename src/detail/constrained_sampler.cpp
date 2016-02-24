@@ -38,7 +38,8 @@
 #include <moveit/ompl/model_based_planning_context.h>
 #include <moveit/profiler/profiler.h>
 
-moveit_ompl::ConstrainedSampler::ConstrainedSampler(const ModelBasedPlanningContext *pc, const constraint_samplers::ConstraintSamplerPtr &cs)
+moveit_ompl::ConstrainedSampler::ConstrainedSampler(const ModelBasedPlanningContext *pc,
+                                                    const constraint_samplers::ConstraintSamplerPtr &cs)
   : ob::StateSampler(pc->getOMPLStateSpace().get())
   , planning_context_(pc)
   , default_(space_->allocDefaultStateSampler())
@@ -62,7 +63,7 @@ bool moveit_ompl::ConstrainedSampler::sampleC(ob::State *state)
 {
   std::cout << "moveit_ompl::ConstrainedSampler::sampleC() " << std::endl;
 
-  if (constraint_sampler_->sample(work_state_, planning_context_->getCompleteInitialRobotState(), 
+  if (constraint_sampler_->sample(work_state_, planning_context_->getCompleteInitialRobotState(),
                                   planning_context_->getMaximumStateSamplingAttempts()))
   {
     planning_context_->getOMPLStateSpace()->copyToOMPLState(state, work_state_);

@@ -44,7 +44,6 @@
 
 namespace moveit_ompl
 {
-
 class ModelBasedPlanningContext;
 
 /** @class ValidConstrainedSampler
@@ -52,30 +51,29 @@ class ModelBasedPlanningContext;
 class ValidConstrainedSampler : public ompl::base::ValidStateSampler
 {
 public:
-
-  ValidConstrainedSampler(const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
-                            const constraint_samplers::ConstraintSamplerPtr &cs = constraint_samplers::ConstraintSamplerPtr(),
-                           moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
+  ValidConstrainedSampler(
+      const ModelBasedPlanningContext *pc, const kinematic_constraints::KinematicConstraintSetPtr &ks,
+      const constraint_samplers::ConstraintSamplerPtr &cs = constraint_samplers::ConstraintSamplerPtr(),
+      moveit_visual_tools::MoveItVisualToolsPtr visual_tools = moveit_visual_tools::MoveItVisualToolsPtr());
 
   virtual bool sample(ompl::base::State *state);
   virtual bool project(ompl::base::State *state);
   virtual bool sampleNear(ompl::base::State *state, const ompl::base::State *near, const double distance);
+  virtual bool createState(ompl::base::State *state, std::vector<double> &values);
 
 private:
-
-  const ModelBasedPlanningContext                  *planning_context_;
-  kinematic_constraints::KinematicConstraintSetPtr  kinematic_constraint_set_;
-  constraint_samplers::ConstraintSamplerPtr         constraint_sampler_;
-  ompl::base::StateSamplerPtr                       default_sampler_;
-  robot_state::RobotState                           work_state_;
-  double                                            inv_dim_;
-  ompl::RNG                                         rng_;
-  moveit_visual_tools::MoveItVisualToolsPtr         visual_tools_;
+  const ModelBasedPlanningContext *planning_context_;
+  kinematic_constraints::KinematicConstraintSetPtr kinematic_constraint_set_;
+  constraint_samplers::ConstraintSamplerPtr constraint_sampler_;
+  ompl::base::StateSamplerPtr default_sampler_;
+  robot_state::RobotState work_state_;
+  double inv_dim_;
+  ompl::RNG rng_;
+  moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
 };
 
 typedef boost::shared_ptr<ValidConstrainedSampler> ValidConstrainedSamplerPtr;
 typedef boost::shared_ptr<const ValidConstrainedSampler> ValidConstrainedSamplerConstPtr;
-
 }
 
 #endif

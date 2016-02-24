@@ -43,13 +43,14 @@ moveit_ompl::JointModelStateSpaceFactory::JointModelStateSpaceFactory() : ModelB
 }
 
 int moveit_ompl::JointModelStateSpaceFactory::canRepresentProblem(const std::string &group,
-                                                                     const moveit_msgs::MotionPlanRequest &req,
-                                                                     const robot_model::RobotModelConstPtr &kmodel) const
+                                                                  const moveit_msgs::MotionPlanRequest &req,
+                                                                  const robot_model::RobotModelConstPtr &kmodel) const
 {
   return 100;
 }
 
-moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::JointModelStateSpaceFactory::allocStateSpace(const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
+moveit_ompl::ModelBasedStateSpacePtr moveit_ompl::JointModelStateSpaceFactory::allocStateSpace(
+    const ModelBasedStateSpaceSpecification &space_spec, moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
   return ModelBasedStateSpacePtr(new JointModelStateSpace(space_spec, visual_tools));
 }
