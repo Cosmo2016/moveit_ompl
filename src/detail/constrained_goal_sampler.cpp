@@ -91,10 +91,12 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
                                                                        ob::State* new_goal)
 {
   unsigned int max_attempts = planning_context_->getMaximumGoalSamplingAttempts();
-  std::cout << "moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler() max_attempts= " << max_attempts
-            << std::endl;
 
-  bool verbose = true;
+  bool verbose = false;
+
+  if (verbose)
+    std::cout << "moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler() max_attempts= " << max_attempts
+              << std::endl;
 
   unsigned int attempts_so_far = gls->samplingAttemptsCount();
 
@@ -108,7 +110,7 @@ bool moveit_ompl::ConstrainedGoalSampler::sampleUsingConstraintSampler(const ob:
   // terminate after a maximum number of samples
   if (gls->getStateCount() >= planning_context_->getMaximumGoalSamples())
   {
-    std::cout << "terminate after a maximum number of samples " << std::endl;
+    //std::cout << "terminate after maximum number of samples " << std::endl;
     return false;
   }
 

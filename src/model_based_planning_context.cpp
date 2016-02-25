@@ -183,7 +183,7 @@ void moveit_ompl::ModelBasedPlanningContext::configure()
       boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback, this, _1, _2, _3));
 }
 
-void moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback(ompl::base::State *state, std::size_t type,
+void moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback(const ompl::base::State *state, std::size_t type,
                                                                         double neighborRadius)
 {
   std::cout << "moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback()" << std::endl;
@@ -215,6 +215,13 @@ void moveit_ompl::ModelBasedPlanningContext::useConfig()
   if (config.empty())
     return;
   std::map<std::string, std::string> cfg = config;
+
+  // debug all configs
+  for(std::map<std::string, std::string>::const_iterator it = cfg.begin();
+      it != cfg.end(); ++it)
+  {
+    std::cout << it->first << " " << it->second << std::endl;
+  }
 
   // set the projection evaluator
   std::map<std::string, std::string>::iterator it = cfg.find("projection_evaluator");
@@ -259,9 +266,9 @@ void moveit_ompl::ModelBasedPlanningContext::setPlanningVolume(const moveit_msgs
       wparams.min_corner.z == wparams.max_corner.z && wparams.min_corner.z == 0.0)
     ROS_WARN("It looks like the planning volume was not specified.");
 
-  ROS_DEBUG("%s -  Setting planning volume (affects SE2 & SE3 joints only) to x = [%f, %f], y = [%f, %f], z = [%f, %f]",
-            name_.c_str(), wparams.min_corner.x, wparams.max_corner.x, wparams.min_corner.y, wparams.max_corner.y,
-            wparams.min_corner.z, wparams.max_corner.z);
+  // ROS_DEBUG("%s -  Setting planning volume (affects SE2 & SE3 joints only) to x = [%f, %f], y = [%f, %f], z = [%f, %f]",
+  //           name_.c_str(), wparams.min_corner.x, wparams.max_corner.x, wparams.min_corner.y, wparams.max_corner.y,
+  //           wparams.min_corner.z, wparams.max_corner.z);
 
   spec_.state_space_->setPlanningVolume(wparams.min_corner.x, wparams.max_corner.x, wparams.min_corner.y,
                                         wparams.max_corner.y, wparams.min_corner.z, wparams.max_corner.z);
@@ -320,7 +327,7 @@ void moveit_ompl::ModelBasedPlanningContext::setVerboseStateValidityChecks(bool 
 ompl::base::GoalPtr moveit_ompl::ModelBasedPlanningContext::constructGoal()
 {
   // ******************* set up the goal representation, based on goal constraints
-  ROS_ERROR_STREAM_NAMED(name_, "constructing goal with " << goal_constraints_.size() << " constraints");
+  //ROS_ERROR_STREAM_NAMED(name_, "constructing goal with " << goal_constraints_.size() << " constraints");
 
   std::vector<ob::GoalPtr> goals;
   for (std::size_t i = 0; i < goal_constraints_.size(); ++i)
@@ -332,7 +339,6 @@ ompl::base::GoalPtr moveit_ompl::ModelBasedPlanningContext::constructGoal()
 
     if (constraint_sampler)
     {
-      std::cout << "has constraint sampler " << std::endl;
       ob::GoalPtr g =
           ob::GoalPtr(new ConstrainedGoalSampler(this, goal_constraints_[i], constraint_sampler, visual_tools_));
       goals.push_back(g);
@@ -347,7 +353,7 @@ ompl::base::GoalPtr moveit_ompl::ModelBasedPlanningContext::constructGoal()
 
   if (goals.size() == 1)
   {
-    ROS_INFO_STREAM_NAMED(name_, "Problem has only one goal");
+    //ROS_INFO_STREAM_NAMED(name_, "Problem has only one goal");
     return goals[0];
   }
 

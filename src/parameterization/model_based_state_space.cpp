@@ -88,8 +88,8 @@ mo::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpaceSpecifi
     bounds_.setHigh(i, var_bounds.front().max_position_);
 
     // Debug
-    std::cout << "JointModel: " << spec_.joint_model_group_->getActiveJointModels()[i]->getName() << " has bounds ["
-              << var_bounds.front().min_position_ << ", " << var_bounds.front().max_position_ << "]" << std::endl;
+    //std::cout << "JointModel: " << spec_.joint_model_group_->getActiveJointModels()[i]->getName() << " has bounds ["
+    //<< var_bounds.front().min_position_ << ", " << var_bounds.front().max_position_ << "]" << std::endl;
   }
 
   // default settings

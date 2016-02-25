@@ -304,7 +304,7 @@ public:
   virtual void configure();
 
   /** \brief Display a state in Rviz */
-  void visualizationStateCallback(ompl::base::State *state, std::size_t type, double neighborRadius);
+  void visualizationStateCallback(const ompl::base::State *state, std::size_t type, double neighborRadius);
 
 protected:
   void preSolve();
