@@ -321,6 +321,9 @@ protected:
   void registerTerminationCondition(const ob::PlannerTerminationCondition &ptc);
   void unregisterTerminationCondition();
 
+  // Short name for this class
+  std::string class_name_;
+
   ModelBasedPlanningContextSpecification spec_;
 
   robot_state::RobotState complete_initial_robot_state_;
