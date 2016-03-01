@@ -201,10 +201,20 @@ double mo::ModelBasedStateSpace::getMeasure() const
 
 double mo::ModelBasedStateSpace::distance(const ompl::base::State *state1, const ompl::base::State *state2) const
 {
+  // if (distance_function_)
+  //   return distance_function_(state1, state2);
+  // else
+  return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+}
+
+double mo::ModelBasedStateSpace::distance2(const ompl::base::State *state1, const ompl::base::State *state2) const
+{
   if (distance_function_)
     return distance_function_(state1, state2);
-  else
-    return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+
+  std::cout << "distance2 function missing! " << std::endl;
+  return 0;
+  //return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
 }
 
 bool mo::ModelBasedStateSpace::equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const

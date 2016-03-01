@@ -277,7 +277,7 @@ void moveit_ompl::ModelBasedPlanningContext::setPlanningVolume(const moveit_msgs
 
 void moveit_ompl::ModelBasedPlanningContext::simplifySolution(double timeout)
 {
-  // std::cout << "skipping simplification step ==================================" << std::endl;
+  std::cout << "skipping simplification step 123 ==================================" << std::endl;
   ompl_simple_setup_->simplifySolution(timeout);
   last_simplify_time_ = ompl_simple_setup_->getLastSimplificationTime();
 }
@@ -496,11 +496,11 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
   {
     double ptime = getLastPlanTime();
 
-    bool disableSimplifyAndInterpolate = false;
+    bool disableSimplifyAndInterpolate = true;
 
     if (disableSimplifyAndInterpolate)
     {
-      ROS_WARN_STREAM_NAMED(class_name_, "Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
+      ROS_INFO_STREAM_NAMED(class_name_, "Disabled simplifySolution and interpolateSolution in model_based_planning_context.cpp");
     }
     else
     {
@@ -551,7 +551,7 @@ bool moveit_ompl::ModelBasedPlanningContext::solve(planning_interface::MotionPla
     // simplify solution if time remains
     if (simplify_solutions_ && ptime < request_.allowed_planning_time)
     {
-      simplifySolution(request_.allowed_planning_time - ptime);
+      //simplifySolution(request_.allowed_planning_time - ptime);
       res.processing_time_.push_back(getLastSimplifyTime());
       res.description_.push_back("simplify");
       res.trajectory_.resize(res.trajectory_.size() + 1);
