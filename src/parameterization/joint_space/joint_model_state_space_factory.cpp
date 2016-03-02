@@ -44,7 +44,7 @@ moveit_ompl::JointModelStateSpaceFactory::JointModelStateSpaceFactory() : ModelB
 
 int moveit_ompl::JointModelStateSpaceFactory::canRepresentProblem(const std::string &group,
                                                                   const moveit_msgs::MotionPlanRequest &req,
-                                                                  const robot_model::RobotModelConstPtr &kmodel) const
+                                                                  const robot_model::RobotModelConstPtr &robot_model) const
 {
   return 100;
 }

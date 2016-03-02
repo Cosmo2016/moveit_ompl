@@ -44,9 +44,9 @@ moveit_ompl::PoseModelStateSpaceFactory::PoseModelStateSpaceFactory() : ModelBas
 
 int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::string &group,
                                                                  const moveit_msgs::MotionPlanRequest &req,
-                                                                 const robot_model::RobotModelConstPtr &kmodel) const
+                                                                 const robot_model::RobotModelConstPtr &robot_model) const
 {
-  const robot_model::JointModelGroup *jmg = kmodel->getJointModelGroup(group);
+  const robot_model::JointModelGroup *jmg = robot_model->getJointModelGroup(group);
   if (jmg)
   {
     const std::pair<robot_model::JointModelGroup::KinematicsSolver, robot_model::JointModelGroup::KinematicsSolverMap> &
@@ -72,6 +72,9 @@ int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::stri
 
     if (ik)
     {
+      // DTC override
+      return 200;
+
       // if we have path constraints, we prefer interpolating in pose space
       if ((!req.path_constraints.position_constraints.empty() ||
            !req.path_constraints.orientation_constraints.empty()) &&

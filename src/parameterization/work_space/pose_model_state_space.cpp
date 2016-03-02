@@ -44,6 +44,8 @@ moveit_ompl::PoseModelStateSpace::PoseModelStateSpace(const ModelBasedStateSpace
                                                       moveit_visual_tools::MoveItVisualToolsPtr visual_tools)
   : ModelBasedStateSpace(spec, visual_tools)
 {
+  ROS_ERROR_STREAM_NAMED(getName(), "Using PoseModelStateSpace!");
+
   jump_factor_ = 3;  // \todo make this a param
 
   if (spec.joint_model_group_->getGroupKinematics().first)
@@ -70,7 +72,10 @@ double moveit_ompl::PoseModelStateSpace::distance(const ompl::base::State *state
 {
   double total = 0;
   for (std::size_t i = 0; i < poses_.size(); ++i)
+  {
+    ROS_WARN_STREAM_NAMED(getName(), "getting distance for pose " << i << " of " << poses_.size());
     total += poses_[i].state_space_->distance(state1->as<StateType>()->poses[i], state2->as<StateType>()->poses[i]);
+  }
   return total;
 }
 
@@ -188,6 +193,7 @@ moveit_ompl::PoseModelStateSpace::PoseComponent::PoseComponent(const robot_model
 
 bool moveit_ompl::PoseModelStateSpace::PoseComponent::computeStateFK(StateType *full_state, unsigned int idx) const
 {
+  std::cout << "computeStateFK " << std::endl;
   // read the values from the joint state, in the order expected by the kinematics solver
   std::vector<double> values(bijection_.size());
   for (unsigned int i = 0; i < bijection_.size(); ++i)
@@ -260,6 +266,7 @@ bool moveit_ompl::PoseModelStateSpace::computeStateFK(ompl::base::State *state) 
   for (std::size_t i = 0; i < poses_.size(); ++i)
     if (!poses_[i].computeStateFK(state->as<StateType>(), i))
     {
+      ROS_ERROR_STREAM("INVALID computeStateFK");
       state->as<StateType>()->markInvalid();
       return false;
     }
@@ -284,11 +291,20 @@ bool moveit_ompl::PoseModelStateSpace::computeStateIK(ompl::base::State *state) 
 bool moveit_ompl::PoseModelStateSpace::computeStateK(ompl::base::State *state) const
 {
   if (state->as<StateType>()->jointsComputed() && !state->as<StateType>()->poseComputed())
+  {
+    std::cout << "starting computeStateFK" << std::endl;
     return computeStateFK(state);
+  }
   if (!state->as<StateType>()->jointsComputed() && state->as<StateType>()->poseComputed())
+  {
+    std::cout << "starting computeStateIK" << std::endl;
     return computeStateIK(state);
+  }
   if (state->as<StateType>()->jointsComputed() && state->as<StateType>()->poseComputed())
+  {
+    std::cout << "starting neither" << std::endl;
     return true;
+  }
   state->as<StateType>()->markInvalid();
   return false;
 }
@@ -326,6 +342,7 @@ ompl::base::StateSamplerPtr moveit_ompl::PoseModelStateSpace::allocDefaultStateS
     {
       sample->as<StateType>()->setJointsComputed(true);
       sample->as<StateType>()->setPoseComputed(false);
+      std::cout << "after state sample " << std::endl;
       space_->as<PoseModelStateSpace>()->computeStateFK(sample);
     }
 
@@ -342,6 +359,7 @@ void moveit_ompl::PoseModelStateSpace::copyToOMPLState(ompl::base::State *state,
   ModelBasedStateSpace::copyToOMPLState(state, rstate);
   state->as<StateType>()->setJointsComputed(true);
   state->as<StateType>()->setPoseComputed(false);
+  std::cout << "copyToOMPLState " << std::endl;
   computeStateFK(state);
   /*
   std::cout << "COPY STATE IN:\n";

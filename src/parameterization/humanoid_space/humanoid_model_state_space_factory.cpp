@@ -46,7 +46,7 @@ moveit_ompl::HumanoidModelStateSpaceFactory::HumanoidModelStateSpaceFactory() : 
 
 int moveit_ompl::HumanoidModelStateSpaceFactory::canRepresentProblem(
     const std::string &group, const moveit_msgs::MotionPlanRequest &req,
-    const robot_model::RobotModelConstPtr &kmodel) const
+    const robot_model::RobotModelConstPtr &robot_model) const
 {
   // This state space is for robots with fixed fake bases such as feet
   if (req.start_state.humanoid_state.fixed_link_names.size())

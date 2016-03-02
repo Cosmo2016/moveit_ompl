@@ -70,7 +70,7 @@ protected:
     srdf_ok_ = srdf_model_->initFile(*urdf_model_, "../kinematic_state/test/srdf/robot.xml");
 
     if (urdf_ok_ && srdf_ok_)
-      kmodel_.reset(new robot_model::RobotModel(urdf_model_, srdf_model_));
+      robot_model_.reset(new robot_model::RobotModel(urdf_model_, srdf_model_));
   };
 
   virtual void TearDown()
@@ -78,7 +78,7 @@ protected:
   }
 
 protected:
-  robot_model::RobotModelPtr kmodel_;
+  robot_model::RobotModelPtr robot_model_;
   boost::shared_ptr<urdf::ModelInterface> urdf_model_;
   boost::shared_ptr<srdf::Model> srdf_model_;
   bool urdf_ok_;
@@ -87,7 +87,7 @@ protected:
 
 TEST_F(LoadPlanningModelsPr2, StateSpace)
 {
-  ompl::ModelBasedStateSpaceSpecification spec(kmodel_, "whole_body");
+  ompl::ModelBasedStateSpaceSpecification spec(robot_model_, "whole_body");
   ompl::JointModelStateSpace ss(spec);
   ss.setPlanningVolume(-1, 1, -1, 1, -1, 1);
   ss.setup();
@@ -108,19 +108,19 @@ TEST_F(LoadPlanningModelsPr2, StateSpace)
 
 TEST_F(LoadPlanningModelsPr2, StateSpaces)
 {
-  ompl::ModelBasedStateSpaceSpecification spec1(kmodel_, "right_arm");
+  ompl::ModelBasedStateSpaceSpecification spec1(robot_model_, "right_arm");
   ompl::ModelBasedStateSpace ss1(spec1);
   ss1.setup();
 
-  ompl::ModelBasedStateSpaceSpecification spec2(kmodel_, "left_arm");
+  ompl::ModelBasedStateSpaceSpecification spec2(robot_model_, "left_arm");
   ompl::ModelBasedStateSpace ss2(spec2);
   ss2.setup();
 
-  ompl::ModelBasedStateSpaceSpecification spec3(kmodel_, "whole_body");
+  ompl::ModelBasedStateSpaceSpecification spec3(robot_model_, "whole_body");
   ompl::ModelBasedStateSpace ss3(spec3);
   ss3.setup();
 
-  ompl::ModelBasedStateSpaceSpecification spec4(kmodel_, "arms");
+  ompl::ModelBasedStateSpaceSpecification spec4(robot_model_, "arms");
   ompl::ModelBasedStateSpace ss4(spec4);
   ss4.setup();
 
@@ -130,7 +130,7 @@ TEST_F(LoadPlanningModelsPr2, StateSpaces)
 
 TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
 {
-  ompl::ModelBasedStateSpaceSpecification spec(kmodel_, "right_arm");
+  ompl::ModelBasedStateSpaceSpecification spec(robot_model_, "right_arm");
   ompl::JointModelStateSpace ss(spec);
   ss.setPlanningVolume(-1, 1, -1, 1, -1, 1);
   ss.setup();
@@ -148,7 +148,7 @@ TEST_F(LoadPlanningModelsPr2, StateSpaceCopy)
   }
   EXPECT_TRUE(passed);
 
-  robot_state::RobotState kstate(kmodel_);
+  robot_state::RobotState kstate(robot_model_);
   kstate.setToRandomPositions();
   EXPECT_TRUE(kstate.distance(kstate) < 1e-12);
   ompl::base::State *state = ss.allocState();
