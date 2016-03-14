@@ -1,15 +1,15 @@
 <package>
   <name>moveit_ompl</name>
-  <version>0.6.7</version>
+  <version>1.0.0</version>
   <description>MoveIt interface to OMPL</description>
-  <author email="isucan@willowgarage.com">Ioan Sucan</author>
   <maintainer email="davetcoleman@gmail.com">Dave Coleman</maintainer>
+  <author email="davetcoleman@gmail.com">Dave Coleman</author>
 
   <license>BSD</license>
 
   <url type="website">http://moveit.ros.org</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit_ompl/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit_ompl</url>
+  <url type="bugtracker">https://github.com/davetcoleman/moveit_ompl/issues</url>
+  <url type="repository">https://github.com/davetcoleman/moveit_ompl</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 

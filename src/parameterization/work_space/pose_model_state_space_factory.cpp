@@ -72,9 +72,6 @@ int moveit_ompl::PoseModelStateSpaceFactory::canRepresentProblem(const std::stri
 
     if (ik)
     {
-      // DTC override
-      return 200;
-
       // if we have path constraints, we prefer interpolating in pose space
       if ((!req.path_constraints.position_constraints.empty() ||
            !req.path_constraints.orientation_constraints.empty()) &&

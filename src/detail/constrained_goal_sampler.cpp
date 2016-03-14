@@ -65,8 +65,8 @@ moveit_ompl::ConstrainedGoalSampler::ConstrainedGoalSampler(const ModelBasedPlan
   }
   constraint_sampler_->setVerbose(false);  // be default it *is* verbose during testing
   ROS_DEBUG("Constructed a ConstrainedGoalSampler instance at address %p", this);
-  ROS_ERROR_STREAM("disabled goal sampling");
-  //startSampling(); // DTC
+  //ROS_ERROR_STREAM("disabled goal sampling");
+  startSampling(); // DTC
 }
 
 bool moveit_ompl::ConstrainedGoalSampler::checkStateValidity(ob::State* new_goal, const robot_state::RobotState& state,
