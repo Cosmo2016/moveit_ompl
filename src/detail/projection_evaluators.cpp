@@ -36,7 +36,7 @@
 
 #include <moveit/ompl/detail/projection_evaluators.h>
 #include <moveit/ompl/model_based_planning_context.h>
-#include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit/ompl/model_based_state_space.h>
 
 moveit_ompl::ProjectionEvaluatorLinkPose::ProjectionEvaluatorLinkPose(const ModelBasedPlanningContext *pc,
                                                                       const std::string &link)

@@ -37,7 +37,7 @@
 #ifndef MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
 #define MOVEIT_OMPL_MODEL_BASED_PLANNING_CONTEXT_
 
-#include <moveit/ompl/parameterization/model_based_state_space.h>
+#include <moveit/ompl/model_based_state_space.h>
 #include <moveit/ompl/detail/constrained_valid_state_sampler.h>
 #include <moveit/constraint_samplers/constraint_sampler_manager.h>
 #include <moveit/planning_interface/planning_interface.h>

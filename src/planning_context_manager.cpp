@@ -56,9 +56,7 @@
 #include <ompl/geometric/planners/prm/PRM.h>
 #include <ompl/geometric/planners/prm/PRMstar.h>
 
-#include <moveit/ompl/parameterization/joint_space/joint_model_state_space_factory.h>
-#include <moveit/ompl/parameterization/work_space/pose_model_state_space_factory.h>
-#include <moveit/ompl/parameterization/humanoid_space/humanoid_model_state_space_factory.h>
+#include <moveit/ompl/joint_space/model_based_state_space.h>
 
 #include <ompl/tools/thunder/Thunder.h>
 #include <ompl/tools/bolt/Bolt.h>
@@ -126,8 +124,6 @@ mo::PlanningContextManager::PlanningContextManager(const robot_model::RobotModel
 {
   last_planning_context_.reset(new LastPlanningContext());
   cached_contexts_.reset(new CachedContexts());
-  registerDefaultPlanners();
-  registerDefaultStateSpaces();
 }
 
 mo::PlanningContextManager::~PlanningContextManager()
@@ -163,29 +159,6 @@ mo::ConfiguredPlannerAllocator mo::PlanningContextManager::plannerSelector(const
   }
 }
 
-void mo::PlanningContextManager::registerDefaultPlanners()
-{
-  registerPlannerAllocator("geometric::RRT", boost::bind(&allocatePlanner<og::RRT>, _1, _2, _3));
-  registerPlannerAllocator("geometric::RRTConnect", boost::bind(&allocatePlanner<og::RRTConnect>, _1, _2, _3));
-  registerPlannerAllocator("geometric::LazyRRT", boost::bind(&allocatePlanner<og::LazyRRT>, _1, _2, _3));
-  registerPlannerAllocator("geometric::TRRT", boost::bind(&allocatePlanner<og::TRRT>, _1, _2, _3));
-  registerPlannerAllocator("geometric::EST", boost::bind(&allocatePlanner<og::EST>, _1, _2, _3));
-  registerPlannerAllocator("geometric::SBL", boost::bind(&allocatePlanner<og::SBL>, _1, _2, _3));
-  registerPlannerAllocator("geometric::KPIECE", boost::bind(&allocatePlanner<og::KPIECE1>, _1, _2, _3));
-  registerPlannerAllocator("geometric::BKPIECE", boost::bind(&allocatePlanner<og::BKPIECE1>, _1, _2, _3));
-  registerPlannerAllocator("geometric::LBKPIECE", boost::bind(&allocatePlanner<og::LBKPIECE1>, _1, _2, _3));
-  registerPlannerAllocator("geometric::RRTstar", boost::bind(&allocatePlanner<og::RRTstar>, _1, _2, _3));
-  registerPlannerAllocator("geometric::PRM", boost::bind(&allocatePlanner<og::PRM>, _1, _2, _3));
-  registerPlannerAllocator("geometric::PRMstar", boost::bind(&allocatePlanner<og::PRMstar>, _1, _2, _3));
-}
-
-void mo::PlanningContextManager::registerDefaultStateSpaces()
-{
-  registerStateSpaceFactory(ModelBasedStateSpaceFactoryPtr(new JointModelStateSpaceFactory()));
-  registerStateSpaceFactory(ModelBasedStateSpaceFactoryPtr(new PoseModelStateSpaceFactory()));
-  registerStateSpaceFactory(ModelBasedStateSpaceFactoryPtr(new HumanoidModelStateSpaceFactory()));
-}
-
 mo::ConfiguredPlannerSelector mo::PlanningContextManager::getPlannerSelector() const
 {
   return boost::bind(&PlanningContextManager::plannerSelector, this, _1);
@@ -210,7 +183,7 @@ void mo::PlanningContextManager::createPlanningContext(ModelBasedPlanningContext
   context_spec.config_ = config.config;
   context_spec.planner_selector_ = getPlannerSelector();
   context_spec.constraint_sampler_manager_ = constraint_sampler_manager_;
-  context_spec.state_space_ = factory->getNewStateSpace(space_spec, visual_tools);
+  //context_spec.state_space_ = factory->getNewStateSpace(space_spec, visual_tools);
 
   enum SimpleSetupType
   {
@@ -376,17 +349,15 @@ void mo::PlanningContextManager::createPlanningContext(ModelBasedPlanningContext
   // Add new context to cache
   {
     boost::mutex::scoped_lock slock(cached_contexts_->lock_);
-    cached_contexts_->contexts_[std::make_pair(config.name, factory->getType())].push_back(context);
+    //cached_contexts_->contexts_[std::make_pair(config.name, factory->getType())].push_back(context);
   }
 }
 
 mo::ModelBasedPlanningContextPtr mo::PlanningContextManager::getPlanningContext(
     const planning_interface::PlannerConfigurationSettings &config,
-    const StateSpaceFactoryTypeSelector &factory_selector, const moveit_msgs::MotionPlanRequest &req,
+    const moveit_msgs::MotionPlanRequest &req,
     moveit_visual_tools::MoveItVisualToolsPtr visual_tools) const
 {
-  const mo::ModelBasedStateSpaceFactoryPtr &factory = factory_selector(config.group);
-
   // Check for a cached planning context
   ModelBasedPlanningContextPtr context;
 

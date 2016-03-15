@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan, Dave Coleman */
 
-#ifndef MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
-#define MOVEIT_OMPL_PARAMETERIZATION_MODEL_BASED_STATE_SPACE_
+#ifndef MOVEIT_OMPL_MODEL_BASED_STATE_SPACE_
+#define MOVEIT_OMPL_MODEL_BASED_STATE_SPACE_
 
 #include <ompl/base/StateSpace.h>
 #include <moveit/robot_model/robot_model.h>

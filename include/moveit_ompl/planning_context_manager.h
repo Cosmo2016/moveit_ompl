@@ -39,7 +39,7 @@
 
 #include <moveit/macros/class_forward.h>
 #include <moveit/ompl/model_based_planning_context.h>
-#include <moveit/ompl/parameterization/model_based_state_space_factory.h>
+#include <moveit/ompl/model_based_state_space_factory.h>
 #include <moveit/constraint_samplers/constraint_sampler_manager.h>
 
 #include <boost/shared_ptr.hpp>
@@ -183,9 +183,6 @@ protected:
   typedef boost::function<const ModelBasedStateSpaceFactoryPtr &(const std::string &)> StateSpaceFactoryTypeSelector;
 
   ConfiguredPlannerAllocator plannerSelector(const std::string &planner) const;
-
-  void registerDefaultPlanners();
-  void registerDefaultStateSpaces();
 
   /** \brief This is the function that constructs new planning contexts if no previous ones exist that are suitable */
   ModelBasedPlanningContextPtr getPlanningContext(const planning_interface::PlannerConfigurationSettings &config,

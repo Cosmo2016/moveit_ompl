@@ -37,7 +37,6 @@
 #ifndef MOVEIT_OMPL_OMPL_PLANNER_MANAGER_
 #define MOVEIT_OMPL_OMPL_PLANNER_MANAGER
 
-#include <moveit/ompl/planning_context_manager.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/robot_state/conversions.h>
@@ -93,7 +92,7 @@ public:
       @param pconfig Configurations for the different planners */
   const planning_interface::PlannerConfigurationMap &getPlannerConfigurations() const
   {
-    return context_manager_->getPlannerConfigurations();
+    //return context_manager_->getPlannerConfigurations();
   }
 
   /// \brief Calls the function above but ignores the error_code
@@ -101,39 +100,10 @@ public:
   getPlanningContext(const planning_scene::PlanningSceneConstPtr &planning_scene,
                      const planning_interface::MotionPlanRequest &req, moveit_msgs::MoveItErrorCodes &error_code) const;
 
-  ModelBasedPlanningContextPtr getLastPlanningContext() const
-  {
-    return context_manager_->getLastPlanningContext();
-  }
-
-  const PlanningContextManagerPtr &getPlanningContextManager() const
-  {
-    return context_manager_;
-  }
-
-  PlanningContextManagerPtr &getPlanningContextManager()
-  {
-    return context_manager_;
-  }
-
-  bool simplifySolutions() const
-  {
-    return simplify_solutions_;
-  }
-
-  void simplifySolutions(bool flag)
-  {
-    simplify_solutions_ = true;
-  }
-
-  /** @brief Print the status of this node*/
-  void printStatus();
-
 protected:
+
   /** @brief Configure the planners*/
   void loadPlannerConfigurations();
-
-  void configureContext(const ModelBasedPlanningContextPtr &context) const;
 
   /** \brief Configure the OMPL planning context for a new planning request */
   ModelBasedPlanningContextPtr prepareForSolve(const planning_interface::MotionPlanRequest &req,
@@ -146,16 +116,10 @@ protected:
   /** \brief The kinematic model for which motion plans are computed */
   robot_model::RobotModelConstPtr robot_model_;
 
+  // Create one planning context and stick to it the whole time (you can't change groups)
+  ModelBasedPlanningContextPtr planning_context_;
+
   constraint_samplers::ConstraintSamplerManagerPtr constraint_sampler_manager_;
-
-  PlanningContextManagerPtr context_manager_;
-
-  bool simplify_solutions_;
-
-  ros::Publisher pub_markers_;
-  ros::Publisher pub_valid_states_;
-  ros::Publisher pub_valid_traj_;
-  std::string planner_data_link_name_;
 
   // Visualize in Rviz
   moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;

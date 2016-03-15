@@ -34,8 +34,8 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/ompl/parameterization/model_based_state_space.h>
-#include <moveit/ompl/detail/default_state_sampler.h>
+#include <moveit_ompl/model_based_state_space.h>
+#include <moveit_ompl/detail/default_state_sampler.h>
 #include <boost/bind.hpp>
 
 namespace mo = moveit_ompl;
@@ -46,6 +46,7 @@ mo::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpaceSpecifi
 {
   // set the state space name
   setName(spec_.joint_model_group_->getName());
+  setName(getName() + "_JointModel");
   variable_count_ = spec_.joint_model_group_->getVariableCount();
   state_values_size_ = variable_count_ * sizeof(double);
   joint_model_vector_ = spec_.joint_model_group_->getActiveJointModels();
@@ -88,7 +89,7 @@ mo::ModelBasedStateSpace::ModelBasedStateSpace(const ModelBasedStateSpaceSpecifi
     bounds_.setHigh(i, var_bounds.front().max_position_);
 
     // Debug
-    //std::cout << "JointModel: " << spec_.joint_model_group_->getActiveJointModels()[i]->getName() << " has bounds ["
+    // std::cout << "JointModel: " << spec_.joint_model_group_->getActiveJointModels()[i]->getName() << " has bounds ["
     //<< var_bounds.front().min_position_ << ", " << var_bounds.front().max_position_ << "]" << std::endl;
   }
 
@@ -142,8 +143,8 @@ bool mo::ModelBasedStateSpace::populateState(ompl::base::State *state, const std
   {
     state->as<ModelBasedStateSpace::StateType>()->values[i] = values[i];
   }
-  //memcpy((void *) &values[0], state->as<ModelBasedStateSpace::StateType>()->values,
-  //values.size() * sizeof(double));
+  // memcpy((void *) &values[0], state->as<ModelBasedStateSpace::StateType>()->values,
+  // values.size() * sizeof(double));
 }
 
 void mo::ModelBasedStateSpace::copyState(ompl::base::State *destination, const ompl::base::State *source) const
@@ -214,7 +215,7 @@ double mo::ModelBasedStateSpace::distance2(const ompl::base::State *state1, cons
 
   std::cout << "distance2 function missing! " << std::endl;
   return 0;
-  //return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+  // return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
 }
 
 bool mo::ModelBasedStateSpace::equalStates(const ompl::base::State *state1, const ompl::base::State *state2) const
@@ -290,7 +291,6 @@ void mo::ModelBasedStateSpace::setPlanningVolume(double minX, double maxX, doubl
 
 ompl::base::StateSamplerPtr mo::ModelBasedStateSpace::allocDefaultStateSampler() const
 {
-
   return ompl::base::StateSamplerPtr(static_cast<ompl::base::StateSampler *>(
       new DefaultStateSampler(this, spec_.joint_model_group_, &spec_.joint_bounds_)));
 }

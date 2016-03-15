@@ -37,8 +37,7 @@
 #ifndef MOVEIT_OMPL_DETAILS_DEFAULT_STATE_SAMPLER_
 #define MOVEIT_OMPL_DETAILS_DEFAULT_STATE_SAMPLER_
 
-#include <moveit/ompl/parameterization/model_based_state_space.h>
-#include <moveit/ompl/model_based_planning_context.h>
+#include <moveit_ompl/model_based_state_space.h>
 
 namespace moveit_ompl
 {
