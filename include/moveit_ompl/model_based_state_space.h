@@ -76,94 +76,72 @@ public:
   class StateType : public ompl::base::State
   {
   public:
-    enum
-    {
-      VALIDITY_KNOWN = 1,
-      GOAL_DISTANCE_KNOWN = 2,
-      VALIDITY_TRUE = 4,
-      IS_START_STATE = 8,
-      IS_GOAL_STATE = 16
-    };
+    // enum
+    // {
+    //   VALIDITY_KNOWN = 1,
+    //   GOAL_DISTANCE_KNOWN = 2,
+    //   VALIDITY_TRUE = 4,
+    // };
 
-    StateType() : ompl::base::State(), values(NULL), tag(-1), flags(0), distance(0.0)
+    StateType()
+      : ompl::base::State(),
+        values(NULL),
+        level(0)
+        //tag(-1),
+        //flags(0), distance(0.0)
     {
-    }
-
-    void markValid(double d)
-    {
-      distance = d;
-      flags |= GOAL_DISTANCE_KNOWN;
-      markValid();
     }
 
-    void markValid()
-    {
-      flags |= (VALIDITY_KNOWN | VALIDITY_TRUE);
-    }
+    // void markValid(double d)
+    // {
+    //   distance = d;
+    //   flags |= GOAL_DISTANCE_KNOWN;
+    //   markValid();
+    // }
 
-    void markInvalid(double d)
-    {
-      distance = d;
-      flags |= GOAL_DISTANCE_KNOWN;
-      markInvalid();
-    }
+    // void markValid()
+    // {
+    //   flags |= (VALIDITY_KNOWN | VALIDITY_TRUE);
+    // }
 
-    void markInvalid()
-    {
-      flags &= ~VALIDITY_TRUE;
-      flags |= VALIDITY_KNOWN;
-    }
+    // void markInvalid(double d)
+    // {
+    //   distance = d;
+    //   flags |= GOAL_DISTANCE_KNOWN;
+    //   markInvalid();
+    // }
 
-    bool isValidityKnown() const
-    {
-      return flags & VALIDITY_KNOWN;
-    }
+    // void markInvalid()
+    // {
+    //   flags &= ~VALIDITY_TRUE;
+    //   flags |= VALIDITY_KNOWN;
+    // }
 
-    void clearKnownInformation()
-    {
-      flags = 0;
-    }
+    // bool isValidityKnown() const
+    // {
+    //   return flags & VALIDITY_KNOWN;
+    // }
 
-    bool isMarkedValid() const
-    {
-      return flags & VALIDITY_TRUE;
-    }
+    // void clearKnownInformation()
+    // {
+    //   flags = 0;
+    // }
 
-    bool isGoalDistanceKnown() const
-    {
-      return flags & GOAL_DISTANCE_KNOWN;
-    }
-    /*
-    bool isStartState() const
-    {
-      return flags & IS_START_STATE;
-    }
+    // bool isMarkedValid() const
+    // {
+    //   return flags & VALIDITY_TRUE;
+    // }
 
-    bool isGoalState() const
-    {
-      return flags & IS_GOAL_STATE;
-    }
-
-    bool isInputState() const
-    {
-      return flags & (IS_START_STATE | IS_GOAL_STATE);
-    }
-
-    void markStartState()
-    {
-      flags |= IS_START_STATE;
-    }
-
-    void markGoalState()
-    {
-      flags |= IS_GOAL_STATE;
-    }
-    */
+    // bool isGoalDistanceKnown() const
+    // {
+    //   return flags & GOAL_DISTANCE_KNOWN;
+    // }
 
     double *values;
-    int tag;
-    int flags;
-    double distance;
+    int level;
+    //int tag;
+    //int flags;
+    //double distance;
   };
 
   ModelBasedStateSpace(
@@ -257,8 +235,8 @@ public:
   virtual void copyJointToOMPLState(ompl::base::State *state, const robot_state::RobotState &robot_state,
                                     const moveit::core::JointModel *joint_model, int ompl_state_joint_index) const;
 
-  double getTagSnapToSegment() const;
-  void setTagSnapToSegment(double snap);
+  //double getTagSnapToSegment() const;
+  //void setTagSnapToSegment(double snap);
 
 protected:
   ModelBasedStateSpaceSpecification spec_;
@@ -270,8 +248,8 @@ protected:
   InterpolationFunction interpolation_function_;
   DistanceFunction distance_function_;
 
-  double tag_snap_to_segment_;
-  double tag_snap_to_segment_complement_;
+  //double tag_snap_to_segment_;
+  //double tag_snap_to_segment_complement_;
 
   // For visualizing things in rviz
   moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
