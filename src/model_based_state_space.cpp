@@ -359,3 +359,15 @@ void mo::ModelBasedStateSpace::copyJointToOMPLState(ompl::base::State *state,
   // clear any cached info (such as validity known or not)
   //state->as<StateType>()->clearKnownInformation();
 }
+
+/** \brief Get the mode (for hybrid task planning) of this state */
+int mo::ModelBasedStateSpace::getLevel(const ompl::base::State *state) const
+{
+  return state->as<StateType>()->level;
+}
+
+/** \brief Set the mode (for hybrid task planning) of this state */
+void mo::ModelBasedStateSpace::setLevel(ompl::base::State *state, int level)
+{
+  state->as<StateType>()->level = level;
+}

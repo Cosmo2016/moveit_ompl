@@ -238,6 +238,12 @@ public:
   //double getTagSnapToSegment() const;
   //void setTagSnapToSegment(double snap);
 
+  /** \brief Get the mode (for hybrid task planning) of this state */
+  virtual int getLevel(const ompl::base::State *state) const;
+
+  /** \brief Set the mode (for hybrid task planning) of this state */
+  virtual void setLevel(ompl::base::State *state, int level);
+
 protected:
   ModelBasedStateSpaceSpecification spec_;
   std::vector<robot_model::JointModel::Bounds> joint_bounds_storage_;
