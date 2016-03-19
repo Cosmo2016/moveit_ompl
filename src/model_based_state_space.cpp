@@ -212,7 +212,10 @@ double mo::ModelBasedStateSpace::distance(const ompl::base::State *state1, const
   // if (distance_function_)
   //   return distance_function_(state1, state2);
   // else
+  //return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+
   return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+  //+ abs(state1->as<StateType>()->level - state2->as<StateType>()->level);
 }
 
 double mo::ModelBasedStateSpace::distance2(const ompl::base::State *state1, const ompl::base::State *state2) const
@@ -231,6 +234,11 @@ bool mo::ModelBasedStateSpace::equalStates(const ompl::base::State *state1, cons
     if (fabs(state1->as<StateType>()->values[i] - state2->as<StateType>()->values[i]) >
         std::numeric_limits<double>::epsilon())
       return false;
+
+  // Check level
+  if(state1->as<StateType>()->level != state2->as<StateType>()->level)
+    return false;
+
   return true;
 }
 
