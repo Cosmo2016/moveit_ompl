@@ -180,14 +180,14 @@ void moveit_ompl::ModelBasedPlanningContext::configure()
     ompl_simple_setup_->setup();
 
   // Set the visualization callbacks
-  ompl_simple_setup_->setVizStateCallback(
-      boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback, this, _1, _2, _3));
+  ompl_simple_setup_->setVizState(
+      boost::bind(&moveit_ompl::ModelBasedPlanningContext::visualizationState, this, _1, _2, _3));
 }
 
-void moveit_ompl::ModelBasedPlanningContext::visualizationStateCallback(const ompl::base::State *state, std::size_t type,
+void moveit_ompl::ModelBasedPlanningContext::visualizationState(const ompl::base::State *state, std::size_t type,
                                                                         double neighborRadius)
 {
-  std::cout << "ModelBasedPlanningContext::visualizationStateCallback()" << std::endl;
+  std::cout << "ModelBasedPlanningContext::visualizationState()" << std::endl;
   if (!visual_tools_)
     return;
 
