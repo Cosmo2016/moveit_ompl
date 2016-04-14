@@ -46,9 +46,9 @@
 
 namespace moveit_ompl
 {
-typedef boost::function<bool(const ompl::base::State *from, const ompl::base::State *to, const double t,
+typedef std::function<bool(const ompl::base::State *from, const ompl::base::State *to, const double t,
                              ompl::base::State *state)> InterpolationFunction;
-typedef boost::function<double(const ompl::base::State *state1, const ompl::base::State *state2)> DistanceFunction;
+typedef std::function<double(const ompl::base::State *state1, const ompl::base::State *state2)> DistanceFunction;
 
 struct ModelBasedStateSpaceSpecification
 {
@@ -261,7 +261,7 @@ protected:
   moveit_visual_tools::MoveItVisualToolsPtr visual_tools_;
 };
 
-typedef boost::shared_ptr<ModelBasedStateSpace> ModelBasedStateSpacePtr;
+typedef std::shared_ptr<ModelBasedStateSpace> ModelBasedStateSpacePtr;
 }
 
 #endif

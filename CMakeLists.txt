@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(moveit_ompl)
 
+# C++ 11
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall ${CMAKE_CXX_FLAGS}")
+
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
