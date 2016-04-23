@@ -145,6 +145,7 @@ bool mo::ModelBasedStateSpace::populateState(ompl::base::State *state, const std
   }
   // memcpy((void *) &values[0], state->as<ModelBasedStateSpace::StateType>()->values,
   // values.size() * sizeof(double));
+  return true;
 }
 
 void mo::ModelBasedStateSpace::copyState(ompl::base::State *destination, const ompl::base::State *source) const
