@@ -136,20 +136,21 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   bool getFilePath(std::string &file_path, const std::string &file_name, const std::string &home_directory)
   {
     namespace fs = boost::filesystem;
-    std::cout << "get file path " << std::endl;
     // Check that the directory exists, if not, create it
     fs::path rootPath;
-    rootPath = fs::path("/home/dave");
-    // if (!std::string(getenv("HOME")).empty())
-    //   rootPath = fs::path(getenv("HOME"));  // Support Linux/Mac
-    // else if (!std::string(getenv("HOMEPATH")).empty())
-    //   rootPath = fs::path(getenv("HOMEPATH"));  // Support Windows
-    // else
-    // {
-    //   ROS_WARN("Unable to find a home path for this computer");
-    //   rootPath = fs::path("");
-    // }
-    std::cout << "rootPath: " << rootPath << std::endl;
+
+    //rootPath = fs::path("/home/dave");
+    //std::cout << "Over-rode root path to : " << rootPath << std::endl;
+
+    if (!std::string(getenv("HOME")).empty())
+      rootPath = fs::path(getenv("HOME"));  // Support Linux/Mac
+    else if (!std::string(getenv("HOMEPATH")).empty())
+      rootPath = fs::path(getenv("HOMEPATH"));  // Support Windows
+    else
+    {
+      ROS_WARN("Unable to find a home path for this computer");
+      rootPath = fs::path("");
+    }
     rootPath = rootPath / fs::path(home_directory);
 
     boost::system::error_code returnedError;
