@@ -102,6 +102,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "sparse_delta_fraction", sparseDB->sparseDeltaFraction_);
     sparseDB->discretization_ = discretizer->discretization_;
     error += !get(name, rpnh, "dense_delta_fraction", sparseDB->denseDeltaFraction_);
+    error += !get(name, rpnh, "near_sample_points_multiple", sparseDB->nearSamplePointsMultiple_);
     error += !get(name, rpnh, "stretch_factor", sparseDB->stretchFactor_);
     error += !get(name, rpnh, "sparse_creation_insertion_order", sparseDB->sparseCreationInsertionOrder_);
     error += !get(name, rpnh, "percent_max_extent_underestimate", sparseDB->percentMaxExtentUnderestimate_);
@@ -113,6 +114,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/database_edges", sparseDB->visualizeDatabaseEdges_);
     error += !get(name, rpnh, "visualize/dense_representatives", sparseDB->visualizeDenseRepresentatives_);
     error += !get(name, rpnh, "visualize/node_popularity", sparseDB->visualizeNodePopularity_);
+    error += !get(name, rpnh, "visualize/quality_criteria", sparseDB->visualizeQualityCriteria_);
     shutdownIfError(name, error);
   }
 
