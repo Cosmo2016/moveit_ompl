@@ -115,6 +115,8 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/dense_representatives", sparseDB->visualizeDenseRepresentatives_);
     error += !get(name, rpnh, "visualize/node_popularity", sparseDB->visualizeNodePopularity_);
     error += !get(name, rpnh, "visualize/quality_criteria", sparseDB->visualizeQualityCriteria_);
+    error += !get(name, rpnh, "visualize/astar", sparseDB->visualizeAstar_);
+    error += !get(name, rpnh, "visualize/astar_speed", sparseDB->visualizeAstarSpeed_);
     shutdownIfError(name, error);
   }
 
@@ -122,8 +124,6 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "bolt_retrieve_repair");
     error += !get(name, rpnh, "debug/verbose", boltRetrieveRepair->verbose_);
-    error += !get(name, rpnh, "visualize/astar", boltRetrieveRepair->visualizeAstar_);
-    error += !get(name, rpnh, "visualize/astar_speed", boltRetrieveRepair->visualizeAstarSpeed_);
     shutdownIfError(name, error);
   }
 }
