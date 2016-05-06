@@ -62,6 +62,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   ompl::tools::bolt::DiscretizerPtr discretizer = denseDB->getDiscretizer();
   ompl::tools::bolt::SparseDBPtr sparseDB = denseDB->getSparseDB();
   ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
+  ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseDB->getVertexDiscretizer();
 
   // Bolt
   {
@@ -69,11 +70,11 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/raw_trajectory", bolt->visualizeRawTrajectory_);
   }
 
-  // Discretizer
+  // Vertex Discretizer
   {
-    ros::NodeHandle rpnh(nh, "discretizer");
-    error += !get(name, rpnh, "discretization", discretizer->discretization_);
-    error += !get(name, rpnh, "visualize/grid_generation", discretizer->visualizeGridGeneration_);
+    ros::NodeHandle rpnh(nh, "vertex_discretizer");
+    error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
+    error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
   }
 
   // DenseDB
@@ -108,6 +109,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseDB->fourthCriteriaAfterFailures_);
     error += !get(name, rpnh, "sparse_creation_insertion_order", sparseDB->sparseCreationInsertionOrder_);
     error += !get(name, rpnh, "percent_max_extent_underestimate", sparseDB->percentMaxExtentUnderestimate_);
+    error += !get(name, rpnh, "magic_multiple", sparseDB->magicMultiple_);
     error += !get(name, rpnh, "testing_bool", sparseDB->testingBool_);
     error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
     error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
