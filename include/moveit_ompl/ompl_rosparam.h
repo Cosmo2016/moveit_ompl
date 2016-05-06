@@ -100,17 +100,19 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "sparse_db");
     error += !get(name, rpnh, "sparse_delta_fraction", sparseDB->sparseDeltaFraction_);
-    sparseDB->discretization_ = discretizer->discretization_;
     error += !get(name, rpnh, "dense_delta_fraction", sparseDB->denseDeltaFraction_);
     error += !get(name, rpnh, "near_sample_points_multiple", sparseDB->nearSamplePointsMultiple_);
     error += !get(name, rpnh, "stretch_factor", sparseDB->stretchFactor_);
+    error += !get(name, rpnh, "obstacle_clearance", sparseDB->obstacleClearance_);
     error += !get(name, rpnh, "terminate_after_failures", sparseDB->terminateAfterFailures_);
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseDB->fourthCriteriaAfterFailures_);
     error += !get(name, rpnh, "sparse_creation_insertion_order", sparseDB->sparseCreationInsertionOrder_);
     error += !get(name, rpnh, "percent_max_extent_underestimate", sparseDB->percentMaxExtentUnderestimate_);
     error += !get(name, rpnh, "testing_bool", sparseDB->testingBool_);
     error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
+    error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
     error += !get(name, rpnh, "debug/checks_verbose", sparseDB->vCriteria_);
+    error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
     error += !get(name, rpnh, "visualize/spars_graph", sparseDB->visualizeSparsGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseDB->visualizeSparsGraphSpeed_);
     error += !get(name, rpnh, "visualize/database_vertices", sparseDB->visualizeDatabaseVertices_);
