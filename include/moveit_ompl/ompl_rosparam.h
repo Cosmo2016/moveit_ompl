@@ -58,9 +58,9 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
 {
   using namespace rosparam_shortcuts;
   std::size_t error = 0;
-  ompl::tools::bolt::DenseDBPtr denseDB = bolt->getDenseDB();
-  ompl::tools::bolt::DiscretizerPtr discretizer = denseDB->getDiscretizer();
-  ompl::tools::bolt::SparseDBPtr sparseDB = denseDB->getSparseDB();
+  //ompl::tools::bolt::DenseDBPtr denseDB = bolt->getDenseDB();
+  ompl::tools::bolt::SparseDBPtr sparseDB = bolt->getSparseDB();
+  //ompl::tools::bolt::DiscretizerPtr discretizer = denseDB->getDiscretizer();
   ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseDB->getVertexDiscretizer();
 
@@ -71,31 +71,31 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   }
 
   // Vertex Discretizer
-  {
-    ros::NodeHandle rpnh(nh, "vertex_discretizer");
-    error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
-    error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
-  }
+  // {
+  //   ros::NodeHandle rpnh(nh, "vertex_discretizer");
+  //   error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
+  //   error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
+  // }
 
   // DenseDB
-  {
-    ros::NodeHandle rpnh(nh, "dense_db");
-    error += !get(name, rpnh, "desired_average_cost", denseDB->desiredAverageCost_);
-    error += !get(name, rpnh, "debug/snap_path_verbose", denseDB->snapPathVerbose_);
-    error += !get(name, rpnh, "visualize/cart_neighbors", denseDB->visualizeCartNeighbors_);
-    error += !get(name, rpnh, "visualize/cart_path", denseDB->visualizeCartPath_);
-    error += !get(name, rpnh, "visualize/snap_path", denseDB->visualizeSnapPath_);
-    error += !get(name, rpnh, "visualize/snap_path_speed", denseDB->visualizeSnapPathSpeed_);
-    error += !get(name, rpnh, "visualize/astar", denseDB->visualizeAstar_);
-    error += !get(name, rpnh, "visualize/astar_speed", denseDB->visualizeAstarSpeed_);
-    error += !get(name, rpnh, "visualize/add_sample", denseDB->visualizeAddSample_);
-    error += !get(name, rpnh, "visualize/database_edges", denseDB->visualizeDatabaseEdges_);
-    error += !get(name, rpnh, "visualize/database_vertices", denseDB->visualizeDatabaseVertices_);
-    error += !get(name, rpnh, "save_database", denseDB->savingEnabled_);
-    error += !get(name, rpnh, "popularity_bias_enabled", denseDB->popularityBiasEnabled_);
-    error += !get(name, rpnh, "popularity_bias", denseDB->popularityBias_);
-    shutdownIfError(name, error);
-  }
+  // {
+  //   ros::NodeHandle rpnh(nh, "dense_db");
+  //   error += !get(name, rpnh, "desired_average_cost", denseDB->desiredAverageCost_);
+  //   error += !get(name, rpnh, "debug/snap_path_verbose", denseDB->snapPathVerbose_);
+  //   error += !get(name, rpnh, "visualize/cart_neighbors", denseDB->visualizeCartNeighbors_);
+  //   error += !get(name, rpnh, "visualize/cart_path", denseDB->visualizeCartPath_);
+  //   error += !get(name, rpnh, "visualize/snap_path", denseDB->visualizeSnapPath_);
+  //   error += !get(name, rpnh, "visualize/snap_path_speed", denseDB->visualizeSnapPathSpeed_);
+  //   error += !get(name, rpnh, "visualize/astar", denseDB->visualizeAstar_);
+  //   error += !get(name, rpnh, "visualize/astar_speed", denseDB->visualizeAstarSpeed_);
+  //   error += !get(name, rpnh, "visualize/add_sample", denseDB->visualizeAddSample_);
+  //   error += !get(name, rpnh, "visualize/database_edges", denseDB->visualizeDatabaseEdges_);
+  //   error += !get(name, rpnh, "visualize/database_vertices", denseDB->visualizeDatabaseVertices_);
+  //   error += !get(name, rpnh, "save_database", denseDB->savingEnabled_);
+  //   error += !get(name, rpnh, "popularity_bias_enabled", denseDB->popularityBiasEnabled_);
+  //   error += !get(name, rpnh, "popularity_bias", denseDB->popularityBias_);
+  //   shutdownIfError(name, error);
+  // }
 
   // SparseDB
   {
