@@ -61,6 +61,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   ompl::tools::bolt::SparseDBPtr sparseDB = bolt->getSparseDB();
   ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseDB->getVertexDiscretizer();
+  ompl::tools::bolt::DenseCachePtr denseCache = sparseDB->getDenseCache();
 
   // Bolt
   {
@@ -91,6 +92,9 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "testing_bool", sparseDB->testingBool_);
     error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
     error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
+    error += !get(name, rpnh, "use_check_remove_close_vertices", sparseDB->useCheckRemoveCloseVertices_);
+    error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseDB->useClearEdgesNearVertex_);
+    error += !get(name, rpnh, "use_original_smoother", sparseDB->useOriginalSmoother_);
     error += !get(name, rpnh, "debug/add_verbose", sparseDB->vAdd_);
     error += !get(name, rpnh, "debug/checks_verbose", sparseDB->vCriteria_);
     error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
@@ -98,6 +102,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/spars_graph", sparseDB->visualizeSparsGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseDB->visualizeSparsGraphSpeed_);
     error += !get(name, rpnh, "visualize/attempted_states", sparseDB->visualizeAttemptedStates_);
+    error += !get(name, rpnh, "visualize/connectvity", sparseDB->visualizeConnectivity_);
     error += !get(name, rpnh, "visualize/database_vertices", sparseDB->visualizeDatabaseVertices_);
     error += !get(name, rpnh, "visualize/database_edges", sparseDB->visualizeDatabaseEdges_);
     error += !get(name, rpnh, "visualize/database_coverage", sparseDB->visualizeDatabaseCoverage_);
@@ -108,6 +113,13 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/quality_path_simp", sparseDB->visualizeQualityPathSimp_);
     error += !get(name, rpnh, "visualize/astar", sparseDB->visualizeAstar_);
     error += !get(name, rpnh, "visualize/astar_speed", sparseDB->visualizeAstarSpeed_);
+    shutdownIfError(name, error);
+  }
+
+  // Dense Cache
+  {
+    ros::NodeHandle rpnh(nh, "dense_cache");
+    error += !get(name, rpnh, "disable_cache", denseCache->disableCache_);
     shutdownIfError(name, error);
   }
 
