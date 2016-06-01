@@ -58,9 +58,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
 {
   using namespace rosparam_shortcuts;
   std::size_t error = 0;
-  //ompl::tools::bolt::DenseDBPtr denseDB = bolt->getDenseDB();
   ompl::tools::bolt::SparseDBPtr sparseDB = bolt->getSparseDB();
-  //ompl::tools::bolt::DiscretizerPtr discretizer = denseDB->getDiscretizer();
   ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseDB->getVertexDiscretizer();
 
@@ -71,31 +69,11 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   }
 
   // Vertex Discretizer
-  // {
-  //   ros::NodeHandle rpnh(nh, "vertex_discretizer");
-  //   error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
-  //   error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
-  // }
-
-  // DenseDB
-  // {
-  //   ros::NodeHandle rpnh(nh, "dense_db");
-  //   error += !get(name, rpnh, "desired_average_cost", denseDB->desiredAverageCost_);
-  //   error += !get(name, rpnh, "debug/snap_path_verbose", denseDB->snapPathVerbose_);
-  //   error += !get(name, rpnh, "visualize/cart_neighbors", denseDB->visualizeCartNeighbors_);
-  //   error += !get(name, rpnh, "visualize/cart_path", denseDB->visualizeCartPath_);
-  //   error += !get(name, rpnh, "visualize/snap_path", denseDB->visualizeSnapPath_);
-  //   error += !get(name, rpnh, "visualize/snap_path_speed", denseDB->visualizeSnapPathSpeed_);
-  //   error += !get(name, rpnh, "visualize/astar", denseDB->visualizeAstar_);
-  //   error += !get(name, rpnh, "visualize/astar_speed", denseDB->visualizeAstarSpeed_);
-  //   error += !get(name, rpnh, "visualize/add_sample", denseDB->visualizeAddSample_);
-  //   error += !get(name, rpnh, "visualize/database_edges", denseDB->visualizeDatabaseEdges_);
-  //   error += !get(name, rpnh, "visualize/database_vertices", denseDB->visualizeDatabaseVertices_);
-  //   error += !get(name, rpnh, "save_database", denseDB->savingEnabled_);
-  //   error += !get(name, rpnh, "popularity_bias_enabled", denseDB->popularityBiasEnabled_);
-  //   error += !get(name, rpnh, "popularity_bias", denseDB->popularityBias_);
-  //   shutdownIfError(name, error);
-  // }
+  {
+    ros::NodeHandle rpnh(nh, "vertex_discretizer");
+    error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
+    error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
+  }
 
   // SparseDB
   {
@@ -113,10 +91,13 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "testing_bool", sparseDB->testingBool_);
     error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
     error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
+    error += !get(name, rpnh, "debug/add_verbose", sparseDB->vAdd_);
     error += !get(name, rpnh, "debug/checks_verbose", sparseDB->vCriteria_);
     error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
+    error += !get(name, rpnh, "debug/remove_close_verbose", sparseDB->vRemoveClose_);
     error += !get(name, rpnh, "visualize/spars_graph", sparseDB->visualizeSparsGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseDB->visualizeSparsGraphSpeed_);
+    error += !get(name, rpnh, "visualize/attempted_states", sparseDB->visualizeAttemptedStates_);
     error += !get(name, rpnh, "visualize/database_vertices", sparseDB->visualizeDatabaseVertices_);
     error += !get(name, rpnh, "visualize/database_edges", sparseDB->visualizeDatabaseEdges_);
     error += !get(name, rpnh, "visualize/database_coverage", sparseDB->visualizeDatabaseCoverage_);
@@ -124,6 +105,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseDB->visualizeVoronoiDiagramAnimated_);
     error += !get(name, rpnh, "visualize/node_popularity", sparseDB->visualizeNodePopularity_);
     error += !get(name, rpnh, "visualize/quality_criteria", sparseDB->visualizeQualityCriteria_);
+    error += !get(name, rpnh, "visualize/quality_path_simp", sparseDB->visualizeQualityPathSimp_);
     error += !get(name, rpnh, "visualize/astar", sparseDB->visualizeAstar_);
     error += !get(name, rpnh, "visualize/astar_speed", sparseDB->visualizeAstarSpeed_);
     shutdownIfError(name, error);
