@@ -83,6 +83,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "dense_delta_fraction", sparseDB->denseDeltaFraction_);
     error += !get(name, rpnh, "near_sample_points_multiple", sparseDB->nearSamplePointsMultiple_);
     error += !get(name, rpnh, "stretch_factor", sparseDB->stretchFactor_);
+    error += !get(name, rpnh, "discretize_penetration_dist", sparseDB->discretizePenetrationDist_);
     error += !get(name, rpnh, "obstacle_clearance", sparseDB->obstacleClearance_);
     error += !get(name, rpnh, "terminate_after_failures", sparseDB->terminateAfterFailures_);
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseDB->fourthCriteriaAfterFailures_);
@@ -93,8 +94,9 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "use_check_remove_close_vertices", sparseDB->useCheckRemoveCloseVertices_);
     error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseDB->useClearEdgesNearVertex_);
     error += !get(name, rpnh, "use_original_smoother", sparseDB->useOriginalSmoother_);
+    error += !get(name, rpnh, "saving_enabled", sparseDB->savingEnabled_);
     error += !get(name, rpnh, "debug/add_verbose", sparseDB->vAdd_);
-    error += !get(name, rpnh, "debug/checks_verbose", sparseDB->vCriteria_);
+    error += !get(name, rpnh, "debug/criteria_verbose", sparseDB->vCriteria_);
     error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
     error += !get(name, rpnh, "debug/remove_close_verbose", sparseDB->vRemoveClose_);
     error += !get(name, rpnh, "debug/added_reason_verbose", sparseDB->vAddedReason_);
