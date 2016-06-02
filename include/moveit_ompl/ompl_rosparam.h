@@ -88,8 +88,6 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseDB->fourthCriteriaAfterFailures_);
     error += !get(name, rpnh, "sparse_creation_insertion_order", sparseDB->sparseCreationInsertionOrder_);
     error += !get(name, rpnh, "percent_max_extent_underestimate", sparseDB->percentMaxExtentUnderestimate_);
-    error += !get(name, rpnh, "magic_multiple", sparseDB->magicMultiple_);
-    error += !get(name, rpnh, "testing_bool", sparseDB->testingBool_);
     error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
     error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
     error += !get(name, rpnh, "use_check_remove_close_vertices", sparseDB->useCheckRemoveCloseVertices_);
@@ -99,6 +97,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "debug/checks_verbose", sparseDB->vCriteria_);
     error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
     error += !get(name, rpnh, "debug/remove_close_verbose", sparseDB->vRemoveClose_);
+    error += !get(name, rpnh, "debug/added_reason_verbose", sparseDB->vAddedReason_);
     error += !get(name, rpnh, "visualize/spars_graph", sparseDB->visualizeSparsGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseDB->visualizeSparsGraphSpeed_);
     error += !get(name, rpnh, "visualize/attempted_states", sparseDB->visualizeAttemptedStates_);
@@ -111,6 +110,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/node_popularity", sparseDB->visualizeNodePopularity_);
     error += !get(name, rpnh, "visualize/quality_criteria", sparseDB->visualizeQualityCriteria_);
     error += !get(name, rpnh, "visualize/quality_path_simp", sparseDB->visualizeQualityPathSimp_);
+    error += !get(name, rpnh, "visualize/remove_close_vertices", sparseDB->visualizeRemoveCloseVertices_);
     error += !get(name, rpnh, "visualize/astar", sparseDB->visualizeAstar_);
     error += !get(name, rpnh, "visualize/astar_speed", sparseDB->visualizeAstarSpeed_);
     shutdownIfError(name, error);
@@ -120,6 +120,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "dense_cache");
     error += !get(name, rpnh, "disable_cache", denseCache->disableCache_);
+    error += !get(name, rpnh, "save_every_n_edges", denseCache->saveEveryNEdges_);
     shutdownIfError(name, error);
   }
 
