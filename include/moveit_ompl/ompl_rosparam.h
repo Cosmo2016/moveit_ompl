@@ -122,6 +122,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "dense_cache");
     error += !get(name, rpnh, "disable_cache", denseCache->disableCache_);
+    error += !get(name, rpnh, "enable_cache_saving", denseCache->enableCacheSaving_);
     error += !get(name, rpnh, "save_every_n_edges", denseCache->saveEveryNEdges_);
     shutdownIfError(name, error);
   }
@@ -175,7 +176,6 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     // directories successfully created, append the group name as the file name
     rootPath = rootPath / fs::path(file_name);
     file_path = rootPath.string();
-    ROS_INFO_STREAM("Loading from " << file_path);
 
     return true;
   }
