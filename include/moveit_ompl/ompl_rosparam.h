@@ -58,10 +58,10 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
 {
   using namespace rosparam_shortcuts;
   std::size_t error = 0;
-  ompl::tools::bolt::SparseDBPtr sparseDB = bolt->getSparseDB();
+  ompl::tools::bolt::SparseGraphPtr sparseGraph = bolt->getSparseGraph();
   ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
-  ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseDB->getVertexDiscretizer();
-  ompl::tools::bolt::DenseCachePtr denseCache = sparseDB->getDenseCache();
+  ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseGraph->getVertexDiscretizer();
+  ompl::tools::bolt::DenseCachePtr denseCache = sparseGraph->getDenseCache();
 
   // Bolt
   {
@@ -76,45 +76,45 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
   }
 
-  // SparseDB
+  // SparseGraph
   {
     ros::NodeHandle rpnh(nh, "sparse_db");
-    error += !get(name, rpnh, "sparse_delta_fraction", sparseDB->sparseDeltaFraction_);
-    error += !get(name, rpnh, "dense_delta_fraction", sparseDB->denseDeltaFraction_);
-    error += !get(name, rpnh, "near_sample_points_multiple", sparseDB->nearSamplePointsMultiple_);
-    error += !get(name, rpnh, "stretch_factor", sparseDB->stretchFactor_);
-    error += !get(name, rpnh, "discretize_penetration_dist", sparseDB->discretizePenetrationDist_);
-    error += !get(name, rpnh, "obstacle_clearance", sparseDB->obstacleClearance_);
-    error += !get(name, rpnh, "terminate_after_failures", sparseDB->terminateAfterFailures_);
-    error += !get(name, rpnh, "fourth_criteria_after_failures", sparseDB->fourthCriteriaAfterFailures_);
-    error += !get(name, rpnh, "sparse_creation_insertion_order", sparseDB->sparseCreationInsertionOrder_);
-    error += !get(name, rpnh, "percent_max_extent_underestimate", sparseDB->percentMaxExtentUnderestimate_);
-    error += !get(name, rpnh, "use_discretized_samples", sparseDB->useDiscretizedSamples_);
-    error += !get(name, rpnh, "use_random_samples", sparseDB->useRandomSamples_);
-    error += !get(name, rpnh, "use_check_remove_close_vertices", sparseDB->useCheckRemoveCloseVertices_);
-    error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseDB->useClearEdgesNearVertex_);
-    error += !get(name, rpnh, "use_original_smoother", sparseDB->useOriginalSmoother_);
-    error += !get(name, rpnh, "saving_enabled", sparseDB->savingEnabled_);
-    error += !get(name, rpnh, "debug/add_verbose", sparseDB->vAdd_);
-    error += !get(name, rpnh, "debug/criteria_verbose", sparseDB->vCriteria_);
-    error += !get(name, rpnh, "debug/quality_verbose", sparseDB->vQuality_);
-    error += !get(name, rpnh, "debug/remove_close_verbose", sparseDB->vRemoveClose_);
-    error += !get(name, rpnh, "debug/added_reason_verbose", sparseDB->vAddedReason_);
-    error += !get(name, rpnh, "visualize/spars_graph", sparseDB->visualizeSparsGraph_);
-    error += !get(name, rpnh, "visualize/spars_graph_speed", sparseDB->visualizeSparsGraphSpeed_);
-    error += !get(name, rpnh, "visualize/attempted_states", sparseDB->visualizeAttemptedStates_);
-    error += !get(name, rpnh, "visualize/connectvity", sparseDB->visualizeConnectivity_);
-    error += !get(name, rpnh, "visualize/database_vertices", sparseDB->visualizeDatabaseVertices_);
-    error += !get(name, rpnh, "visualize/database_edges", sparseDB->visualizeDatabaseEdges_);
-    error += !get(name, rpnh, "visualize/database_coverage", sparseDB->visualizeDatabaseCoverage_);
-    error += !get(name, rpnh, "visualize/voronoi_diagram", sparseDB->visualizeVoronoiDiagram_);
-    error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseDB->visualizeVoronoiDiagramAnimated_);
-    error += !get(name, rpnh, "visualize/node_popularity", sparseDB->visualizeNodePopularity_);
-    error += !get(name, rpnh, "visualize/quality_criteria", sparseDB->visualizeQualityCriteria_);
-    error += !get(name, rpnh, "visualize/quality_path_simp", sparseDB->visualizeQualityPathSimp_);
-    error += !get(name, rpnh, "visualize/remove_close_vertices", sparseDB->visualizeRemoveCloseVertices_);
-    error += !get(name, rpnh, "visualize/astar", sparseDB->visualizeAstar_);
-    error += !get(name, rpnh, "visualize/astar_speed", sparseDB->visualizeAstarSpeed_);
+    error += !get(name, rpnh, "sparse_delta_fraction", sparseGraph->sparseDeltaFraction_);
+    error += !get(name, rpnh, "dense_delta_fraction", sparseGraph->denseDeltaFraction_);
+    error += !get(name, rpnh, "near_sample_points_multiple", sparseGraph->nearSamplePointsMultiple_);
+    error += !get(name, rpnh, "stretch_factor", sparseGraph->stretchFactor_);
+    error += !get(name, rpnh, "discretize_penetration_dist", sparseGraph->discretizePenetrationDist_);
+    error += !get(name, rpnh, "obstacle_clearance", sparseGraph->obstacleClearance_);
+    error += !get(name, rpnh, "terminate_after_failures", sparseGraph->terminateAfterFailures_);
+    error += !get(name, rpnh, "fourth_criteria_after_failures", sparseGraph->fourthCriteriaAfterFailures_);
+    error += !get(name, rpnh, "sparse_creation_insertion_order", sparseGraph->sparseCreationInsertionOrder_);
+    error += !get(name, rpnh, "percent_max_extent_underestimate", sparseGraph->percentMaxExtentUnderestimate_);
+    error += !get(name, rpnh, "use_discretized_samples", sparseGraph->useDiscretizedSamples_);
+    error += !get(name, rpnh, "use_random_samples", sparseGraph->useRandomSamples_);
+    error += !get(name, rpnh, "use_check_remove_close_vertices", sparseGraph->useCheckRemoveCloseVertices_);
+    error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseGraph->useClearEdgesNearVertex_);
+    error += !get(name, rpnh, "use_original_smoother", sparseGraph->useOriginalSmoother_);
+    error += !get(name, rpnh, "saving_enabled", sparseGraph->savingEnabled_);
+    error += !get(name, rpnh, "debug/add_verbose", sparseGraph->vAdd_);
+    error += !get(name, rpnh, "debug/criteria_verbose", sparseGraph->vCriteria_);
+    error += !get(name, rpnh, "debug/quality_verbose", sparseGraph->vQuality_);
+    error += !get(name, rpnh, "debug/remove_close_verbose", sparseGraph->vRemoveClose_);
+    error += !get(name, rpnh, "debug/added_reason_verbose", sparseGraph->vAddedReason_);
+    error += !get(name, rpnh, "visualize/spars_graph", sparseGraph->visualizeSparsGraph_);
+    error += !get(name, rpnh, "visualize/spars_graph_speed", sparseGraph->visualizeSparsGraphSpeed_);
+    error += !get(name, rpnh, "visualize/attempted_states", sparseGraph->visualizeAttemptedStates_);
+    error += !get(name, rpnh, "visualize/connectvity", sparseGraph->visualizeConnectivity_);
+    error += !get(name, rpnh, "visualize/database_vertices", sparseGraph->visualizeDatabaseVertices_);
+    error += !get(name, rpnh, "visualize/database_edges", sparseGraph->visualizeDatabaseEdges_);
+    error += !get(name, rpnh, "visualize/database_coverage", sparseGraph->visualizeDatabaseCoverage_);
+    error += !get(name, rpnh, "visualize/voronoi_diagram", sparseGraph->visualizeVoronoiDiagram_);
+    error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseGraph->visualizeVoronoiDiagramAnimated_);
+    error += !get(name, rpnh, "visualize/node_popularity", sparseGraph->visualizeNodePopularity_);
+    error += !get(name, rpnh, "visualize/quality_criteria", sparseGraph->visualizeQualityCriteria_);
+    error += !get(name, rpnh, "visualize/quality_path_simp", sparseGraph->visualizeQualityPathSimp_);
+    error += !get(name, rpnh, "visualize/remove_close_vertices", sparseGraph->visualizeRemoveCloseVertices_);
+    error += !get(name, rpnh, "visualize/astar", sparseGraph->visualizeAstar_);
+    error += !get(name, rpnh, "visualize/astar_speed", sparseGraph->visualizeAstarSpeed_);
     shutdownIfError(name, error);
   }
 
