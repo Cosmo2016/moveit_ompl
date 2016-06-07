@@ -60,7 +60,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   std::size_t error = 0;
   ompl::tools::bolt::SparseGraphPtr sparseGraph = bolt->getSparseGraph();
   ompl::tools::bolt::SparseCriteriaPtr sparseCriteria = bolt->getSparseCriteria();
-  ompl::tools::bolt::BoltRetrieveRepairPtr boltRetrieveRepair = bolt->getRetrieveRepairPlanner();
+  ompl::tools::bolt::BoltPlannerPtr boltPlanner = bolt->getBoltPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseCriteria->getVertexDiscretizer();
   ompl::tools::bolt::DenseCachePtr denseCache = sparseGraph->getDenseCache();
 
@@ -134,10 +134,10 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     shutdownIfError(name, error);
   }
 
-  // BoltRetrieveRepair
+  // BoltPlanner
   {
     ros::NodeHandle rpnh(nh, "bolt_retrieve_repair");
-    error += !get(name, rpnh, "debug/verbose", boltRetrieveRepair->verbose_);
+    error += !get(name, rpnh, "debug/verbose", boltPlanner->verbose_);
     shutdownIfError(name, error);
   }
 }
