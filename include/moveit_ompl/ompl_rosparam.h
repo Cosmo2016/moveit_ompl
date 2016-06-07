@@ -59,6 +59,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   using namespace rosparam_shortcuts;
   std::size_t error = 0;
   ompl::tools::bolt::SparseGraphPtr sparseGraph = bolt->getSparseGraph();
+  ompl::tools::bolt::TaskGraphPtr taskGraph = bolt->getTaskGraph();
   ompl::tools::bolt::SparseCriteriaPtr sparseCriteria = bolt->getSparseCriteria();
   ompl::tools::bolt::BoltPlannerPtr boltPlanner = bolt->getBoltPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseCriteria->getVertexDiscretizer();
@@ -125,6 +126,22 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     shutdownIfError(name, error);
   }
 
+  // TaskGraph
+  {
+    ros::NodeHandle rpnh(nh, "task_graph");
+    error += !get(name, rpnh, "debug/add_verbose", taskGraph->vAdd_);
+    error += !get(name, rpnh, "debug/search_verbose", taskGraph->vSearch_);
+    error += !get(name, rpnh, "debug/visualize_verbose", taskGraph->vVisualize_);
+    error += !get(name, rpnh, "debug/verbose", taskGraph->verbose_);
+    error += !get(name, rpnh, "visualize/task_graph", taskGraph->visualizeTaskGraph_);
+    error += !get(name, rpnh, "visualize/task_graph_speed", taskGraph->visualizeTaskGraphSpeed_);
+    error += !get(name, rpnh, "visualize/database_vertices", taskGraph->visualizeDatabaseVertices_);
+    error += !get(name, rpnh, "visualize/database_edges", taskGraph->visualizeDatabaseEdges_);
+    error += !get(name, rpnh, "visualize/astar", taskGraph->visualizeAstar_);
+    error += !get(name, rpnh, "visualize/astar_speed", taskGraph->visualizeAstarSpeed_);
+    shutdownIfError(name, error);
+  }
+
   // Dense Cache
   {
     ros::NodeHandle rpnh(nh, "dense_cache");
@@ -136,7 +153,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
 
   // BoltPlanner
   {
-    ros::NodeHandle rpnh(nh, "bolt_retrieve_repair");
+    ros::NodeHandle rpnh(nh, "bolt_planner");
     error += !get(name, rpnh, "debug/verbose", boltPlanner->verbose_);
     shutdownIfError(name, error);
   }
