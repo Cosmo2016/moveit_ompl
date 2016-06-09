@@ -74,17 +74,17 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   // Vertex Discretizer
   {
     ros::NodeHandle rpnh(nh, "vertex_discretizer");
-    error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
-    error += !get(name, rpnh, "debug/verbose_thread", vertexDiscret->vThread_);
+    error += !get(name, rpnh, "verbose/verbose", vertexDiscret->verbose_);
+    error += !get(name, rpnh, "verbose/thread", vertexDiscret->vThread_);
     error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
   }
 
   // SparseGraph
   {
     ros::NodeHandle rpnh(nh, "sparse_graph");
-    error += !get(name, rpnh, "saving_enabled", sparseGraph->savingEnabled_);
+    error += !get(name, rpnh, "save_enabled", sparseGraph->savingEnabled_);
     error += !get(name, rpnh, "super_debug", sparseGraph->superDebug_);
-    error += !get(name, rpnh, "debug/add_verbose", sparseGraph->vAdd_);
+    error += !get(name, rpnh, "verbose/add", sparseGraph->vAdd_);
     error += !get(name, rpnh, "visualize/spars_graph", sparseGraph->visualizeSparseGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseGraph->visualizeSparseGraphSpeed_);
     error += !get(name, rpnh, "visualize/database_vertices", sparseGraph->visualizeDatabaseVertices_);
@@ -115,10 +115,10 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseCriteria->useClearEdgesNearVertex_);
     error += !get(name, rpnh, "use_original_smoother", sparseCriteria->useOriginalSmoother_);
     error += !get(name, rpnh, "save_interval", sparseCriteria->saveInterval_);
-    error += !get(name, rpnh, "debug/criteria_verbose", sparseCriteria->vCriteria_);
-    error += !get(name, rpnh, "debug/quality_verbose", sparseCriteria->vQuality_);
-    error += !get(name, rpnh, "debug/remove_close_verbose", sparseCriteria->vRemoveClose_);
-    error += !get(name, rpnh, "debug/added_reason_verbose", sparseCriteria->vAddedReason_);
+    error += !get(name, rpnh, "verbose/criteria", sparseCriteria->vCriteria_);
+    error += !get(name, rpnh, "verbose/quality", sparseCriteria->vQuality_);
+    error += !get(name, rpnh, "verbose/remove_close", sparseCriteria->vRemoveClose_);
+    error += !get(name, rpnh, "verbose/added_reason", sparseCriteria->vAddedReason_);
     error += !get(name, rpnh, "visualize/attempted_states", sparseCriteria->visualizeAttemptedStates_);
     error += !get(name, rpnh, "visualize/connectivity", sparseCriteria->visualizeConnectivity_);
     error += !get(name, rpnh, "visualize/remove_close_vertices", sparseCriteria->visualizeRemoveCloseVertices_);
@@ -132,10 +132,10 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   // TaskGraph
   {
     ros::NodeHandle rpnh(nh, "task_graph");
-    error += !get(name, rpnh, "debug/add_verbose", taskGraph->vAdd_);
-    error += !get(name, rpnh, "debug/search_verbose", taskGraph->vSearch_);
-    error += !get(name, rpnh, "debug/visualize_verbose", taskGraph->vVisualize_);
-    error += !get(name, rpnh, "debug/verbose", taskGraph->verbose_);
+    error += !get(name, rpnh, "verbose/add", taskGraph->vAdd_);
+    error += !get(name, rpnh, "verbose/search", taskGraph->vSearch_);
+    error += !get(name, rpnh, "verbose/visualize", taskGraph->vVisualize_);
+    error += !get(name, rpnh, "verbose/verbose", taskGraph->verbose_);
     error += !get(name, rpnh, "visualize/task_graph", taskGraph->visualizeTaskGraph_);
     error += !get(name, rpnh, "visualize/task_graph_speed", taskGraph->visualizeTaskGraphSpeed_);
     error += !get(name, rpnh, "visualize/database_vertices", taskGraph->visualizeDatabaseVertices_);
@@ -157,7 +157,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   // BoltPlanner
   {
     ros::NodeHandle rpnh(nh, "bolt_planner");
-    error += !get(name, rpnh, "debug/verbose", boltPlanner->verbose_);
+    error += !get(name, rpnh, "verbose/verbose", boltPlanner->verbose_);
     shutdownIfError(name, error);
   }
 }
