@@ -37,8 +37,8 @@
            OMPL Bolt algorithm from different applications
 */
 
-#ifndef OMPL_EXPERIENCE_DEMOS_OMPL_ROSPARAM_H_
-#define OMPL_EXPERIENCE_DEMOS_OMPL_ROSPARAM_H_
+#ifndef MOVEIT_OMPL_OMPL_ROSPARAM_H_
+#define MOVEIT_OMPL_OMPL_ROSPARAM_H_
 
 // ROS
 #include <ros/ros.h>
@@ -52,7 +52,7 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-namespace ompl_experience_demos
+namespace moveit_ompl
 {
 void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools::bolt::BoltPtr bolt)
 {
@@ -75,6 +75,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "vertex_discretizer");
     error += !get(name, rpnh, "debug/verbose", vertexDiscret->verbose_);
+    error += !get(name, rpnh, "debug/verbose_thread", vertexDiscret->vThread_);
     error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
   }
 
@@ -82,6 +83,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "sparse_graph");
     error += !get(name, rpnh, "saving_enabled", sparseGraph->savingEnabled_);
+    error += !get(name, rpnh, "super_debug", sparseGraph->superDebug_);
     error += !get(name, rpnh, "debug/add_verbose", sparseGraph->vAdd_);
     error += !get(name, rpnh, "visualize/spars_graph", sparseGraph->visualizeSparseGraph_);
     error += !get(name, rpnh, "visualize/spars_graph_speed", sparseGraph->visualizeSparseGraphSpeed_);
@@ -112,12 +114,13 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "use_check_remove_close_vertices", sparseCriteria->useCheckRemoveCloseVertices_);
     error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseCriteria->useClearEdgesNearVertex_);
     error += !get(name, rpnh, "use_original_smoother", sparseCriteria->useOriginalSmoother_);
+    error += !get(name, rpnh, "save_interval", sparseCriteria->saveInterval_);
     error += !get(name, rpnh, "debug/criteria_verbose", sparseCriteria->vCriteria_);
     error += !get(name, rpnh, "debug/quality_verbose", sparseCriteria->vQuality_);
     error += !get(name, rpnh, "debug/remove_close_verbose", sparseCriteria->vRemoveClose_);
     error += !get(name, rpnh, "debug/added_reason_verbose", sparseCriteria->vAddedReason_);
     error += !get(name, rpnh, "visualize/attempted_states", sparseCriteria->visualizeAttemptedStates_);
-    error += !get(name, rpnh, "visualize/connectvity", sparseCriteria->visualizeConnectivity_);
+    error += !get(name, rpnh, "visualize/connectivity", sparseCriteria->visualizeConnectivity_);
     error += !get(name, rpnh, "visualize/remove_close_vertices", sparseCriteria->visualizeRemoveCloseVertices_);
     error += !get(name, rpnh, "visualize/voronoi_diagram", sparseCriteria->visualizeVoronoiDiagram_);
     error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseCriteria->visualizeVoronoiDiagramAnimated_);
@@ -206,4 +209,4 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
 
 }  // namespace
 
-#endif  // OMPL_EXPERIENCE_DEMOS_OMPL_ROSPARAM_H_
+#endif  // MOVEIT_OMPL_OMPL_ROSPARAM_H_

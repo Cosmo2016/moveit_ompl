@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   pluginlib
   tf
   eigen_conversions
+  sensor_msgs
 )
 find_package(OMPL REQUIRED)
 
@@ -50,6 +51,7 @@ add_library(${PROJECT_NAME}
   # src/model_based_planning_context.cpp
   src/model_based_state_space.cpp
   src/detail/threadsafe_state_storage.cpp
+  src/remote_control.cpp
   # src/detail/state_validity_checker.cpp
   # src/detail/projection_evaluators.cpp
   # src/detail/goal_union.cpp
