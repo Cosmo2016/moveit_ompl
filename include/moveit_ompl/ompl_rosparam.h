@@ -90,6 +90,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/database_vertices", sparseGraph->visualizeDatabaseVertices_);
     error += !get(name, rpnh, "visualize/database_edges", sparseGraph->visualizeDatabaseEdges_);
     error += !get(name, rpnh, "visualize/database_coverage", sparseGraph->visualizeDatabaseCoverage_);
+    error += !get(name, rpnh, "visualize/graph_after_loading", sparseGraph->visualizeGraphAfterLoading_);
     error += !get(name, rpnh, "visualize/quality_path_simp", sparseGraph->visualizeQualityPathSimp_);
     error += !get(name, rpnh, "visualize/astar", sparseGraph->visualizeAstar_);
     error += !get(name, rpnh, "visualize/astar_speed", sparseGraph->visualizeAstarSpeed_);
