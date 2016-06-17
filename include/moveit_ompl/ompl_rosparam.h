@@ -133,9 +133,13 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   // TaskGraph
   {
     ros::NodeHandle rpnh(nh, "task_graph");
+    error += !get(name, rpnh, "num_neighbors_connect_to_cart", taskGraph->numNeighborsConnectToCart_);
     error += !get(name, rpnh, "verbose/add", taskGraph->vAdd_);
     error += !get(name, rpnh, "verbose/search", taskGraph->vSearch_);
     error += !get(name, rpnh, "verbose/visualize", taskGraph->vVisualize_);
+    error += !get(name, rpnh, "verbose/heuristic", taskGraph->vHeuristic_);
+    error += !get(name, rpnh, "verbose/clear", taskGraph->vClear_);
+    error += !get(name, rpnh, "verbose/generate_task", taskGraph->vGenerateTask_);
     error += !get(name, rpnh, "verbose/verbose", taskGraph->verbose_);
     error += !get(name, rpnh, "visualize/task_graph", taskGraph->visualizeTaskGraph_);
     error += !get(name, rpnh, "visualize/task_graph_speed", taskGraph->visualizeTaskGraphSpeed_);
