@@ -77,6 +77,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "verbose/verbose", vertexDiscret->verbose_);
     error += !get(name, rpnh, "verbose/thread", vertexDiscret->vThread_);
     error += !get(name, rpnh, "visualize/grid_generation", vertexDiscret->visualizeGridGeneration_);
+    error += !get(name, rpnh, "visualize/grid_generation_wait", vertexDiscret->visualizeGridGenerationWait_);
   }
 
   // SparseGraph
@@ -104,7 +105,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "dense_delta_fraction", sparseCriteria->denseDeltaFraction_);
     error += !get(name, rpnh, "near_sample_points_multiple", sparseCriteria->nearSamplePointsMultiple_);
     error += !get(name, rpnh, "stretch_factor", sparseCriteria->stretchFactor_);
-    error += !get(name, rpnh, "discretize_penetration_dist", sparseCriteria->discretizePenetrationDist_);
+    error += !get(name, rpnh, "penetration_overlap_fraction", sparseCriteria->penetrationOverlapFraction_);
     error += !get(name, rpnh, "obstacle_clearance", sparseCriteria->obstacleClearance_);
     error += !get(name, rpnh, "terminate_after_failures", sparseCriteria->terminateAfterFailures_);
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseCriteria->fourthCriteriaAfterFailures_);

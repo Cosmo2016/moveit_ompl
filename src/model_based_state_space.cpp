@@ -105,24 +105,6 @@ mo::ModelBasedStateSpace::~ModelBasedStateSpace()
 {
 }
 
-// double mo::ModelBasedStateSpace::getTagSnapToSegment() const
-// {
-//   return tag_snap_to_segment_;
-// }
-
-// void mo::ModelBasedStateSpace::setTagSnapToSegment(double snap)
-// {
-//   if (snap < 0.0 || snap > 1.0)
-//     ROS_WARN("Snap to segment for tags is a ratio. It's value must be between 0.0 and 1.0. Value remains as previously "
-//              "set (%lf)",
-//              tag_snap_to_segment_);
-//   else
-//   {
-//     tag_snap_to_segment_ = snap;
-//     tag_snap_to_segment_complement_ = 1.0 - tag_snap_to_segment_;
-//   }
-// }
-
 ompl::base::State *mo::ModelBasedStateSpace::allocState() const
 {
   StateType *state = new StateType();
@@ -152,9 +134,6 @@ void mo::ModelBasedStateSpace::copyState(ompl::base::State *destination, const o
 {
   memcpy(destination->as<StateType>()->values, source->as<StateType>()->values, state_values_size_);
   destination->as<StateType>()->level = source->as<StateType>()->level;
-  //destination->as<StateType>()->tag = source->as<StateType>()->tag;
-  //destination->as<StateType>()->flags = source->as<StateType>()->flags;
-  //destination->as<StateType>()->distance = source->as<StateType>()->distance;
 }
 
 unsigned int mo::ModelBasedStateSpace::getSerializationLength() const
@@ -164,18 +143,12 @@ unsigned int mo::ModelBasedStateSpace::getSerializationLength() const
 
 void mo::ModelBasedStateSpace::serialize(void *serialization, const ompl::base::State *state) const
 {
-  //*reinterpret_cast<int *>(serialization) = state->as<StateType>()->tag;
-  //memcpy(reinterpret_cast<char *>(serialization) + sizeof(int), state->as<StateType>()->values, state_values_size_);
-
   *reinterpret_cast<int *>(serialization) = state->as<StateType>()->level;
   memcpy(reinterpret_cast<char *>(serialization) + sizeof(int), state->as<StateType>()->values, state_values_size_);
 }
 
 void mo::ModelBasedStateSpace::deserialize(ompl::base::State *state, const void *serialization) const
 {
-  // state->as<StateType>()->tag = *reinterpret_cast<const int *>(serialization);
-  // memcpy(state->as<StateType>()->values, reinterpret_cast<const char *>(serialization) + sizeof(int),
-  //        state_values_size_);
   state->as<StateType>()->level = *reinterpret_cast<const int *>(serialization);
   memcpy(state->as<StateType>()->values, reinterpret_cast<const char *>(serialization) + sizeof(int),
          state_values_size_);
@@ -210,13 +183,12 @@ double mo::ModelBasedStateSpace::getMeasure() const
 
 double mo::ModelBasedStateSpace::distance(const ompl::base::State *state1, const ompl::base::State *state2) const
 {
+  return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
+
   // if (distance_function_)
   //   return distance_function_(state1, state2);
   // else
-  //return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
-
-  return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
-  //+ abs(state1->as<StateType>()->level - state2->as<StateType>()->level);
+  // return spec_.joint_model_group_->distance(state1->as<StateType>()->values, state2->as<StateType>()->values);
 }
 
 double mo::ModelBasedStateSpace::distance2(const ompl::base::State *state1, const ompl::base::State *state2) const
@@ -265,14 +237,6 @@ void mo::ModelBasedStateSpace::interpolate(const ompl::base::State *from, const 
     // perform the actual interpolation
     spec_.joint_model_group_->interpolate(from->as<StateType>()->values, to->as<StateType>()->values, t,
                                           state->as<StateType>()->values);
-
-    // compute tag
-    // if (from->as<StateType>()->tag >= 0 && t < 1.0 - tag_snap_to_segment_)
-    //   state->as<StateType>()->tag = from->as<StateType>()->tag;
-    // else if (to->as<StateType>()->tag >= 0 && t > tag_snap_to_segment_)
-    //   state->as<StateType>()->tag = to->as<StateType>()->tag;
-    // else
-    //   state->as<StateType>()->tag = -1;
   }
 }
 
@@ -328,18 +292,6 @@ void mo::ModelBasedStateSpace::printState(const ompl::base::State *state, std::o
     out << std::endl;
   }
 
-  // if (state->as<StateType>()->isStartState())
-  //   out << "* start state"  << std::endl;
-  // if (state->as<StateType>()->isGoalState())
-  //   out << "* goal state"  << std::endl;
-  // if (state->as<StateType>()->isValidityKnown())
-  // {
-  //   if (state->as<StateType>()->isMarkedValid())
-  //     out << "* valid state" << std::endl;
-  //   else
-  //     out << "* invalid state" << std::endl;
-  // }
-  //out << "Tag: " << state->as<StateType>()->tag << std::endl;
   out << "Level: " << state->as<StateType>()->level << std::endl;
 }
 
@@ -364,9 +316,6 @@ void mo::ModelBasedStateSpace::copyJointToOMPLState(ompl::base::State *state,
   memcpy(getValueAddressAtIndex(state, ompl_state_joint_index),
          robot_state.getVariablePositions() + joint_model->getFirstVariableIndex() * sizeof(double),
          joint_model->getVariableCount() * sizeof(double));
-
-  // clear any cached info (such as validity known or not)
-  //state->as<StateType>()->clearKnownInformation();
 }
 
 /** \brief Get the mode (for hybrid task planning) of this state */
