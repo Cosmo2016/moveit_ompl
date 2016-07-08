@@ -157,6 +157,9 @@ bool RemoteControl::waitForNextStep(const std::string& caption)
   {
     ros::Duration(0.25).sleep();
     ros::spinOnce();
+
+    if (!ros::ok())
+      return false;
   }
   if (!ros::ok())
     return false;

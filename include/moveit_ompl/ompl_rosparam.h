@@ -69,6 +69,8 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   {
     ros::NodeHandle rpnh(nh, "bolt");
     error += !get(name, rpnh, "visualize/raw_trajectory", bolt->visualizeRawTrajectory_);
+    error += !get(name, rpnh, "visualize/smooth_trajectory", bolt->visualizeSmoothTrajectory_);
+    error += !get(name, rpnh, "visualize/robot_trajectory", bolt->visualizeRobotTrajectory_);
   }
 
   // Vertex Discretizer
