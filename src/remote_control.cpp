@@ -146,7 +146,7 @@ bool RemoteControl::waitForNextStep(const std::string& caption)
 
   // Show message
   std::cout << std::endl;
-  std::cout << CONSOLE_COLOR_CYAN << "Waiting to continue: " << caption << CONSOLE_COLOR_RESET << std::flush;
+  std::cout << CONSOLE_COLOR_CYAN << "Waiting to continue: " << caption << CONSOLE_COLOR_RESET << std::endl;
 
   if (displayWaitingState_)
     displayWaitingState_(true);
