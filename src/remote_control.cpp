@@ -159,10 +159,10 @@ bool RemoteControl::waitForNextStep(const std::string& caption)
     ros::spinOnce();
 
     if (!ros::ok())
-      return false;
+      exit(0);
   }
   if (!ros::ok())
-    return false;
+    exit(0);
   next_step_ready_ = false;
   is_waiting_ = false;
   std::cout << CONSOLE_COLOR_CYAN << "... Continuing" << CONSOLE_COLOR_RESET << std::endl;
@@ -191,7 +191,7 @@ bool RemoteControl::waitForNextFullStep(const std::string& caption)
     ros::spinOnce();
   }
   if (!ros::ok())
-    return false;
+    exit(0);
   next_step_ready_ = false;
   is_waiting_ = false;
   std::cout << "Continuing " << std::endl;
