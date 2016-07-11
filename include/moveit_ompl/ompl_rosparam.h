@@ -63,7 +63,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   ompl::tools::bolt::SparseCriteriaPtr sparseCriteria = bolt->getSparseCriteria();
   ompl::tools::bolt::BoltPlannerPtr boltPlanner = bolt->getBoltPlanner();
   ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseCriteria->getVertexDiscretizer();
-  ompl::tools::bolt::DenseCachePtr denseCache = sparseGraph->getDenseCache();
+  //ompl::tools::bolt::DenseCachePtr denseCache = sparseGraph->getDenseCache();
 
   // Bolt
   {
@@ -153,14 +153,14 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     shutdownIfError(name, error);
   }
 
-  // Dense Cache
-  {
-    ros::NodeHandle rpnh(nh, "dense_cache");
-    error += !get(name, rpnh, "disable_cache", denseCache->disableCache_);
-    error += !get(name, rpnh, "enable_cache_saving", denseCache->enableCacheSaving_);
-    error += !get(name, rpnh, "save_every_n_edges", denseCache->saveEveryNEdges_);
-    shutdownIfError(name, error);
-  }
+  // // Dense Cache
+  // {
+  //   ros::NodeHandle rpnh(nh, "dense_cache");
+  //   error += !get(name, rpnh, "disable_cache", denseCache->disableCache_);
+  //   error += !get(name, rpnh, "enable_cache_saving", denseCache->enableCacheSaving_);
+  //   error += !get(name, rpnh, "save_every_n_edges", denseCache->saveEveryNEdges_);
+  //   shutdownIfError(name, error);
+  // }
 
   // BoltPlanner
   {
