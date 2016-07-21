@@ -93,6 +93,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/database_vertices", sparseGraph->visualizeDatabaseVertices_);
     error += !get(name, rpnh, "visualize/database_edges", sparseGraph->visualizeDatabaseEdges_);
     error += !get(name, rpnh, "visualize/database_coverage", sparseGraph->visualizeDatabaseCoverage_);
+    error += !get(name, rpnh, "visualize/projection", sparseGraph->visualizeProjection_);
     error += !get(name, rpnh, "visualize/graph_after_loading", sparseGraph->visualizeGraphAfterLoading_);
     error += !get(name, rpnh, "visualize/quality_path_simp", sparseGraph->visualizeQualityPathSimp_);
     error += !get(name, rpnh, "visualize/astar", sparseGraph->visualizeAstar_);
@@ -113,6 +114,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "fourth_criteria_after_failures", sparseCriteria->fourthCriteriaAfterFailures_);
     error += !get(name, rpnh, "sparse_creation_insertion_order", sparseCriteria->sparseCreationInsertionOrder_);
     error += !get(name, rpnh, "percent_max_extent_underestimate", sparseCriteria->percentMaxExtentUnderestimate_);
+    error += !get(name, rpnh, "use_l2_norm", sparseCriteria->useL2Norm_);
     error += !get(name, rpnh, "use_discretized_samples", sparseCriteria->useDiscretizedSamples_);
     error += !get(name, rpnh, "use_random_samples", sparseCriteria->useRandomSamples_);
     error += !get(name, rpnh, "use_check_remove_close_vertices", sparseCriteria->useCheckRemoveCloseVertices_);
