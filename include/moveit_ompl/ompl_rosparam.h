@@ -48,6 +48,8 @@
 
 // OMPL
 #include <ompl/tools/bolt/Bolt.h>
+#include <ompl/tools/bolt/SparseCriteria.h>
+#include <ompl/tools/bolt/SparseGenerator.h>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -61,8 +63,9 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   ompl::tools::bolt::SparseGraphPtr sparseGraph = bolt->getSparseGraph();
   ompl::tools::bolt::TaskGraphPtr taskGraph = bolt->getTaskGraph();
   ompl::tools::bolt::SparseCriteriaPtr sparseCriteria = bolt->getSparseCriteria();
+  ompl::tools::bolt::SparseGeneratorPtr sparseGenerator = bolt->getSparseGenerator();
   ompl::tools::bolt::BoltPlannerPtr boltPlanner = bolt->getBoltPlanner();
-  ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseCriteria->getVertexDiscretizer();
+  ompl::tools::bolt::VertexDiscretizerPtr vertexDiscret = sparseGenerator->getVertexDiscretizer();
   //ompl::tools::bolt::DenseCachePtr denseCache = sparseGraph->getDenseCache();
 
   // Bolt
@@ -85,6 +88,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
   // SparseGraph
   {
     ros::NodeHandle rpnh(nh, "sparse_graph");
+    error += !get(name, rpnh, "obstacle_clearance", sparseGraph->obstacleClearance_);
     error += !get(name, rpnh, "save_enabled", sparseGraph->savingEnabled_);
     error += !get(name, rpnh, "super_debug", sparseGraph->superDebug_);
     error += !get(name, rpnh, "verbose/add", sparseGraph->vAdd_);
@@ -98,6 +102,8 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/quality_path_simp", sparseGraph->visualizeQualityPathSimp_);
     error += !get(name, rpnh, "visualize/astar", sparseGraph->visualizeAstar_);
     error += !get(name, rpnh, "visualize/astar_speed", sparseGraph->visualizeAstarSpeed_);
+    error += !get(name, rpnh, "visualize/voronoi_diagram", sparseGraph->visualizeVoronoiDiagram_);
+    error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseGraph->visualizeVoronoiDiagramAnimated_);
     shutdownIfError(name, error);
   }
 
@@ -109,18 +115,10 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "near_sample_points_multiple", sparseCriteria->nearSamplePointsMultiple_);
     error += !get(name, rpnh, "stretch_factor", sparseCriteria->stretchFactor_);
     error += !get(name, rpnh, "penetration_overlap_fraction", sparseCriteria->penetrationOverlapFraction_);
-    error += !get(name, rpnh, "obstacle_clearance", sparseCriteria->obstacleClearance_);
-    error += !get(name, rpnh, "terminate_after_failures", sparseCriteria->terminateAfterFailures_);
-    error += !get(name, rpnh, "fourth_criteria_after_failures", sparseCriteria->fourthCriteriaAfterFailures_);
-    error += !get(name, rpnh, "sparse_creation_insertion_order", sparseCriteria->sparseCreationInsertionOrder_);
-    error += !get(name, rpnh, "percent_max_extent_underestimate", sparseCriteria->percentMaxExtentUnderestimate_);
     error += !get(name, rpnh, "use_l2_norm", sparseCriteria->useL2Norm_);
-    error += !get(name, rpnh, "use_discretized_samples", sparseCriteria->useDiscretizedSamples_);
-    error += !get(name, rpnh, "use_random_samples", sparseCriteria->useRandomSamples_);
     error += !get(name, rpnh, "use_check_remove_close_vertices", sparseCriteria->useCheckRemoveCloseVertices_);
     error += !get(name, rpnh, "use_clear_edges_near_vertex", sparseCriteria->useClearEdgesNearVertex_);
     error += !get(name, rpnh, "use_original_smoother", sparseCriteria->useOriginalSmoother_);
-    error += !get(name, rpnh, "save_interval", sparseCriteria->saveInterval_);
     error += !get(name, rpnh, "verbose/criteria", sparseCriteria->vCriteria_);
     error += !get(name, rpnh, "verbose/quality", sparseCriteria->vQuality_);
     error += !get(name, rpnh, "verbose/remove_close", sparseCriteria->vRemoveClose_);
@@ -128,11 +126,20 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/attempted_states", sparseCriteria->visualizeAttemptedStates_);
     error += !get(name, rpnh, "visualize/connectivity", sparseCriteria->visualizeConnectivity_);
     error += !get(name, rpnh, "visualize/remove_close_vertices", sparseCriteria->visualizeRemoveCloseVertices_);
-    error += !get(name, rpnh, "visualize/voronoi_diagram", sparseCriteria->visualizeVoronoiDiagram_);
-    error += !get(name, rpnh, "visualize/voronoi_diagram_animated", sparseCriteria->visualizeVoronoiDiagramAnimated_);
     error += !get(name, rpnh, "visualize/node_popularity", sparseCriteria->visualizeNodePopularity_);
     error += !get(name, rpnh, "visualize/quality_criteria", sparseCriteria->visualizeQualityCriteria_);
     shutdownIfError(name, error);
+  }
+
+  // SparseGenerator
+  {
+    ros::NodeHandle rpnh(nh, "sparse_generator");
+    error += !get(name, rpnh, "terminate_after_failures", sparseGenerator->terminateAfterFailures_);
+    error += !get(name, rpnh, "fourth_criteria_after_failures", sparseGenerator->fourthCriteriaAfterFailures_);
+    error += !get(name, rpnh, "use_discretized_samples", sparseGenerator->useDiscretizedSamples_);
+    error += !get(name, rpnh, "use_random_samples", sparseGenerator->useRandomSamples_);
+    error += !get(name, rpnh, "save_interval", sparseGenerator->saveInterval_);
+
   }
 
   // TaskGraph
