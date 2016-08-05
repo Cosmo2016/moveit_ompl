@@ -131,6 +131,7 @@ void loadOMPLParameters(ros::NodeHandle nh, const std::string &name, ompl::tools
     error += !get(name, rpnh, "visualize/quality_criteria", sparseCriteria->visualizeQualityCriteria_);
     error += !get(name, rpnh, "visualize/quality_criteria_close_reps", sparseCriteria->visualizeQualityCriteriaCloseReps_);
     error += !get(name, rpnh, "visualize/quality_criteria_sampler", sparseCriteria->visualizeQualityCriteriaSampler_);
+    error += !get(name, rpnh, "visualize/quality_criteria_astar", sparseCriteria->visualizeQualityCriteriaAstar_);
     shutdownIfError(name, error);
   }
 
